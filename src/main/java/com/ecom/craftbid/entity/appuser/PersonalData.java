@@ -1,16 +1,12 @@
-package com.ecom.craftbid.entity;
+package com.ecom.craftbid.entity.appuser;
 
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @NoArgsConstructor
 @AllArgsConstructor
-@Getter
-@Setter
+@Data
 @Entity
 @Table(name = "personal_data")
 public class PersonalData {
@@ -28,6 +24,6 @@ public class PersonalData {
     private String phoneNumber;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "app_user_id")
-    private AppUser appUser;
+    @JoinColumn(name = "profile_id")
+    private Profile profile;
 }

@@ -1,7 +1,7 @@
 package com.ecom.craftbid.repository;
 
-import com.ecom.craftbid.entity.AppUser;
+import com.ecom.craftbid.entity.appuser.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface AppUserRepository extends JpaRepository<AppUser, Long> {
+public interface AppUserRepository extends JpaRepository<User, Long> {
 }

@@ -5,7 +5,7 @@ import lombok.Getter;
 
 @AllArgsConstructor
 @Getter
-public enum FeedbackStars {
+public enum FeedbackStar {
     ONE_STAR(1),
     TWO_STARS(2),
     THREE_STARS(3),
