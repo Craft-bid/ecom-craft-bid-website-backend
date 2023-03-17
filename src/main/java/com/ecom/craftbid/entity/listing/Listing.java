@@ -6,9 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 @Data
 @AllArgsConstructor
@@ -37,7 +35,6 @@ public class Listing {
     @ManyToOne
     private User winner;
 
-//todo add tags
-//    @OneToMany(mappedBy = "listing", cascade = CascadeType.ALL)
-//    private List<Tag> tag;
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    private Set<Tag> tags = new HashSet<>();
 }
