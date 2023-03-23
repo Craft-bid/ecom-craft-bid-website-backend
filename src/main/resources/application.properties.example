@@ -1,0 +1,8 @@
+# Config for docker database from /docker/docker-compose.yml
+spring.jpa.hibernate.ddl-auto=create-drop
+spring.datasource.url=jdbc:postgresql://localhost:8001/craftbid_db
+spring.datasource.username=postgres
+spring.datasource.password=postgres
+spring.jpa.open-in-view=false
+spring.datasource.driver-class-name=org.postgresql.Driver
+spring.jpa.properties.hibernate.dialect = org.hibernate.dialect.PostgreSQLDialect
