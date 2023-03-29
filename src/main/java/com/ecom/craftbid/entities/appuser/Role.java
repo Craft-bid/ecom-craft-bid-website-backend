@@ -1,4 +1,4 @@
-package com.ecom.craftbid.entity.appuser;
+package com.ecom.craftbid.entities.appuser;
 
 
 import jakarta.persistence.Entity;

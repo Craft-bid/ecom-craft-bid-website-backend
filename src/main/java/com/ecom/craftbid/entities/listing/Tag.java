@@ -1,4 +1,4 @@
-package com.ecom.craftbid.entity.listing;
+package com.ecom.craftbid.entities.listing;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

@@ -1,4 +1,4 @@
-package com.ecom.craftbid.entity.appuser;
+package com.ecom.craftbid.entities.appuser;
 
 import com.ecom.craftbid.enums.FeedbackStar;
 import jakarta.persistence.*;

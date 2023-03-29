@@ -1,6 +1,6 @@
-package com.ecom.craftbid.entity.listing;
+package com.ecom.craftbid.entities.listing;
 
-import com.ecom.craftbid.entity.appuser.User;
+import com.ecom.craftbid.entities.appuser.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
