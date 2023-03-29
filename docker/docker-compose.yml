@@ -2,6 +2,7 @@ version: '3.8'
 
 services:
   db:
+    container_name: craftbid_db
     image: postgres:12-alpine
     environment:
       POSTGRES_USER: postgres
