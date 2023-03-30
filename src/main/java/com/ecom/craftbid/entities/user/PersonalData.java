@@ -1,4 +1,4 @@
-package com.ecom.craftbid.entities.appuser;
+package com.ecom.craftbid.entities.user;
 
 
 import jakarta.persistence.*;
@@ -8,6 +8,7 @@ import lombok.*;
 @AllArgsConstructor
 @Data
 @Entity
+@Builder
 @Table(name = "personal_data")
 public class PersonalData {
     @Id

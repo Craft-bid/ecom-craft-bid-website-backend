@@ -1,8 +1,9 @@
-package com.ecom.craftbid.entities.appuser;
+package com.ecom.craftbid.entities.user;
 
 import com.ecom.craftbid.enums.FeedbackStar;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -11,6 +12,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
+@Builder
 @Table(name = "feedback")
 public class Feedback {
     @Id
