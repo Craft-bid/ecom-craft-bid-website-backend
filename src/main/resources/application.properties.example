@@ -1,5 +1,7 @@
 # Config for docker database from /docker/docker-compose.yml
-# Config for docker database from /docker/docker-compose.yml
+# copy this file to src/main/resources/application.properties
+# and change the values to your needs
+
 spring.datasource.url=jdbc:postgresql://localhost:8001/craftbid_db
 spring.datasource.username=postgres
 spring.datasource.password=postgres
