@@ -1,12 +1,13 @@
-package com.ecom.craftbid.entity.transaction;
+package com.ecom.craftbid.entities.transaction;
 
 
-import com.ecom.craftbid.entity.appuser.PersonalData;
-import com.ecom.craftbid.entity.appuser.User;
-import com.ecom.craftbid.entity.listing.Bid;
-import com.ecom.craftbid.entity.listing.Listing;
+import com.ecom.craftbid.entities.user.PersonalData;
+import com.ecom.craftbid.entities.user.User;
+import com.ecom.craftbid.entities.listing.Bid;
+import com.ecom.craftbid.entities.listing.Listing;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -16,6 +17,7 @@ import java.util.Date;
 @AllArgsConstructor
 @Data
 @Entity
+@Builder
 public class Transaction {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

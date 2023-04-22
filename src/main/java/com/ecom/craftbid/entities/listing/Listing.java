@@ -1,8 +1,9 @@
-package com.ecom.craftbid.entity.listing;
+package com.ecom.craftbid.entities.listing;
 
-import com.ecom.craftbid.entity.appuser.User;
+import com.ecom.craftbid.entities.user.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -12,6 +13,7 @@ import java.util.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
+@Builder
 public class Listing {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -1,7 +1,8 @@
-package com.ecom.craftbid.entity.appuser;
+package com.ecom.craftbid.entities.user;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -12,6 +13,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
+@Builder
 @Table(name = "profile")
 public class Profile {
     @Id
