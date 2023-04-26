@@ -2,8 +2,10 @@ package com.ecom.craftbid;
 
 import com.ecom.craftbid.entities.listing.Listing;
 import com.ecom.craftbid.entities.listing.Tag;
+import com.ecom.craftbid.entities.user.User;
 import com.ecom.craftbid.repositories.ListingRepository;
 import com.ecom.craftbid.repositories.TagRepository;
+import com.ecom.craftbid.repositories.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -11,6 +13,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.*;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @Slf4j
 @SpringBootTest
@@ -22,6 +26,8 @@ public class ListingCRUDTests {
     ListingRepository listingRepository;
     @Autowired
     TagRepository tagRepository;
+    @Autowired
+    UserRepository userRepository;
 
     @BeforeEach
     void setup() {
@@ -55,6 +61,7 @@ public class ListingCRUDTests {
     void cleanup() {
         listingRepository.deleteAll();
         tagRepository.deleteAll();
+        userRepository.deleteAll();
     }
 
 
@@ -82,6 +89,47 @@ public class ListingCRUDTests {
         assert(listingRepository.findByEndedFalse().size() == 0);
     }
 
+    void createAndSetAdvertiserAndWinnerUser() {
+        User advertiser = new User();
+        User winner = new User();
+        advertiser.setName("Advertiser");
+        winner.setName("Winner");
+        userRepository.save(advertiser);
+        userRepository.save(winner);
+
+        Listing card3DListing = listingRepository.findAll().get(0);
+        card3DListing.setAdvertiser(advertiser);
+        card3DListing.setWinner(winner);
+        listingRepository.save(card3DListing);
+    }
+
+    @Test
+    void checkListingByWinnerAndAdvertiserId() {
+        createAndSetAdvertiserAndWinnerUser();
+
+        Listing card3DListing = listingRepository.findAll().get(0);
+        User advertiser = card3DListing.getAdvertiser();
+        User winner = card3DListing.getWinner();
+
+        assert(listingRepository.findByAdvertiserId(advertiser.getId()).size() == 1);
+        assert(listingRepository.findByWinnerId(winner.getId()).size() == 1);
+        assertEquals(advertiser.getName(), "Advertiser");
+        assertEquals(winner.getName(), "Winner");
+    }
+
+    @Test
+    void getWinnerAndAdvertiserFromListing() {
+        createAndSetAdvertiserAndWinnerUser();
+
+        Listing card3DListing = listingRepository.findAll().get(0);
+        User advertiser = card3DListing.getAdvertiser();
+        User winner = card3DListing.getWinner();
+
+        assert(listingRepository.findByAdvertiserId(advertiser.getId()).size() == 1);
+        assert(listingRepository.findByWinnerId(winner.getId()).size() == 1);
+        assertEquals(advertiser.getName(), "Advertiser");
+        assertEquals(winner.getName(), "Winner");
+    }
 
 
 }
