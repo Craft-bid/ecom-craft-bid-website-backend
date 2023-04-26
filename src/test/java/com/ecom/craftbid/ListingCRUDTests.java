@@ -69,5 +69,19 @@ public class ListingCRUDTests {
         log.info("Tag: " + car3DTag.getName());
     }
 
+    @Test
+    void checkListingWithEndedValue() {
+        Listing card3DListing = listingRepository.findAll().get(0);
+
+        assert(listingRepository.findByEndedTrue().size() == 0);
+        assert(listingRepository.findByEndedFalse().size() == 1);
+
+        card3DListing.setEnded(true);
+        listingRepository.save(card3DListing);
+        assert(listingRepository.findByEndedTrue().size() == 1);
+        assert(listingRepository.findByEndedFalse().size() == 0);
+    }
+
+
 
 }
