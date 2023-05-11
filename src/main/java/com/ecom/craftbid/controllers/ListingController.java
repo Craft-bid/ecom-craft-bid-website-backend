@@ -152,6 +152,11 @@ public class ListingController {
         return listingRepository.findByEndedTrueOrderByExpirationDateDesc();
     }
 
+    @GetMapping("/listings-by-title")
+    public List<Listing> getListingsByTitle(@RequestParam String title) {
+        return listingRepository.findByTitleContaining(title);
+    }
+
 
 }
 
