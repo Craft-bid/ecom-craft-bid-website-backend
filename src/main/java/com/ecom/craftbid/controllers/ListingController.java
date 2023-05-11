@@ -1,5 +1,6 @@
 package com.ecom.craftbid.controllers;
 
+import com.ecom.craftbid.entities.listing.Bid;
 import com.ecom.craftbid.entities.listing.Listing;
 import com.ecom.craftbid.entities.listing.Tag;
 import com.ecom.craftbid.repositories.ListingRepository;
@@ -75,5 +76,52 @@ public class ListingController {
 
         return listingRepository.save(listing);
     }
+
+    @PostMapping("/{listingId}/photos")
+    public Listing addPhotosToListing(@PathVariable long listingId, @RequestBody List<String> photos) throws ChangeSetPersister.NotFoundException {
+        Listing listing = listingRepository.findById(listingId)
+                .orElseThrow(ChangeSetPersister.NotFoundException::new);
+
+        listing.getPhotos().addAll(photos);
+
+        return listingRepository.save(listing);
+    }
+
+    @DeleteMapping("/{listingId}/photos/{photo}")
+    public Listing removePhotoFromListing(@PathVariable long listingId, @PathVariable String photo) throws ChangeSetPersister.NotFoundException {
+        Listing listing = listingRepository.findById(listingId)
+                .orElseThrow(ChangeSetPersister.NotFoundException::new);
+
+        listing.getPhotos().remove(photo);
+
+        return listingRepository.save(listing);
+    }
+
+    @PostMapping("/{listingId}/bids")
+    public Listing addBidToListing(@PathVariable long listingId, @RequestBody Bid bid) throws ChangeSetPersister.NotFoundException {
+        Listing listing = listingRepository.findById(listingId)
+                .orElseThrow(ChangeSetPersister.NotFoundException::new);
+
+        bid.setListing(listing);
+        listing.getBids().add(bid);
+
+        return listingRepository.save(listing);
+    }
+
+    @DeleteMapping("/{listingId}/bids/{bidId}")
+    public Listing removeBidFromListing(@PathVariable long listingId, @PathVariable long bidId) throws ChangeSetPersister.NotFoundException {
+        Listing listing = listingRepository.findById(listingId)
+                .orElseThrow(ChangeSetPersister.NotFoundException::new);
+
+        Bid bidToRemove = listing.getBids().stream()
+                .filter(bid -> bid.getId() == bidId)
+                .findFirst()
+                .orElseThrow(ChangeSetPersister.NotFoundException::new);
+
+        listing.getBids().remove(bidToRemove);
+
+        return listingRepository.save(listing);
+    }
+
 }
 
