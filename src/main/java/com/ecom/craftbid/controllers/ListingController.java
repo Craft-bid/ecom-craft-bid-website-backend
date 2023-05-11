@@ -3,8 +3,10 @@ package com.ecom.craftbid.controllers;
 import com.ecom.craftbid.entities.listing.Bid;
 import com.ecom.craftbid.entities.listing.Listing;
 import com.ecom.craftbid.entities.listing.Tag;
+import com.ecom.craftbid.entities.user.User;
 import com.ecom.craftbid.repositories.ListingRepository;
 import com.ecom.craftbid.repositories.TagRepository;
+import com.ecom.craftbid.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.http.ResponseEntity;
@@ -24,6 +26,9 @@ public class ListingController {
 
     @Autowired
     private TagRepository tagRepository;
+
+    @Autowired
+    private UserRepository userRepository;
 
     @GetMapping
     public List<Listing> getAllListings() {
@@ -122,6 +127,21 @@ public class ListingController {
 
         return listingRepository.save(listing);
     }
+
+    @PutMapping("/{listingId}/winner/{userId}")
+    public Listing setWinnerForListing(@PathVariable long listingId, @PathVariable long userId) throws ChangeSetPersister.NotFoundException {
+        Listing listing = listingRepository.findById(listingId)
+                .orElseThrow(ChangeSetPersister.NotFoundException::new);
+
+        User winner = userRepository.findById(userId)
+                .orElseThrow(ChangeSetPersister.NotFoundException::new);
+
+
+        listing.setWinner(winner);
+
+        return listingRepository.save(listing);
+    }
+
 
 }
 
