@@ -142,6 +142,16 @@ public class ListingController {
         return listingRepository.save(listing);
     }
 
+    @GetMapping("/active-listings")
+    public List<Listing> getActiveListingsSortedByExpirationDate() {
+        return listingRepository.findByEndedFalseOrderByExpirationDateDesc();
+    }
+
+    @GetMapping("/ended-listings")
+    public List<Listing> getEndedListingsSortedByExpirationDate() {
+        return listingRepository.findByEndedTrueOrderByExpirationDateDesc();
+    }
+
 
 }
 
