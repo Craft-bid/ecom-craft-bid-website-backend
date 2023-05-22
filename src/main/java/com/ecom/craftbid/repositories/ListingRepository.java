@@ -1,7 +1,6 @@
 package com.ecom.craftbid.repositories;
 
 import com.ecom.craftbid.entities.listing.Listing;
-import com.ecom.craftbid.entities.user.User;
 import lombok.NonNull;
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -22,7 +21,7 @@ public interface ListingRepository extends JpaRepository<Listing, Long> {
     List<Listing> findByTitleContaining(String title);
 
     Listing save(@NonNull Listing listing);
-    Listing deleteById(long id);
+    void deleteById(long id);
 
 
 }
