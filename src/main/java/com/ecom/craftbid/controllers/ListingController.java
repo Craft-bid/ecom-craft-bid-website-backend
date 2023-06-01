@@ -211,6 +211,7 @@ public class ListingController {
             spec = spec.and((root, query, criteriaBuilder) ->
                     criteriaBuilder.equal(root.get("expirationDate"), dateTo)
             );
+
         }
 
         return listingRepository.findAll(spec, pageable);
