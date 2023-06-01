@@ -9,13 +9,18 @@ import com.ecom.craftbid.repositories.TagRepository;
 import com.ecom.craftbid.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.crossstore.ChangeSetPersister;
+
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Page;
+
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/listings")
@@ -31,7 +36,7 @@ public class ListingController {
     private UserRepository userRepository;
 
     @GetMapping
-    public List<Listing> getAllListings() {
+    public List<Listing> getAllListings(Pageable pageable) {
         return listingRepository.findAll();
     }
 
@@ -143,20 +148,66 @@ public class ListingController {
     }
 
     @GetMapping("/active-listings")
-    public List<Listing> getActiveListingsSortedByExpirationDate() {
-        return listingRepository.findByEndedFalseOrderByExpirationDateDesc();
+    public Page<Listing> getActiveListingsSortedByExpirationDate(Pageable pageable) {
+        return listingRepository.findByEndedFalseOrderByExpirationDateDesc(pageable);
     }
 
     @GetMapping("/ended-listings")
-    public List<Listing> getEndedListingsSortedByExpirationDate() {
-        return listingRepository.findByEndedTrueOrderByExpirationDateDesc();
+    public Page<Listing> getEndedListingsSortedByExpirationDate(Pageable pageable) {
+        return listingRepository.findByEndedTrueOrderByExpirationDateDesc(pageable);
     }
 
     @GetMapping("/listings-by-title")
-    public List<Listing> getListingsByTitle(@RequestParam String title) {
-        return listingRepository.findByTitleContaining(title);
+    public Page<Listing> getListingsByTitle(@RequestParam String title, Pageable pageable) {
+        return listingRepository.findByTitleContaining(title, pageable);
     }
 
+    @GetMapping("/listings-by-tags")
+    public Page<Listing> getListingsByTags(@RequestParam List<String> tags, Pageable pageable) {
+        return listingRepository.findByTags_NameIn(tags, pageable);
+    }
+
+    @GetMapping("/search")
+    public Page<Listing> findBySearchCriteria(
+            @RequestParam(required = false) String title,
+            @RequestParam(required = false) String advertiserSurname,
+            @RequestParam(required = false) String winnerName,
+            @RequestParam(required = false) List<String> tagNames,
+            @RequestParam(required = false) Date dateFrom,
+            @RequestParam(required = false) Date dateTo,
+            Pageable pageable) {
+
+        Specification<Listing> spec = Specification.where(null);
+
+        if (title != null && !title.isEmpty()) {
+            spec = spec.or((root, query, criteriaBuilder) ->
+                    criteriaBuilder.like(criteriaBuilder.lower(root.get("title")), "%" + title.toLowerCase() + "%"));
+        }
+
+        if (advertiserSurname != null && !advertiserSurname.isEmpty()) {
+            spec = spec.or((root, query, criteriaBuilder) ->
+                    criteriaBuilder.like(criteriaBuilder.lower(root.get("advertiser").get("name")),
+                            "%" + advertiserSurname.toLowerCase() + "%"));
+        }
+
+        if (winnerName != null && !winnerName.isEmpty()) {
+            spec = spec.or((root, query, criteriaBuilder) ->
+                    criteriaBuilder.like(criteriaBuilder.lower(root.get("winner").get("name")),
+                            "%" + winnerName.toLowerCase() + "%"));
+        }
+
+        if (tagNames != null && !tagNames.isEmpty()) {
+            spec = spec.or((root, query, criteriaBuilder) ->
+                    root.join("tags").get("name").in(tagNames));
+        }
+
+        if (dateFrom != null && dateTo != null) {
+            spec = spec.and((root, query, criteriaBuilder) ->
+                    criteriaBuilder.between(root.get("creationDate"), dateFrom, dateTo));
+        }
+
+        return listingRepository.findAll(spec, pageable);
+    }
 
 }
 

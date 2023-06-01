@@ -11,6 +11,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import java.util.*;
 
@@ -79,15 +81,17 @@ public class ListingCRUDTests {
     @Test
     void checkListingWithEndedValue() {
         Listing card3DListing = listingRepository.findAll().get(0);
+        Pageable pageable = PageRequest.of(0, 10);
 
-        assert(listingRepository.findByEndedTrue().size() == 0);
-        assert(listingRepository.findByEndedFalse().size() == 1);
+        assert listingRepository.findByEndedTrue(pageable).getTotalElements() == 0;
+        assert listingRepository.findByEndedFalse(pageable).getTotalElements() == 1;
 
         card3DListing.setEnded(true);
         listingRepository.save(card3DListing);
-        assert(listingRepository.findByEndedTrue().size() == 1);
-        assert(listingRepository.findByEndedFalse().size() == 0);
+        assert listingRepository.findByEndedTrue(pageable).getTotalElements() == 1;
+        assert listingRepository.findByEndedFalse(pageable).getTotalElements() == 0;
     }
+
 
     void createAndSetAdvertiserAndWinnerUser() {
         User advertiser = new User();
@@ -111,8 +115,10 @@ public class ListingCRUDTests {
         User advertiser = card3DListing.getAdvertiser();
         User winner = card3DListing.getWinner();
 
-        assert(listingRepository.findByAdvertiserId(advertiser.getId()).size() == 1);
-        assert(listingRepository.findByWinnerId(winner.getId()).size() == 1);
+        Pageable pageable = Pageable.unpaged();
+
+        assert listingRepository.findByAdvertiserId(advertiser.getId(), pageable).getTotalElements() == 1;
+        assert listingRepository.findByWinnerId(winner.getId(), pageable).getTotalElements() == 1;
         assertEquals(advertiser.getName(), "Advertiser");
         assertEquals(winner.getName(), "Winner");
     }
@@ -125,8 +131,10 @@ public class ListingCRUDTests {
         User advertiser = card3DListing.getAdvertiser();
         User winner = card3DListing.getWinner();
 
-        assert(listingRepository.findByAdvertiserId(advertiser.getId()).size() == 1);
-        assert(listingRepository.findByWinnerId(winner.getId()).size() == 1);
+        Pageable pageable = Pageable.unpaged();
+
+        assert listingRepository.findByAdvertiserId(advertiser.getId(), pageable).getTotalElements() == 1;
+        assert listingRepository.findByWinnerId(winner.getId(), pageable).getTotalElements() == 1;
         assertEquals(advertiser.getName(), "Advertiser");
         assertEquals(winner.getName(), "Winner");
     }
