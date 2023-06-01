@@ -201,9 +201,16 @@ public class ListingController {
                     root.join("tags").get("name").in(tagNames));
         }
 
-        if (dateFrom != null && dateTo != null) {
+        if (dateFrom != null) {
             spec = spec.and((root, query, criteriaBuilder) ->
-                    criteriaBuilder.between(root.get("creationDate"), dateFrom, dateTo));
+                    criteriaBuilder.equal(root.get("creationDate"), dateFrom)
+            );
+        }
+
+        if (dateTo != null) {
+            spec = spec.and((root, query, criteriaBuilder) ->
+                    criteriaBuilder.equal(root.get("expirationDate"), dateTo)
+            );
         }
 
         return listingRepository.findAll(spec, pageable);
