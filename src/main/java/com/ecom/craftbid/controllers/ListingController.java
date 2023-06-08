@@ -217,7 +217,7 @@ public class ListingController {
     @GetMapping("/public/listings/search")
     public Page<Listing> findBySearchCriteria(
             @RequestParam(required = false) String title,
-            @RequestParam(required = false) String advertiserSurname,
+            @RequestParam(required = false) String advertiserName,
             @RequestParam(required = false) String winnerName,
             @RequestParam(required = false) List<String> tagNames,
             @RequestParam(required = false) Date dateFrom,
@@ -231,10 +231,10 @@ public class ListingController {
                     criteriaBuilder.like(criteriaBuilder.lower(root.get("title")), "%" + title.toLowerCase() + "%"));
         }
 
-        if (advertiserSurname != null && !advertiserSurname.isEmpty()) {
+        if (advertiserName != null && !advertiserName.isEmpty()) {
             spec = spec.or((root, query, criteriaBuilder) ->
                     criteriaBuilder.like(criteriaBuilder.lower(root.get("advertiser").get("name")),
-                            "%" + advertiserSurname.toLowerCase() + "%"));
+                            "%" + advertiserName.toLowerCase() + "%"));
         }
 
         if (winnerName != null && !winnerName.isEmpty()) {
