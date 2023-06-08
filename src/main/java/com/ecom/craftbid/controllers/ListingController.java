@@ -187,7 +187,7 @@ public class ListingController {
 
         User winner = userRepository.findById(userId)
                 .orElseThrow(ChangeSetPersister.NotFoundException::new);
-        
+
         listing.setWinner(winner);
 
         return listingRepository.save(listing);
