@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.Set;
 
 @RestController
-@RequestMapping("/api/listings")
+@RequestMapping("/api/v1")
 public class ListingController {
 
     @Autowired
@@ -35,17 +35,17 @@ public class ListingController {
     @Autowired
     private UserRepository userRepository;
 
-    @GetMapping
+    @GetMapping("/public/listings")
     public List<Listing> getAllListings(Pageable pageable) {
         return listingRepository.findAll();
     }
 
-    @PostMapping
+    @PostMapping("/private/listings")
     public Listing createListing(@RequestBody Listing listing) {
         return listingRepository.save(listing);
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/private/listings/{id}")
     public Listing updateListing(@PathVariable long id, @RequestBody Listing updatedListing) throws ChangeSetPersister.NotFoundException {
         Listing existingListing = listingRepository.findById(id)
                 .orElseThrow(ChangeSetPersister.NotFoundException::new);
@@ -56,13 +56,13 @@ public class ListingController {
         return listingRepository.save(existingListing);
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/private/listings/{id}")
     public ResponseEntity<?> deleteListing(@PathVariable long id) {
         listingRepository.deleteById(id);
         return ResponseEntity.noContent().build();
     }
 
-    @PostMapping("/{listingId}/tags")
+    @PostMapping("/private/{listingId}/tags")
     public Listing addTagsToListing(@PathVariable long listingId, @RequestBody List<Long> tagIds) throws ChangeSetPersister.NotFoundException {
         Listing listing = listingRepository.findById(listingId)
                 .orElseThrow(ChangeSetPersister.NotFoundException::new);
@@ -74,7 +74,7 @@ public class ListingController {
         return listingRepository.save(listing);
     }
 
-    @DeleteMapping("/{listingId}/tags/{tagId}")
+    @DeleteMapping("/private/{listingId}/tags/{tagId}")
     public Listing removeTagFromListing(@PathVariable long listingId, @PathVariable long tagId) throws ChangeSetPersister.NotFoundException {
         Listing listing = listingRepository.findById(listingId)
                 .orElseThrow(ChangeSetPersister.NotFoundException::new);
@@ -87,7 +87,7 @@ public class ListingController {
         return listingRepository.save(listing);
     }
 
-    @PostMapping("/{listingId}/photos")
+    @PostMapping("/private/{listingId}/photos")
     public Listing addPhotosToListing(@PathVariable long listingId, @RequestBody List<String> photos) throws ChangeSetPersister.NotFoundException {
         Listing listing = listingRepository.findById(listingId)
                 .orElseThrow(ChangeSetPersister.NotFoundException::new);
@@ -97,7 +97,7 @@ public class ListingController {
         return listingRepository.save(listing);
     }
 
-    @DeleteMapping("/{listingId}/photos/{photo}")
+    @DeleteMapping("/private/{listingId}/photos/{photo}")
     public Listing removePhotoFromListing(@PathVariable long listingId, @PathVariable String photo) throws ChangeSetPersister.NotFoundException {
         Listing listing = listingRepository.findById(listingId)
                 .orElseThrow(ChangeSetPersister.NotFoundException::new);
@@ -107,7 +107,7 @@ public class ListingController {
         return listingRepository.save(listing);
     }
 
-    @PostMapping("/{listingId}/bids")
+    @PostMapping("/private/{listingId}/bids")
     public Listing addBidToListing(@PathVariable long listingId, @RequestBody Bid bid) throws ChangeSetPersister.NotFoundException {
         Listing listing = listingRepository.findById(listingId)
                 .orElseThrow(ChangeSetPersister.NotFoundException::new);
@@ -118,7 +118,7 @@ public class ListingController {
         return listingRepository.save(listing);
     }
 
-    @DeleteMapping("/{listingId}/bids/{bidId}")
+    @DeleteMapping("/private/{listingId}/bids/{bidId}")
     public Listing removeBidFromListing(@PathVariable long listingId, @PathVariable long bidId) throws ChangeSetPersister.NotFoundException {
         Listing listing = listingRepository.findById(listingId)
                 .orElseThrow(ChangeSetPersister.NotFoundException::new);
@@ -133,7 +133,7 @@ public class ListingController {
         return listingRepository.save(listing);
     }
 
-    @PutMapping("/{listingId}/winner/{userId}")
+    @PutMapping("/private/{listingId}/winner/{userId}")
     public Listing setWinnerForListing(@PathVariable long listingId, @PathVariable long userId) throws ChangeSetPersister.NotFoundException {
         Listing listing = listingRepository.findById(listingId)
                 .orElseThrow(ChangeSetPersister.NotFoundException::new);
@@ -147,27 +147,27 @@ public class ListingController {
         return listingRepository.save(listing);
     }
 
-    @GetMapping("/active-listings")
+    @GetMapping("/public/listings/active-listings")
     public Page<Listing> getActiveListingsSortedByExpirationDate(Pageable pageable) {
         return listingRepository.findByEndedFalseOrderByExpirationDateDesc(pageable);
     }
 
-    @GetMapping("/ended-listings")
+    @GetMapping("/public/listings/ended-listings")
     public Page<Listing> getEndedListingsSortedByExpirationDate(Pageable pageable) {
         return listingRepository.findByEndedTrueOrderByExpirationDateDesc(pageable);
     }
 
-    @GetMapping("/listings-by-title")
+    @GetMapping("/public/listings/listings-by-title")
     public Page<Listing> getListingsByTitle(@RequestParam String title, Pageable pageable) {
         return listingRepository.findByTitleContaining(title, pageable);
     }
 
-    @GetMapping("/listings-by-tags")
+    @GetMapping("/public/listings/listings-by-tags")
     public Page<Listing> getListingsByTags(@RequestParam List<String> tags, Pageable pageable) {
         return listingRepository.findByTags_NameIn(tags, pageable);
     }
 
-    @GetMapping("/search")
+    @GetMapping("/public/listings/search")
     public Page<Listing> findBySearchCriteria(
             @RequestParam(required = false) String title,
             @RequestParam(required = false) String advertiserSurname,
