@@ -8,28 +8,28 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/tags")
+@RequestMapping("/api/v1")
 public class TagController {
 
     @Autowired
     private TagRepository tagRepository;
 
-    @GetMapping
+    @GetMapping("/public/tags")
     public List<Tag> getAllTags() {
         return tagRepository.findAll();
     }
 
-    @PostMapping
+    @PostMapping("/private/tags")
     public Tag createTag(Tag tag) {
         return tagRepository.save(tag);
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/private/tags/{id}")
     public void deleteTag(@PathVariable long id) {
         tagRepository.deleteById(id);
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/private/tags/{id}")
     public Tag updateTag(Tag tag) {
         return tagRepository.save(tag);
     }

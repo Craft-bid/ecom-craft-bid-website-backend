@@ -10,23 +10,23 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/bids")
+@RequestMapping("/api/v1")
 public class BidController {
 
     @Autowired
     private BidRepository bidRepository;
 
-    @GetMapping
+    @GetMapping("/public/bids")
     public List<Bid> getAllBids() {
         return bidRepository.findAll();
     }
 
-    @PostMapping
+    @PostMapping("/private/bids")
     public Bid createBid(Bid bid) {
         return bidRepository.save(bid);
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/private/bids/{id}")
     public Bid updateBid(@PathVariable long id, @RequestBody Bid updatedBid) throws ChangeSetPersister.NotFoundException {
         Bid existingBid = bidRepository.findById(id).orElseThrow(ChangeSetPersister.NotFoundException::new);
 
@@ -40,7 +40,7 @@ public class BidController {
         return bidRepository.save(existingBid);
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/private/bids/{id}")
     public void deleteBid(@PathVariable long id) {
         bidRepository.deleteById(id);
     }

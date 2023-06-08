@@ -26,6 +26,7 @@ public interface ListingRepository extends JpaRepository<Listing, Long> {
     Page<Listing> findByWinnerId(long id, Pageable pageable);
     Page<Listing> findByBidsId(long id, Pageable pageable);
     Page<Listing> findByTitleContaining(String title, Pageable pageable);
+    Listing findById(long id);
 
     Page<Listing> findByTags_NameIn(List<String> names, Pageable pageable);
 
