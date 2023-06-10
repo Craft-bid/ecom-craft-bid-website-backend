@@ -12,7 +12,6 @@ import java.util.*;
 @Getter
 @Setter
 @Builder
-
 public class Listing {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -45,6 +44,7 @@ public class Listing {
 
     public Listing() {
         this.bids = new ArrayList<>();
+        this.photos = new ArrayList<>();
         this.tags = new HashSet<>();
     }
 

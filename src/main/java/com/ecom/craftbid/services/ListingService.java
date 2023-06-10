@@ -36,7 +36,6 @@ public class ListingService {
     private TagRepository tagRepository;
 
 
-
     private Listing findListingById(long listingId) throws NotFoundException {
         return listingRepository.findById(listingId)
                 .orElseThrow(NotFoundException::new);
@@ -60,10 +59,12 @@ public class ListingService {
     public UserDTO getUserById(long userId) throws NotFoundException {
         return UserDTO.fromUser(findUserById(userId));
     }
+
     public ListingDTO getListingById(long id) {
         Listing listing = listingRepository.findById(id).orElseThrow(NotFoundException::new);
         return ListingDTO.fromListing(listing);
     }
+
     public ListingDTO updateListing(long id, Listing updatedListing, long winnerId, long advertiserId) throws NotFoundException {
         Listing listing = findListingById(id);
         User winner = findUserById(winnerId);
@@ -197,7 +198,7 @@ public class ListingService {
         return listings.map(ListingDTO::fromListing);
     }
 
-    public Page<ListingDTO> findBySearchCriteria(@ModelAttribute SearchCriteriaDto searchRequest, Pageable pageable) {
+    public List<ListingDTO> findBySearchCriteria(@ModelAttribute SearchCriteriaDto searchRequest, Pageable pageable) {
         Specification<Listing> spec = Specification.where(null);
 
         String title = searchRequest.getTitle();
@@ -206,7 +207,7 @@ public class ListingService {
         List<String> tagNames = searchRequest.getTagNames();
         Date dateFrom = searchRequest.getDateFrom();
         Date dateTo = searchRequest.getDateTo();
-        
+
         if (title != null && !title.isEmpty()) {
             spec = spec.or((root, query, criteriaBuilder) ->
                     criteriaBuilder.like(criteriaBuilder.lower(root.get("title")), "%" + title.toLowerCase() + "%"));
@@ -242,7 +243,7 @@ public class ListingService {
         }
 
         Page<Listing> searchResults = listingRepository.findAll(spec, pageable);
-        return searchResults.map(ListingDTO::fromListing);
+        return searchResults.stream().map(ListingDTO::fromListing).toList();
     }
 
 

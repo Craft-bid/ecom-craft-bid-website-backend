@@ -2,13 +2,14 @@ package com.ecom.craftbid.dtos;
 
 
 import com.ecom.craftbid.entities.listing.Listing;
-import com.ecom.craftbid.entities.listing.Tag;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
 
 @Data
 @AllArgsConstructor
@@ -21,11 +22,12 @@ public class ListingDTO {
     private Date expirationDate;
     private Date creationDate;
     private String description;
-    private List<String> photos = new ArrayList<>();
-    private List<BidDTO> bids;
+    private Collection<String> photos;
+    private Collection<BidDTO> bids;
+    private Collection<TagDTO> tags;
     private long advertiserId;
     private long winnerId;
-    private Collection<TagDTO> tags;
+
 
     public static ListingDTO fromListing(Listing listing) {
         return ListingDTO.builder()
@@ -35,11 +37,11 @@ public class ListingDTO {
                 .expirationDate(listing.getExpirationDate())
                 .creationDate(listing.getCreationDate())
                 .description(listing.getDescription())
-                .photos(listing.getPhotos())
-                .bids(BidDTO.fromBids(listing.getBids()))
+                .photos(new ArrayList<>(listing.getPhotos()))
+                .bids(BidDTO.fromBids(new ArrayList<>(listing.getBids())))
                 .advertiserId(listing.getAdvertiser().getId())
                 .winnerId(listing.getWinner() == null ? 0 : listing.getWinner().getId())
-                .tags(TagDTO.fromTags(listing.getTags()))
+                .tags(TagDTO.fromTags(new ArrayList<>(listing.getTags())))
                 .build();
     }
 

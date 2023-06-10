@@ -35,21 +35,10 @@ public class BidDTO {
     }
 
     public static List<BidDTO> fromBids(List<Bid> bids) {
-//        return bids
-//                .stream()
-//                .map(BidDTO::fromBid)
-//                .collect(Collectors.toList());
-        // TODO: fix xd
-        Bid bid = new Bid();
-        bid.setId(1);
-        bid.setPrice(100);
-        bid.setDescription("test");
-        bid.setCreationDate(new Date());
-        bid.setDaysToDeliver(5);
-        User bidder = new User();
-        bidder.setName("test");
-        bid.setBidder(bidder);
-        return List.of(BidDTO.fromBid(bid));
+        return bids
+                .stream()
+                .map(BidDTO::fromBid)
+                .collect(Collectors.toList());
     }
 }
 
