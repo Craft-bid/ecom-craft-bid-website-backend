@@ -31,7 +31,7 @@ public class ListingService {
     private ListingRepository listingRepository;
 
     @Autowired
-    private UserRepository userRepository;
+    private UserService userService;
 
     @Autowired
     private TagRepository tagRepository;
@@ -39,11 +39,6 @@ public class ListingService {
 
     private Listing findListingById(long listingId) throws NotFoundException {
         return listingRepository.findById(listingId)
-                .orElseThrow(NotFoundException::new);
-    }
-
-    private User findUserById(long userId) throws NotFoundException {
-        return userRepository.findById(userId)
                 .orElseThrow(NotFoundException::new);
     }
 
@@ -57,13 +52,8 @@ public class ListingService {
         createdListing.setTitle(listingCreateRequest.getTitle());
         createdListing.setDescription(listingCreateRequest.getDescription());
 
-        User advertiser;
-        try {
-            advertiser = findUserById(listingCreateRequest.getAdvertiserId());
+        User advertiser = userService.findUserById(listingCreateRequest.getAdvertiserId());
 
-        } catch (NotFoundException e) {
-            advertiser = null;
-        }
         createdListing.setAdvertiser(advertiser);
         createdListing.setEnded(listingCreateRequest.isEnded());
 
@@ -72,7 +62,7 @@ public class ListingService {
     }
 
     public UserDTO getUserById(long userId) throws NotFoundException {
-        return UserDTO.fromUser(findUserById(userId));
+        return UserDTO.fromUser(userService.findUserById(userId));
     }
 
     public ListingDTO getListingById(long id) {
@@ -82,8 +72,8 @@ public class ListingService {
 
     public ListingDTO updateListing(long id, Listing updatedListing, long winnerId, long advertiserId) throws NotFoundException {
         Listing listing = findListingById(id);
-        User winner = findUserById(winnerId);
-        User advertiser = findUserById(advertiserId);
+        User winner = userService.findUserById(winnerId);
+        User advertiser = userService.findUserById(advertiserId);
 
         listing.setTitle(updatedListing.getTitle());
         listing.setDescription(updatedListing.getDescription());
@@ -96,7 +86,7 @@ public class ListingService {
 
     public ListingDTO updateListingWinner(long id, long winnerId) throws NotFoundException {
         Listing listing = findListingById(id);
-        User winner = findUserById(winnerId);
+        User winner = userService.findUserById(winnerId);
 
         listing.setWinner(winner);
         Listing savedListing = listingRepository.save(listing);
@@ -105,7 +95,7 @@ public class ListingService {
 
     public ListingDTO updateListingAdvertiser(long id, long advertiserId) throws NotFoundException {
         Listing listing = findListingById(id);
-        User advertiser = findUserById(advertiserId);
+        User advertiser = userService.findUserById(advertiserId);
         if (advertiser == null) {
             throw new NotFoundException("Advertiser with ID " + advertiserId + " not found.");
         }
@@ -187,8 +177,7 @@ public class ListingService {
 
     public ListingDTO setWinnerForListing(long listingId, long userId) {
         Listing listing = findListingById(listingId);
-        User winner = userRepository.findById(userId)
-                .orElseThrow();
+        User winner = userService.findUserById(userId);
         listing.setWinner(winner);
         return saveAndReturnListingDTO(listing);
     }
@@ -298,5 +287,11 @@ public class ListingService {
 
         return ListingDTO.fromListing(listing);
 
+    }
+
+    public List<ListingDTO> getListingsPage(Pageable pageable) {
+        Page<Listing> listings = listingRepository.findAll(pageable);
+
+        return listings.stream().map(ListingDTO::fromListing).toList();
     }
 }

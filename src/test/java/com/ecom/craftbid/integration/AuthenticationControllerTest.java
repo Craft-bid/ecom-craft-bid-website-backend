@@ -38,9 +38,6 @@ public class AuthenticationControllerTest {
     private AuthenticationService authenticationService;
 
     @MockBean
-    private UserRepository userRepository;
-
-    @MockBean
     private PasswordEncoder passwordEncoder;
 
     @Test

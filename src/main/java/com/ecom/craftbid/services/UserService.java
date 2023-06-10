@@ -17,19 +17,26 @@ public class UserService {
     @Autowired
     private UserRepository userRepository;
 
+    protected User findUserById(long userId) throws NotFoundException {
+        return userRepository.findById(userId)
+                .orElseThrow(NotFoundException::new);
+    }
+
     public List<User> getAllUsers() {
         return userRepository.findAll();
     }
 
     public User getUser(long id) {
-        return userRepository.findById(id).orElseThrow(NotFoundException::new);
+        return findUserById(id);
     }
 
     public User createUser(User user) {
+
         return userRepository.save(user);
     }
 
     public void deleteUser(long id) {
+
         userRepository.deleteById(id);
     }
 
