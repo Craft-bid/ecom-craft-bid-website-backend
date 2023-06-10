@@ -132,12 +132,6 @@ public class ListingController {
         return ResponseEntity.ok(listingDtoPage);
     }
 
-    @GetMapping("/public/listings-by-title")
-    public ResponseEntity<Page<ListingDTO>> getListingsByTitle(@RequestParam String title, Pageable pageable) {
-        Page<ListingDTO> listingDtoPage = listingService.getListingsByTitle(title, pageable);
-        return ResponseEntity.ok(listingDtoPage);
-    }
-
     @GetMapping("/public/listings-by-tags")
     public ResponseEntity<Page<ListingDTO>> getListingsByTags(@RequestParam List<String> tags, Pageable pageable) {
         Page<ListingDTO> listingDtoPage = listingService.getListingsByTags(tags, pageable);
