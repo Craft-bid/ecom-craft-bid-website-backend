@@ -22,12 +22,6 @@ public class ListingController {
     @Autowired
     private ListingService listingService;
 
-    @GetMapping("/public/listings")
-    public ResponseEntity<Page<ListingDTO>> getAllListings(Specification<Listing> spec, Pageable pageable) {
-        Page<ListingDTO> listingDtoPage = listingService.getAllListings(spec, pageable);
-        return ResponseEntity.ok(listingDtoPage);
-    }
-
     @PostMapping("/private/listings")
     public ResponseEntity<ListingDTO> createListing(@RequestBody Listing listing) {
         ListingDTO listingDto = listingService.createListing(listing);
@@ -160,7 +154,7 @@ public class ListingController {
         return ResponseEntity.ok(listingDtoPage);
     }
 
-    @GetMapping("/public/search")
+    @GetMapping("/public/listings/search")
     public ResponseEntity<Page<ListingDTO>> findBySearchCriteria(@ModelAttribute SearchCriteriaDto searchCriteriaDto, Pageable pageable) {
         Page<ListingDTO> listingDtoPage = listingService.findBySearchCriteria(searchCriteriaDto, pageable);
         return ResponseEntity.ok(listingDtoPage);
