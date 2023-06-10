@@ -4,6 +4,7 @@ import com.ecom.craftbid.dtos.ListingDTO;
 import com.ecom.craftbid.dtos.ListingResponse;
 import com.ecom.craftbid.entities.listing.Listing;
 import com.ecom.craftbid.repositories.ListingRepository;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.Test;
@@ -48,17 +49,31 @@ public class ListingControllerTest {
     }
 
     @Test
-    public void testSearchNoCriteria() throws Exception { // no criteria equivalent to findAll
+    public void testSearchNoCriteria() throws Exception {
         MvcResult result = mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/public/listings/search"))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andReturn();
 
         String responseContent = result.getResponse().getContentAsString();
-        ObjectMapper objectMapper = new ObjectMapper();
-        ListingResponse listingResponse = objectMapper.readValue(responseContent, ListingResponse.class);
-        List<ListingDTO> responseListings = listingResponse.getContent();
+        List<ListingDTO> responseListings = new ObjectMapper().readValue(responseContent, new TypeReference<List<ListingDTO>>() {});
 
-        // DataInitializer creates 3 listings
-        assertEquals(3, responseListings.size());
+        List<Listing> listings = listingRepository.findAll();
+        assertEquals(listings.size(), responseListings.size());
     }
+
+    @Test
+    public void testSearchByTitle() throws Exception {
+        String title = "Item 1";
+
+        MvcResult result = mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/public/listings/search?title=" + title))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andReturn();
+
+        String responseContent = result.getResponse().getContentAsString();
+        List<ListingDTO> responseListings = new ObjectMapper().readValue(responseContent, new TypeReference<List<ListingDTO>>() {});
+
+        assertEquals(1, responseListings.size());
+        assertEquals(title, responseListings.get(0).getTitle());
+    }
+    
 }
