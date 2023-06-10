@@ -23,4 +23,9 @@ public class Tag {
 
     @ManyToMany(mappedBy = "tags")
     private List<Listing> listings = new ArrayList<>();
+
+    @Override
+    public String toString() {
+        return name;
+    }
 }

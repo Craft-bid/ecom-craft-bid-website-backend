@@ -31,7 +31,9 @@ public class Listing {
     private List<String> photos = new ArrayList<>();
 
     @OneToMany(mappedBy = "listing", cascade = CascadeType.ALL)
-    private List<Bid> bids;
+        @Builder.Default
+        private List<Bid> bids = new ArrayList<>();
+
     @ManyToOne
     private User advertiser;
     @ManyToOne
@@ -44,4 +46,14 @@ public class Listing {
             inverseJoinColumns = @JoinColumn(name = "tag_id")
     )
     private Set<Tag> tags = new HashSet<>();
+
+    public void addTag(Tag tag) {
+        this.tags.add(tag);
+        tag.getListings().add(this);
+    }
+
+    public void removeTag(Tag tag) {
+        this.tags.remove(tag);
+        tag.getListings().remove(this);
+    }
 }

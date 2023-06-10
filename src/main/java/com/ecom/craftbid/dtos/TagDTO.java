@@ -26,6 +26,9 @@ public class TagDTO {
     }
 
     public static List<TagDTO> fromTags(Collection<Tag> tags) {
+        if(tags == null)
+            return List.of();
+
         return tags.stream()
                 .map(TagDTO::fromTag)
                 .collect(Collectors.toList());

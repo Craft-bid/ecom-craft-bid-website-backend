@@ -2,6 +2,7 @@ package com.ecom.craftbid.dtos;
 
 
 import com.ecom.craftbid.entities.listing.Listing;
+import com.ecom.craftbid.entities.listing.Tag;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -22,11 +23,13 @@ public class ListingDTO {
     private String description;
     private List<String> photos = new ArrayList<>();
     private List<BidDTO> bids;
-    private UserDTO advertiser;
-    private UserDTO winner;
+    private long advertiserId;
+    private long winnerId;
     private Collection<TagDTO> tags;
 
     public static ListingDTO fromListing(Listing listing) {
+        Set<Tag> tags2 = listing.getTags();
+        List<TagDTO> tags1 = new ArrayList<>(); // TODO: fix xd
         return ListingDTO.builder()
                 .id(listing.getId())
                 .title(listing.getTitle())
@@ -36,9 +39,9 @@ public class ListingDTO {
                 .description(listing.getDescription())
                 .photos(listing.getPhotos())
                 .bids(BidDTO.fromBids(listing.getBids()))
-                .advertiser(UserDTO.fromUser(listing.getAdvertiser()))
-                .winner(UserDTO.fromUser(listing.getWinner()))
-                .tags(TagDTO.fromTags(listing.getTags()))
+                .advertiserId(listing.getAdvertiser().getId())
+                .winnerId(listing.getWinner() == null ? 0 : listing.getWinner().getId())
+                .tags(tags1)
                 .build();
     }
 

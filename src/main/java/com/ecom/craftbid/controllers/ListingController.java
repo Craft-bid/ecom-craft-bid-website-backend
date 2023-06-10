@@ -51,6 +51,7 @@ public class ListingController {
     @GetMapping("/public/listings/{id}")
     public ResponseEntity<ListingDTO> getListingById(@PathVariable long id) {
         Listing listing = listingRepository.findById(id);
+        List<Listing> listings = listingRepository.findAll();
         ListingDTO listingDto = ListingDTO.fromListing(listing);
         return ResponseEntity.ok(listingDto);
     }
