@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
@@ -41,34 +40,10 @@ public class ListingController {
         return ResponseEntity.ok(listingDto);
     }
 
-    @PutMapping("/private/listings/{id}/winner")
-    public ResponseEntity<ListingDTO> updateListingWinner(@PathVariable long id, @RequestParam long winnerId) {
-        ListingDTO listingDto = listingService.updateListingWinner(id, winnerId);
-        return ResponseEntity.ok(listingDto);
-    }
 
-    @PutMapping("/private/listings/{id}/advertiser")
-    public ResponseEntity<ListingDTO> updateListingAdvertiser(@PathVariable long id, @RequestParam long advertiserId) {
-        ListingDTO listingDto = listingService.updateListingAdvertiser(id, advertiserId);
-        return ResponseEntity.ok(listingDto);
-    }
-
-    @PutMapping("/private/listings/{id}/status")
-    public ResponseEntity<ListingDTO> updateListingStatus(@PathVariable long id, @RequestParam Boolean ended) {
-
-        ListingDTO listingDto = listingService.updateListingStatus(id, ended);
-        return ResponseEntity.ok(listingDto);
-    }
-
-    @PutMapping("/private/listings/{id}/expirationDate")
-    public ResponseEntity<ListingDTO> updateListingExpirationDate(@PathVariable long id, @RequestParam Date expirationDate) {
-        ListingDTO listingDto = listingService.updateListingExpirationDate(id, expirationDate);
-        return ResponseEntity.ok(listingDto);
-    }
-
-    @PutMapping("/private/listings/{id}/creationDate")
-    public ResponseEntity<ListingDTO> updateListingCreationDate(@PathVariable long id, @RequestParam Date creationDate) {
-        ListingDTO listingDto = listingService.updateListingCreationDate(id, creationDate);
+    @PatchMapping("/private/listings/{id}")
+    public ResponseEntity<ListingDTO> patchListing(@PathVariable long id, @RequestBody Listing updatedListing) {
+        ListingDTO listingDto = listingService.patchListing(id, updatedListing);
         return ResponseEntity.ok(listingDto);
     }
 
@@ -139,7 +114,6 @@ public class ListingController {
     }
 
     @GetMapping("/public/listings/search")
-    @Transactional
     public ResponseEntity<List<ListingDTO>> findBySearchCriteria(@ModelAttribute SearchCriteriaDto searchCriteriaDto, Pageable pageable) {
         List<ListingDTO> listingDtoPage = listingService.findBySearchCriteria(searchCriteriaDto, pageable);
         return ResponseEntity.ok(listingDtoPage);

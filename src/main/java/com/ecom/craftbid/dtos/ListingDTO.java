@@ -18,7 +18,7 @@ import java.util.Date;
 public class ListingDTO {
     private long id;
     private String title;
-    private boolean ended;
+    private Boolean ended;
     private Date expirationDate;
     private Date creationDate;
     private String description;
@@ -33,15 +33,15 @@ public class ListingDTO {
         return ListingDTO.builder()
                 .id(listing.getId())
                 .title(listing.getTitle())
-                .ended(listing.isEnded())
+                .ended(listing.getEnded())
                 .expirationDate(listing.getExpirationDate())
                 .creationDate(listing.getCreationDate())
                 .description(listing.getDescription())
-                .photos(new ArrayList<>(listing.getPhotos()))
-                .bids(BidDTO.fromBids(new ArrayList<>(listing.getBids())))
+                .photos(listing.getPhotos() != null ? new ArrayList<>(listing.getPhotos()) : new ArrayList<>())
+                .bids(BidDTO.fromBids(listing.getBids()!=null ? new ArrayList<>(listing.getBids()) : new ArrayList<>()))
                 .advertiserId(listing.getAdvertiser() == null ? 0 : listing.getAdvertiser().getId())
                 .winnerId(listing.getWinner() == null ? 0 : listing.getWinner().getId())
-                .tags(TagDTO.fromTags(new ArrayList<>(listing.getTags())))
+                .tags(TagDTO.fromTags(listing.getTags() != null ? new ArrayList<>(listing.getTags()) : new ArrayList<>()))
                 .build();
     }
 

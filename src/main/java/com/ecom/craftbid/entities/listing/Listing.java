@@ -19,7 +19,7 @@ public class Listing {
 
     private String title;
 
-    private boolean ended;
+    private Boolean ended;
     private Date expirationDate;
     private Date creationDate;
 
@@ -27,7 +27,7 @@ public class Listing {
 
     @ElementCollection
     @Nonnull
-    private List<String> photos = new ArrayList<>();
+    private List<String> photos;
 
     @OneToMany(mappedBy = "listing", cascade = CascadeType.ALL)
     @Nonnull
@@ -40,12 +40,9 @@ public class Listing {
 
     @ManyToMany(mappedBy="listings")
     @Nonnull
-    private Set<Tag> tags = new HashSet<>();
+    private Set<Tag> tags;
 
     public Listing() {
-        this.bids = new ArrayList<>();
-        this.photos = new ArrayList<>();
-        this.tags = new HashSet<>();
     }
 
     public void addTag(Tag tag) {

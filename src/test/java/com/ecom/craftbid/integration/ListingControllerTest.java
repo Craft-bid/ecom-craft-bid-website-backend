@@ -2,10 +2,13 @@ package com.ecom.craftbid.integration;
 
 import com.ecom.craftbid.dtos.ListingCreateRequest;
 import com.ecom.craftbid.dtos.ListingDTO;
+import com.ecom.craftbid.entities.listing.Bid;
 import com.ecom.craftbid.entities.listing.Listing;
+import com.ecom.craftbid.entities.user.User;
 import com.ecom.craftbid.repositories.ListingRepository;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,6 +38,10 @@ public class ListingControllerTest {
 
     @Autowired
     private ListingRepository listingRepository;
+
+    @Autowired
+    private EntityManager entityManager;
+
     @Test
     public void testGetListingById() throws Exception {
         long id = 1;
@@ -58,7 +65,8 @@ public class ListingControllerTest {
                 .andReturn();
 
         String responseContent = result.getResponse().getContentAsString();
-        List<ListingDTO> responseListings = new ObjectMapper().readValue(responseContent, new TypeReference<List<ListingDTO>>() {});
+        List<ListingDTO> responseListings = new ObjectMapper().readValue(responseContent, new TypeReference<List<ListingDTO>>() {
+        });
 
         List<Listing> listings = listingRepository.findAll();
         assertEquals(listings.size(), responseListings.size());
@@ -73,7 +81,8 @@ public class ListingControllerTest {
                 .andReturn();
 
         String responseContent = result.getResponse().getContentAsString();
-        List<ListingDTO> responseListings = new ObjectMapper().readValue(responseContent, new TypeReference<List<ListingDTO>>() {});
+        List<ListingDTO> responseListings = new ObjectMapper().readValue(responseContent, new TypeReference<List<ListingDTO>>() {
+        });
 
         assertEquals(1, responseListings.size());
         assertEquals(title, responseListings.get(0).getTitle());
@@ -105,6 +114,41 @@ public class ListingControllerTest {
                 .andExpect(MockMvcResultMatchers.status().isNoContent());
     }
 
+    @Test
+    public void testPatchListing() throws Exception {
 
+        Listing listing = createListing();
+
+        Listing updatedListing = new Listing();
+        updatedListing.setTitle("Updated Title");
+        updatedListing.setEnded(true);
+        updatedListing.setDescription("Updated Description");
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        String requestContent = objectMapper.writeValueAsString(updatedListing);
+
+
+        mockMvc.perform(MockMvcRequestBuilders.patch("/api/v1/private/listings/{id}", listing.getId())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestContent))
+                .andExpect(MockMvcResultMatchers.status().isOk());
+
+
+        Listing updatedListingInDb = listingRepository.findById(listing.getId()).orElseThrow();
+        assertEquals(updatedListing.getTitle(), updatedListingInDb.getTitle());
+        assertEquals(updatedListing.getEnded(), updatedListingInDb.getEnded());
+        assertEquals(updatedListing.getDescription(), updatedListingInDb.getDescription());
+    }
+
+    private Listing createListing() {
+        Listing listing = new Listing();
+        listing.setTitle("Test Listing");
+        listing.setEnded(false);
+        listing.setDescription("Test Description");
+        listing.setAdvertiser(entityManager.getReference(User.class, 1L));
+        listing.setBids(List.of(entityManager.getReference(Bid.class, 1L)));
+
+        return listingRepository.save(listing);
+    }
 
 }

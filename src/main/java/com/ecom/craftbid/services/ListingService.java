@@ -1,7 +1,7 @@
 package com.ecom.craftbid.services;
 
-import com.ecom.craftbid.dtos.ListingDTO;
 import com.ecom.craftbid.dtos.ListingCreateRequest;
+import com.ecom.craftbid.dtos.ListingDTO;
 import com.ecom.craftbid.dtos.SearchCriteriaDto;
 import com.ecom.craftbid.dtos.UserDTO;
 import com.ecom.craftbid.entities.listing.Bid;
@@ -268,4 +268,35 @@ public class ListingService {
     }
 
 
+    public ListingDTO patchListing(long id, Listing updatedListing) {
+        Listing listing = findListingById(id);
+
+        if (updatedListing.getTitle() != null) {
+            listing.setTitle(updatedListing.getTitle());
+        }
+        if (updatedListing.getEnded() != null) {
+            listing.setEnded(updatedListing.getEnded());
+        }
+        if (updatedListing.getExpirationDate() != null) {
+            listing.setExpirationDate(updatedListing.getExpirationDate());
+        }
+        if (updatedListing.getCreationDate() != null) {
+            listing.setCreationDate(updatedListing.getCreationDate());
+        }
+        if (updatedListing.getDescription() != null) {
+            listing.setDescription(updatedListing.getDescription());
+        }
+        if (updatedListing.getAdvertiser() != null) {
+            listing.setAdvertiser(updatedListing.getAdvertiser());
+        }
+        if (updatedListing.getWinner() != null) {
+            listing.setWinner(updatedListing.getWinner());
+        }
+
+
+        listingRepository.flush();
+
+        return ListingDTO.fromListing(listing);
+
+    }
 }
