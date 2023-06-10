@@ -1,6 +1,7 @@
 package com.ecom.craftbid.services;
 
 import com.ecom.craftbid.dtos.ListingDTO;
+import com.ecom.craftbid.dtos.SearchCriteriaDto;
 import com.ecom.craftbid.dtos.UserDTO;
 import com.ecom.craftbid.entities.listing.Bid;
 import com.ecom.craftbid.entities.listing.Listing;
@@ -16,6 +17,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.ModelAttribute;
 
 import java.util.Date;
 import java.util.List;
@@ -195,11 +197,16 @@ public class ListingService {
         return listings.map(ListingDTO::fromListing);
     }
 
-    public Page<ListingDTO> findBySearchCriteria(String title, String advertiserName, String winnerName,
-                                                 List<String> tagNames, Date dateFrom, Date dateTo,
-                                                 Pageable pageable) {
+    public Page<ListingDTO> findBySearchCriteria(@ModelAttribute SearchCriteriaDto searchRequest, Pageable pageable) {
         Specification<Listing> spec = Specification.where(null);
 
+        String title = searchRequest.getTitle();
+        String advertiserName = searchRequest.getAdvertiserName();
+        String winnerName = searchRequest.getWinnerName();
+        List<String> tagNames = searchRequest.getTagNames();
+        Date dateFrom = searchRequest.getDateFrom();
+        Date dateTo = searchRequest.getDateTo();
+        
         if (title != null && !title.isEmpty()) {
             spec = spec.or((root, query, criteriaBuilder) ->
                     criteriaBuilder.like(criteriaBuilder.lower(root.get("title")), "%" + title.toLowerCase() + "%"));

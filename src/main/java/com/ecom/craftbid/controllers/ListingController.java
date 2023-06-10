@@ -1,6 +1,7 @@
 package com.ecom.craftbid.controllers;
 
 import com.ecom.craftbid.dtos.ListingDTO;
+import com.ecom.craftbid.dtos.SearchCriteriaDto;
 import com.ecom.craftbid.entities.listing.Bid;
 import com.ecom.craftbid.entities.listing.Listing;
 import com.ecom.craftbid.services.ListingService;
@@ -160,8 +161,8 @@ public class ListingController {
     }
 
     @GetMapping("/public/search")
-    public ResponseEntity<Page<ListingDTO>> findBySearchCriteria(@RequestParam(required = false) String title, @RequestParam(required = false) String advertiserName, @RequestParam(required = false) String winnerName, @RequestParam(required = false) List<String> tagNames, @RequestParam(required = false) Date dateFrom, @RequestParam(required = false) Date dateTo, Pageable pageable) {
-        Page<ListingDTO> listingDtoPage = listingService.findBySearchCriteria(title, advertiserName, winnerName, tagNames, dateFrom, dateTo, pageable);
+    public ResponseEntity<Page<ListingDTO>> findBySearchCriteria(@ModelAttribute SearchCriteriaDto searchCriteriaDto, Pageable pageable) {
+        Page<ListingDTO> listingDtoPage = listingService.findBySearchCriteria(searchCriteriaDto, pageable);
         return ResponseEntity.ok(listingDtoPage);
     }
 
