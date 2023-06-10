@@ -81,7 +81,7 @@ public class ListingController {
             ListingDTO listingDto = ListingDTO.fromListing(savedListing);
             return ResponseEntity.ok(listingDto);
         } catch (ChangeSetPersister.NotFoundException ex) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ListingDTO());
+            return ResponseEntity.notFound().build();
         }
 
     }
@@ -99,7 +99,7 @@ public class ListingController {
         ListingDTO listingDto = ListingDTO.fromListing(savedListing);
         return ResponseEntity.ok(listingDto);
         } catch (ChangeSetPersister.NotFoundException ex) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ListingDTO());
+            return ResponseEntity.notFound().build();
         }
     }
 
