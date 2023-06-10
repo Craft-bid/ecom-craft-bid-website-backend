@@ -1,4 +1,4 @@
-package com.ecom.craftbid.exception;
+package com.ecom.craftbid.exceptions;
 
 public class NotFoundException extends RuntimeException {
     public NotFoundException() {

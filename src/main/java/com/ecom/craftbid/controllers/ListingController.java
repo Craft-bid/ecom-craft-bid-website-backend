@@ -3,7 +3,6 @@ package com.ecom.craftbid.controllers;
 import com.ecom.craftbid.dtos.ListingDTO;
 import com.ecom.craftbid.entities.listing.Bid;
 import com.ecom.craftbid.entities.listing.Listing;
-import com.ecom.craftbid.exception.NotFoundException;
 import com.ecom.craftbid.services.ListingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -36,55 +35,50 @@ public class ListingController {
 
     @GetMapping("/public/listings/{id}")
     public ResponseEntity<ListingDTO> getListingById(@PathVariable long id) {
-        try {
-            ListingDTO listingDto = listingService.getListingById(id);
-            return ResponseEntity.ok(listingDto);
-        } catch (NotFoundException ex) {
-            return ResponseEntity.notFound().build();
-        }
+        ListingDTO listingDto = listingService.getListingById(id);
+        return ResponseEntity.ok(listingDto);
+
     }
 
     @PutMapping("/private/listings/{id}")
-    public ResponseEntity<ListingDTO> updateListing(@PathVariable long id, @RequestBody Listing updatedListing,
-                                                    @RequestParam long winnerId, @RequestParam long advertiserId) {
-        try {
-            ListingDTO listingDto = listingService.updateListing(id, updatedListing, winnerId, advertiserId);
-            return ResponseEntity.ok(listingDto);
-        } catch (NotFoundException ex) {
-            return ResponseEntity.notFound().build();
-        }
+    public ResponseEntity<ListingDTO> updateListing(@PathVariable long id, @RequestBody Listing updatedListing, @RequestParam long winnerId, @RequestParam long advertiserId) {
+
+        ListingDTO listingDto = listingService.updateListing(id, updatedListing, winnerId, advertiserId);
+        return ResponseEntity.ok(listingDto);
+
     }
 
     @PutMapping("/private/listings/{id}/winner")
     public ResponseEntity<ListingDTO> updateListingWinner(@PathVariable long id, @RequestParam long winnerId) {
-        try {
-            ListingDTO listingDto = listingService.updateListingWinner(id, winnerId);
-            return ResponseEntity.ok(listingDto);
-        } catch (NotFoundException ex) {
-            return ResponseEntity.notFound().build();
-        }
+
+        ListingDTO listingDto = listingService.updateListingWinner(id, winnerId);
+        return ResponseEntity.ok(listingDto);
+
     }
 
     @PutMapping("/private/listings/{id}/advertiser")
     public ResponseEntity<ListingDTO> updateListingAdvertiser(@PathVariable long id, @RequestParam long advertiserId) {
-        try {
-            ListingDTO listingDto = listingService.updateListingAdvertiser(id, advertiserId);
-            return ResponseEntity.ok(listingDto);
-        } catch (NotFoundException ex) {
-            return ResponseEntity.notFound().build();
-        }
+
+        ListingDTO listingDto = listingService.updateListingAdvertiser(id, advertiserId);
+        return ResponseEntity.ok(listingDto);
+
     }
 
     @PutMapping("/private/listings/{id}/status")
     public ResponseEntity<ListingDTO> updateListingStatus(@PathVariable long id, @RequestParam Boolean ended) {
+
         ListingDTO listingDto = listingService.updateListingStatus(id, ended);
         return ResponseEntity.ok(listingDto);
+
+
     }
 
     @PutMapping("/private/listings/{id}/expirationDate")
     public ResponseEntity<ListingDTO> updateListingExpirationDate(@PathVariable long id, @RequestParam Date expirationDate) {
+
         ListingDTO listingDto = listingService.updateListingExpirationDate(id, expirationDate);
         return ResponseEntity.ok(listingDto);
+
     }
 
     @PutMapping("/private/listings/{id}/creationDate")
@@ -111,8 +105,6 @@ public class ListingController {
         return ResponseEntity.ok(listingDto);
     }
 
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////////////////////
     @PostMapping("/private/{listingId}/photos")
     public ResponseEntity<ListingDTO> addPhotosToListing(@PathVariable long listingId, @RequestBody List<String> photos) {
         ListingDTO listingDto = listingService.addPhotosToListing(listingId, photos);
@@ -168,16 +160,8 @@ public class ListingController {
     }
 
     @GetMapping("/public/search")
-    public ResponseEntity<Page<ListingDTO>> findBySearchCriteria(
-            @RequestParam(required = false) String title,
-            @RequestParam(required = false) String advertiserName,
-            @RequestParam(required = false) String winnerName,
-            @RequestParam(required = false) List<String> tagNames,
-            @RequestParam(required = false) Date dateFrom,
-            @RequestParam(required = false) Date dateTo,
-            Pageable pageable) {
-        Page<ListingDTO> listingDtoPage = listingService.findBySearchCriteria(
-                title, advertiserName, winnerName, tagNames, dateFrom, dateTo, pageable);
+    public ResponseEntity<Page<ListingDTO>> findBySearchCriteria(@RequestParam(required = false) String title, @RequestParam(required = false) String advertiserName, @RequestParam(required = false) String winnerName, @RequestParam(required = false) List<String> tagNames, @RequestParam(required = false) Date dateFrom, @RequestParam(required = false) Date dateTo, Pageable pageable) {
+        Page<ListingDTO> listingDtoPage = listingService.findBySearchCriteria(title, advertiserName, winnerName, tagNames, dateFrom, dateTo, pageable);
         return ResponseEntity.ok(listingDtoPage);
     }
 

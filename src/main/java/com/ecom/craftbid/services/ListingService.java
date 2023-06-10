@@ -6,7 +6,7 @@ import com.ecom.craftbid.entities.listing.Bid;
 import com.ecom.craftbid.entities.listing.Listing;
 import com.ecom.craftbid.entities.listing.Tag;
 import com.ecom.craftbid.entities.user.User;
-import com.ecom.craftbid.exception.NotFoundException;
+import com.ecom.craftbid.exceptions.NotFoundException;
 import com.ecom.craftbid.repositories.ListingRepository;
 import com.ecom.craftbid.repositories.TagRepository;
 import com.ecom.craftbid.repositories.UserRepository;
