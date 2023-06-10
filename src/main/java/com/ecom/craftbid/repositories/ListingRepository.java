@@ -9,6 +9,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface ListingRepository extends JpaRepository<Listing, Long> {
@@ -24,7 +25,7 @@ public interface ListingRepository extends JpaRepository<Listing, Long> {
     Page<Listing> findByWinnerId(long id, Pageable pageable);
     Page<Listing> findByBidsId(long id, Pageable pageable);
     Page<Listing> findByTitleContaining(String title, Pageable pageable);
-    Listing findById(long id);
+    Optional<Listing> findById(long id);
 
     Page<Listing> findByTags_NameIn(List<String> names, Pageable pageable);
 

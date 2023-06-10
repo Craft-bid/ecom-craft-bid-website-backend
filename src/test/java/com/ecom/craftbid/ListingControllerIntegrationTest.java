@@ -34,9 +34,7 @@ public class ListingControllerIntegrationTest {
     private ListingRepository listingRepository;
     @Test
     public void testGetListingById() throws Exception {
-        long id = 1;
-        Listing listing = listingRepository.findById(id);
-        Set<Tag> tags = listing.getTags();
+        long id = 11;
 
         MvcResult result = mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/public/listings/" + id))
                 .andExpect(MockMvcResultMatchers.status().isOk())
@@ -45,6 +43,7 @@ public class ListingControllerIntegrationTest {
         String responseContent = result.getResponse().getContentAsString();
         ListingDTO responseListing = new ObjectMapper().readValue(responseContent, ListingDTO.class);
 
+        Listing listing = listingRepository.findById(id).orElseThrow();
         assertEquals(listing.getId(), responseListing.getId());
         assertEquals(listing.getTags().size(), responseListing.getTags().size());
     }
