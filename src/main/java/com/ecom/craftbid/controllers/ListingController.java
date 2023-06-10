@@ -157,6 +157,7 @@ public class ListingController {
     @GetMapping("/public/listings/search")
     public ResponseEntity<Page<ListingDTO>> findBySearchCriteria(@ModelAttribute SearchCriteriaDto searchCriteriaDto, Pageable pageable) {
         Page<ListingDTO> listingDtoPage = listingService.findBySearchCriteria(searchCriteriaDto, pageable);
+        // TODO: listingDTO gets correct 3 listings, but postman gets only one of them
         return ResponseEntity.ok(listingDtoPage);
     }
 
