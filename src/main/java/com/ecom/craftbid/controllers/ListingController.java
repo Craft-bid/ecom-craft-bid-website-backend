@@ -14,6 +14,7 @@ import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import org.springframework.data.domain.Pageable;
@@ -49,6 +50,7 @@ public class ListingController {
     }
 
     @GetMapping("/public/listings/{id}")
+    @Transactional
     public ResponseEntity<ListingDTO> getListingById(@PathVariable long id) {
         Listing listing = listingRepository.findById(id);
         List<Listing> listings = listingRepository.findAll();

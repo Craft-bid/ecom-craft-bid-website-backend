@@ -5,14 +5,12 @@ import lombok.NonNull;
 import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
-
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Page;
+import org.springframework.stereotype.Repository;
 
-import java.util.Date;
 import java.util.List;
 
+@Repository
 public interface ListingRepository extends JpaRepository<Listing, Long> {
     Page<Listing> findByEndedFalseOrderByExpirationDateAsc(Pageable pageable);
     Page<Listing> findByEndedFalseOrderByExpirationDateDesc(Pageable pageable);
@@ -32,7 +30,6 @@ public interface ListingRepository extends JpaRepository<Listing, Long> {
 
     Page<Listing> findAll(Specification<Listing> spec, Pageable pageable);
 
-    Listing save(@NonNull Listing listing);
     void deleteById(long id);
 
 

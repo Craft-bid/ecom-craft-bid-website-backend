@@ -12,8 +12,8 @@ import java.util.Date;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Entity
 @Builder
+@Entity
 public class Bid {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -21,7 +21,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @Slf4j
 @SpringBootTest
 public class ListingCRUDTests {
-    /* if set to true it clears the whole database before each test */
     static final boolean DEBUG = true;
 
     @Autowired
