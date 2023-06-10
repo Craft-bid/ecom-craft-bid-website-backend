@@ -1,6 +1,7 @@
 package com.ecom.craftbid.controllers;
 
 import com.ecom.craftbid.dtos.ListingDTO;
+import com.ecom.craftbid.dtos.ListingCreateRequest;
 import com.ecom.craftbid.dtos.SearchCriteriaDto;
 import com.ecom.craftbid.entities.listing.Bid;
 import com.ecom.craftbid.entities.listing.Listing;
@@ -8,7 +9,6 @@ import com.ecom.craftbid.services.ListingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
@@ -24,8 +24,8 @@ public class ListingController {
     private ListingService listingService;
 
     @PostMapping("/private/listings")
-    public ResponseEntity<ListingDTO> createListing(@RequestBody Listing listing) {
-        ListingDTO listingDto = listingService.createListing(listing);
+    public ResponseEntity<ListingDTO> createListing(@RequestBody ListingCreateRequest listingCreateRequest) {
+        ListingDTO listingDto = listingService.createListing(listingCreateRequest);
         return ResponseEntity.ok(listingDto);
     }
 

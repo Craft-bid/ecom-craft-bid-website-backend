@@ -39,7 +39,7 @@ public class ListingDTO {
                 .description(listing.getDescription())
                 .photos(new ArrayList<>(listing.getPhotos()))
                 .bids(BidDTO.fromBids(new ArrayList<>(listing.getBids())))
-                .advertiserId(listing.getAdvertiser().getId())
+                .advertiserId(listing.getAdvertiser() == null ? 0 : listing.getAdvertiser().getId())
                 .winnerId(listing.getWinner() == null ? 0 : listing.getWinner().getId())
                 .tags(TagDTO.fromTags(new ArrayList<>(listing.getTags())))
                 .build();

@@ -1,6 +1,7 @@
 package com.ecom.craftbid.services;
 
 import com.ecom.craftbid.dtos.ListingDTO;
+import com.ecom.craftbid.dtos.ListingCreateRequest;
 import com.ecom.craftbid.dtos.SearchCriteriaDto;
 import com.ecom.craftbid.dtos.UserDTO;
 import com.ecom.craftbid.entities.listing.Bid;
@@ -51,8 +52,22 @@ public class ListingService {
         return listingPage.map(ListingDTO::fromListing);
     }
 
-    public ListingDTO createListing(Listing listing) {
-        Listing createdListing = listingRepository.save(listing);
+    public ListingDTO createListing(ListingCreateRequest listingCreateRequest) {
+        Listing createdListing = new Listing();
+        createdListing.setTitle(listingCreateRequest.getTitle());
+        createdListing.setDescription(listingCreateRequest.getDescription());
+
+        User advertiser;
+        try {
+            advertiser = findUserById(listingCreateRequest.getAdvertiserId());
+
+        } catch (NotFoundException e) {
+            advertiser = null;
+        }
+        createdListing.setAdvertiser(advertiser);
+        createdListing.setEnded(listingCreateRequest.isEnded());
+
+        listingRepository.save(createdListing);
         return ListingDTO.fromListing(createdListing);
     }
 
