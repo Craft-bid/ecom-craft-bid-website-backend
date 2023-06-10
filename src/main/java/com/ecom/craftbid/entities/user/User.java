@@ -35,7 +35,7 @@ public class User implements UserDetails {
     private Profile profile;
 
     @Enumerated(EnumType.STRING)
-    private Role role;
+    private Role role = Role.USER;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

@@ -21,16 +21,18 @@ public class UserController {
         return ResponseEntity.ok(users);
     }
 
+    @GetMapping("/private/users/{id}")
+    public ResponseEntity<User> getUser(@PathVariable long id) {
+        Optional<User> user = userRepository.findById(id);
+        return user
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
     @PostMapping("/private/users")
     public ResponseEntity<User> createUser(@RequestBody User user) {
         User createdUser = userRepository.save(user);
         return ResponseEntity.ok(createdUser);
-    }
-
-    @GetMapping("/private/users/{id}")
-    public ResponseEntity<User> getUser(@PathVariable long id) {
-        Optional<User> user = userRepository.findById(id);
-        return user.map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
     }
 
     @DeleteMapping("/private/users/{id}")
