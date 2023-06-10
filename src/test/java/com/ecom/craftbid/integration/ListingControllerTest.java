@@ -1,6 +1,7 @@
 package com.ecom.craftbid.integration;
 
 import com.ecom.craftbid.dtos.ListingDTO;
+import com.ecom.craftbid.dtos.ListingResponse;
 import com.ecom.craftbid.entities.listing.Listing;
 import com.ecom.craftbid.repositories.ListingRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -14,6 +15,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -42,5 +45,20 @@ public class ListingControllerTest {
         Listing listing = listingRepository.findById(id).orElseThrow();
         assertEquals(listing.getId(), responseListing.getId());
         assertEquals(listing.getTags().size(), responseListing.getTags().size());
+    }
+
+    @Test
+    public void testSearchNoCriteria() throws Exception { // no criteria equivalent to findAll
+        MvcResult result = mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/public/listings/search"))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andReturn();
+
+        String responseContent = result.getResponse().getContentAsString();
+        ObjectMapper objectMapper = new ObjectMapper();
+        ListingResponse listingResponse = objectMapper.readValue(responseContent, ListingResponse.class);
+        List<ListingDTO> responseListings = listingResponse.getContent();
+
+        // DataInitializer creates 3 listings
+        assertEquals(3, responseListings.size());
     }
 }
