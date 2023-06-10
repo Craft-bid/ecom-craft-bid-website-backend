@@ -33,31 +33,24 @@ public class ListingController {
     public ResponseEntity<ListingDTO> getListingById(@PathVariable long id) {
         ListingDTO listingDto = listingService.getListingById(id);
         return ResponseEntity.ok(listingDto);
-
     }
 
     @PutMapping("/private/listings/{id}")
     public ResponseEntity<ListingDTO> updateListing(@PathVariable long id, @RequestBody Listing updatedListing, @RequestParam long winnerId, @RequestParam long advertiserId) {
-
         ListingDTO listingDto = listingService.updateListing(id, updatedListing, winnerId, advertiserId);
         return ResponseEntity.ok(listingDto);
-
     }
 
     @PutMapping("/private/listings/{id}/winner")
     public ResponseEntity<ListingDTO> updateListingWinner(@PathVariable long id, @RequestParam long winnerId) {
-
         ListingDTO listingDto = listingService.updateListingWinner(id, winnerId);
         return ResponseEntity.ok(listingDto);
-
     }
 
     @PutMapping("/private/listings/{id}/advertiser")
     public ResponseEntity<ListingDTO> updateListingAdvertiser(@PathVariable long id, @RequestParam long advertiserId) {
-
         ListingDTO listingDto = listingService.updateListingAdvertiser(id, advertiserId);
         return ResponseEntity.ok(listingDto);
-
     }
 
     @PutMapping("/private/listings/{id}/status")
@@ -65,16 +58,12 @@ public class ListingController {
 
         ListingDTO listingDto = listingService.updateListingStatus(id, ended);
         return ResponseEntity.ok(listingDto);
-
-
     }
 
     @PutMapping("/private/listings/{id}/expirationDate")
     public ResponseEntity<ListingDTO> updateListingExpirationDate(@PathVariable long id, @RequestParam Date expirationDate) {
-
         ListingDTO listingDto = listingService.updateListingExpirationDate(id, expirationDate);
         return ResponseEntity.ok(listingDto);
-
     }
 
     @PutMapping("/private/listings/{id}/creationDate")
@@ -161,7 +150,5 @@ public class ListingController {
         List<ListingDTO> listingDtoPage = listingService.findBySearchCriteria(searchCriteriaDto, pageable);
         return ResponseEntity.ok(listingDtoPage);
     }
-
-
 }
 
