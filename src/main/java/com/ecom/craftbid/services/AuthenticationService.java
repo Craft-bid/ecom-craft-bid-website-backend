@@ -1,5 +1,8 @@
-package com.ecom.craftbid.controllers;
+package com.ecom.craftbid.services;
 
+import com.ecom.craftbid.dtos.AuthenticationRequest;
+import com.ecom.craftbid.dtos.AuthenticationResponse;
+import com.ecom.craftbid.dtos.RegisterRequest;
 import com.ecom.craftbid.entities.Token;
 import com.ecom.craftbid.enums.Role;
 import com.ecom.craftbid.enums.TokenType;

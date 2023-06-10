@@ -1,5 +1,6 @@
 package com.ecom.craftbid.controllers;
 
+import com.ecom.craftbid.dtos.ListingDTO;
 import com.ecom.craftbid.entities.listing.Bid;
 import com.ecom.craftbid.entities.listing.Listing;
 import com.ecom.craftbid.entities.listing.Tag;
@@ -11,16 +12,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.crossstore.ChangeSetPersister;
 
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Page;
 
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @RestController
 @RequestMapping("/api/v1")
@@ -36,98 +35,128 @@ public class ListingController {
     private UserRepository userRepository;
 
     @GetMapping("/public/listings")
-    public List<Listing> getAllListings(Specification<Listing> spec, Pageable pageable) {
-        return listingRepository.findAll(spec, pageable).getContent();
+    public ResponseEntity<Page<ListingDTO>> getAllListings(Specification<Listing> spec, Pageable pageable) {
+        Page<Listing> listingPage = listingRepository.findAll(spec, pageable);
+        Page<ListingDTO> listingDtoPage = listingPage.map(ListingDTO::fromListing);
+        return ResponseEntity.ok(listingDtoPage);
     }
 
     @PostMapping("/private/listings")
-    public Listing createListing(@RequestBody Listing listing) {
-        return listingRepository.save(listing);
+    public ResponseEntity<ListingDTO> createListing(@RequestBody Listing listing) {
+        Listing createdListing = listingRepository.save(listing);
+        ListingDTO listingDto = ListingDTO.fromListing(createdListing);
+        return ResponseEntity.ok(listingDto);
     }
 
     @GetMapping("/public/listings/{id}")
-    public Listing getListingById(@PathVariable long id) {
-        return listingRepository.findById(id);
+    public ResponseEntity<ListingDTO> getListingById(@PathVariable long id) {
+        Listing listing = listingRepository.findById(id);
+        ListingDTO listingDto = ListingDTO.fromListing(listing);
+        return ResponseEntity.ok(listingDto);
     }
 
     @PutMapping("/private/listings/{id}")
-    public Listing updateListing(@PathVariable long id, @RequestBody Listing updatedListing, @RequestParam long winnerId, @RequestParam long advertiserId) {
+    public ResponseEntity<ListingDTO> updateListing(@PathVariable long id, @RequestBody Listing updatedListing,
+                                                    @RequestParam long winnerId, @RequestParam long advertiserId) {
         Listing existingListing = listingRepository.findById(id);
 
         existingListing.setTitle(updatedListing.getTitle());
         existingListing.setDescription(updatedListing.getDescription());
 
-        return listingRepository.save(existingListing);
+        Listing savedListing = listingRepository.save(existingListing);
+        ListingDTO listingDto = ListingDTO.fromListing(savedListing);
+        return ResponseEntity.ok(listingDto);
     }
 
     @PutMapping("/private/listings/{id}/winner")
-    public Listing updateListingWinner(@PathVariable long id, @RequestParam long winnerId) throws ChangeSetPersister.NotFoundException {
-        Listing existingListing = listingRepository.findById(id);
+    public ResponseEntity<ListingDTO> updateListingWinner(@PathVariable long id, @RequestParam long winnerId) {
+        try {
+            Listing existingListing = listingRepository.findById(id);
 
-        User winner = userRepository.findById(winnerId)
-                .orElseThrow(ChangeSetPersister.NotFoundException::new);
-        existingListing.setWinner(winner);
+            User winner = userRepository.findById(winnerId)
+                    .orElseThrow(ChangeSetPersister.NotFoundException::new);
+            existingListing.setWinner(winner);
 
-        return listingRepository.save(existingListing);
+            Listing savedListing = listingRepository.save(existingListing);
+            ListingDTO listingDto = ListingDTO.fromListing(savedListing);
+            return ResponseEntity.ok(listingDto);
+        } catch (ChangeSetPersister.NotFoundException ex) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ListingDTO());
+        }
+
     }
 
     @PutMapping("/private/listings/{id}/advertiser")
-    public Listing updateListingAdvertiser(@PathVariable long id, @RequestParam long advertiserId) throws ChangeSetPersister.NotFoundException {
+    public ResponseEntity<ListingDTO> updateListingAdvertiser(@PathVariable long id, @RequestParam long advertiserId) {
+        try {
         Listing existingListing = listingRepository.findById(id);
 
         User advertiser = userRepository.findById(advertiserId)
                 .orElseThrow(ChangeSetPersister.NotFoundException::new);
         existingListing.setAdvertiser(advertiser);
 
-        return listingRepository.save(existingListing);
+        Listing savedListing = listingRepository.save(existingListing);
+        ListingDTO listingDto = ListingDTO.fromListing(savedListing);
+        return ResponseEntity.ok(listingDto);
+        } catch (ChangeSetPersister.NotFoundException ex) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ListingDTO());
+        }
     }
 
     @PutMapping("/private/listings/{id}/status")
-    public Listing updateListingStatus(@PathVariable long id, @RequestParam Boolean ended) {
+    public ResponseEntity<ListingDTO> updateListingStatus(@PathVariable long id, @RequestParam Boolean ended) {
         Listing existingListing = listingRepository.findById(id);
 
         existingListing.setEnded(ended);
 
-        return listingRepository.save(existingListing);
+        Listing savedListing = listingRepository.save(existingListing);
+        ListingDTO listingDto = ListingDTO.fromListing(savedListing);
+        return ResponseEntity.ok(listingDto);
     }
 
     @PutMapping("/private/listings/{id}/expirationDate")
-    public Listing updateListingExpirationDate(@PathVariable long id, @RequestParam Date expirationDate) {
+    public ResponseEntity<ListingDTO> updateListingExpirationDate(@PathVariable long id, @RequestParam Date expirationDate) {
         Listing existingListing = listingRepository.findById(id);
 
         existingListing.setExpirationDate(expirationDate);
 
-        return listingRepository.save(existingListing);
+        Listing savedListing = listingRepository.save(existingListing);
+        ListingDTO listingDto = ListingDTO.fromListing(savedListing);
+        return ResponseEntity.ok(listingDto);
     }
 
     @PutMapping("/private/listings/{id}/creationDate")
-    public Listing updateListingCreationDate(@PathVariable long id, @RequestParam Date creationDate) {
+    public ResponseEntity<ListingDTO> updateListingCreationDate(@PathVariable long id, @RequestParam Date creationDate) {
         Listing existingListing = listingRepository.findById(id);
 
         existingListing.setCreationDate(creationDate);
 
-        return listingRepository.save(existingListing);
+        Listing savedListing = listingRepository.save(existingListing);
+        ListingDTO listingDto = ListingDTO.fromListing(savedListing);
+        return ResponseEntity.ok(listingDto);
     }
 
     @DeleteMapping("/private/listings/{id}")
-    public ResponseEntity<?> deleteListing(@PathVariable long id) {
+    public ResponseEntity<Void> deleteListing(@PathVariable long id) {
         listingRepository.deleteById(id);
         return ResponseEntity.noContent().build();
     }
 
     @PostMapping("/private/{listingId}/tags")
-    public Listing addTagsToListing(@PathVariable long listingId, @RequestBody List<Long> tagIds) {
+    public ResponseEntity<ListingDTO> addTagsToListing(@PathVariable long listingId, @RequestBody List<Long> tagIds) {
         Listing listing = listingRepository.findById(listingId);
 
         Set<Tag> tags = new HashSet<>(tagRepository.findAllById(tagIds));
 
         listing.getTags().addAll(tags);
 
-        return listingRepository.save(listing);
+        Listing savedListing = listingRepository.save(listing);
+        ListingDTO listingDto = ListingDTO.fromListing(savedListing);
+        return ResponseEntity.ok(listingDto);
     }
 
     @DeleteMapping("/private/{listingId}/tags/{tagId}")
-    public Listing removeTagFromListing(@PathVariable long listingId, @PathVariable long tagId) throws ChangeSetPersister.NotFoundException {
+    public ResponseEntity<ListingDTO> removeTagFromListing(@PathVariable long listingId, @PathVariable long tagId) throws ChangeSetPersister.NotFoundException {
         Listing listing = listingRepository.findById(listingId);
 
         Tag tag = tagRepository.findById(tagId)
@@ -135,40 +164,48 @@ public class ListingController {
 
         listing.getTags().remove(tag);
 
-        return listingRepository.save(listing);
+        Listing savedListing = listingRepository.save(listing);
+        ListingDTO listingDto = ListingDTO.fromListing(savedListing);
+        return ResponseEntity.ok(listingDto);
     }
 
     @PostMapping("/private/{listingId}/photos")
-    public Listing addPhotosToListing(@PathVariable long listingId, @RequestBody List<String> photos) {
+    public ResponseEntity<ListingDTO> addPhotosToListing(@PathVariable long listingId, @RequestBody List<String> photos) {
         Listing listing = listingRepository.findById(listingId);
 
         listing.getPhotos().addAll(photos);
 
-        return listingRepository.save(listing);
+        Listing savedListing = listingRepository.save(listing);
+        ListingDTO listingDto = ListingDTO.fromListing(savedListing);
+        return ResponseEntity.ok(listingDto);
     }
 
     @DeleteMapping("/private/{listingId}/photos")
-    public Listing removePhotoFromListing(@PathVariable long listingId, @RequestParam String photoPath) {
+    public ResponseEntity<ListingDTO> removePhotoFromListing(@PathVariable long listingId, @RequestParam String photoPath) {
         Listing listing = listingRepository.findById(listingId);
 
         // Find the photo in the photos list by comparing the full path
         listing.getPhotos().removeIf(photo -> photo.equals(photoPath));
 
-        return listingRepository.save(listing);
+        Listing savedListing = listingRepository.save(listing);
+        ListingDTO listingDto = ListingDTO.fromListing(savedListing);
+        return ResponseEntity.ok(listingDto);
     }
 
     @PostMapping("/private/{listingId}/bids")
-    public Listing addBidToListing(@PathVariable long listingId, @RequestBody Bid bid) {
+    public ResponseEntity<ListingDTO> addBidToListing(@PathVariable long listingId, @RequestBody Bid bid) {
         Listing listing = listingRepository.findById(listingId);
 
         bid.setListing(listing);
         listing.getBids().add(bid);
 
-        return listingRepository.save(listing);
+        Listing savedListing = listingRepository.save(listing);
+        ListingDTO listingDto = ListingDTO.fromListing(savedListing);
+        return ResponseEntity.ok(listingDto);
     }
 
     @DeleteMapping("/private/{listingId}/bids/{bidId}")
-    public Listing removeBidFromListing(@PathVariable long listingId, @PathVariable long bidId) throws ChangeSetPersister.NotFoundException {
+    public ResponseEntity<ListingDTO> removeBidFromListing(@PathVariable long listingId, @PathVariable long bidId) throws ChangeSetPersister.NotFoundException {
         Listing listing = listingRepository.findById(listingId);
 
         Bid bidToRemove = listing.getBids().stream()
@@ -178,11 +215,13 @@ public class ListingController {
 
         listing.getBids().remove(bidToRemove);
 
-        return listingRepository.save(listing);
+        Listing savedListing = listingRepository.save(listing);
+        ListingDTO listingDto = ListingDTO.fromListing(savedListing);
+        return ResponseEntity.ok(listingDto);
     }
 
     @PutMapping("/private/{listingId}/winner/{userId}")
-    public Listing setWinnerForListing(@PathVariable long listingId, @PathVariable long userId) throws ChangeSetPersister.NotFoundException {
+    public ResponseEntity<ListingDTO> setWinnerForListing(@PathVariable long listingId, @PathVariable long userId) throws ChangeSetPersister.NotFoundException {
         Listing listing = listingRepository.findById(listingId);
 
         User winner = userRepository.findById(userId)
@@ -190,31 +229,42 @@ public class ListingController {
 
         listing.setWinner(winner);
 
-        return listingRepository.save(listing);
+        Listing savedListing = listingRepository.save(listing);
+        ListingDTO listingDto = ListingDTO.fromListing(savedListing);
+        return ResponseEntity.ok(listingDto);
     }
 
+
     @GetMapping("/public/listings/active-listings")
-    public Page<Listing> getActiveListingsSortedByExpirationDate(Pageable pageable) {
-        return listingRepository.findByEndedFalseOrderByExpirationDateDesc(pageable);
+    public ResponseEntity<Page<ListingDTO>> getActiveListingsSortedByExpirationDate(Pageable pageable) {
+        Page<Listing> activeListings = listingRepository.findByEndedFalseOrderByExpirationDateDesc(pageable);
+        Page<ListingDTO> listingDtoPage = activeListings.map(ListingDTO::fromListing);
+        return ResponseEntity.ok(listingDtoPage);
     }
 
     @GetMapping("/public/listings/ended-listings")
-    public Page<Listing> getEndedListingsSortedByExpirationDate(Pageable pageable) {
-        return listingRepository.findByEndedTrueOrderByExpirationDateDesc(pageable);
+    public ResponseEntity<Page<ListingDTO>> getEndedListingsSortedByExpirationDate(Pageable pageable) {
+        Page<Listing> endedListings = listingRepository.findByEndedTrueOrderByExpirationDateDesc(pageable);
+        Page<ListingDTO> listingDtoPage = endedListings.map(ListingDTO::fromListing);
+        return ResponseEntity.ok(listingDtoPage);
     }
 
     @GetMapping("/public/listings/listings-by-title")
-    public Page<Listing> getListingsByTitle(@RequestParam String title, Pageable pageable) {
-        return listingRepository.findByTitleContaining(title, pageable);
+    public ResponseEntity<Page<ListingDTO>> getListingsByTitle(@RequestParam String title, Pageable pageable) {
+        Page<Listing> listings = listingRepository.findByTitleContaining(title, pageable);
+        Page<ListingDTO> listingDtoPage = listings.map(ListingDTO::fromListing);
+        return ResponseEntity.ok(listingDtoPage);
     }
 
     @GetMapping("/public/listings/listings-by-tags")
-    public Page<Listing> getListingsByTags(@RequestParam List<String> tags, Pageable pageable) {
-        return listingRepository.findByTags_NameIn(tags, pageable);
+    public ResponseEntity<Page<ListingDTO>> getListingsByTags(@RequestParam List<String> tags, Pageable pageable) {
+        Page<Listing> listings = listingRepository.findByTags_NameIn(tags, pageable);
+        Page<ListingDTO> listingDtoPage = listings.map(ListingDTO::fromListing);
+        return ResponseEntity.ok(listingDtoPage);
     }
 
     @GetMapping("/public/listings/search")
-    public Page<Listing> findBySearchCriteria(
+    public ResponseEntity<Page<ListingDTO>> findBySearchCriteria(
             @RequestParam(required = false) String title,
             @RequestParam(required = false) String advertiserName,
             @RequestParam(required = false) String winnerName,
@@ -260,8 +310,11 @@ public class ListingController {
 
         }
 
-        return listingRepository.findAll(spec, pageable);
+        Page<Listing> searchResults = listingRepository.findAll(spec, pageable);
+        Page<ListingDTO> listingDtoPage = searchResults.map(ListingDTO::fromListing);
+        return ResponseEntity.ok(listingDtoPage);
     }
+
 
 }
 

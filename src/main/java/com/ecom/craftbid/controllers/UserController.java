@@ -16,32 +16,40 @@ public class UserController {
     private UserRepository userRepository;
 
     @GetMapping("/public/users")
-    public List<User> getAllUsers() {
-        return userRepository.findAll();
+    public ResponseEntity<List<User>> getAllUsers() {
+        List<User> users = userRepository.findAll();
+        return ResponseEntity.ok(users);
     }
 
     @PostMapping("/private/users")
-    public User createUser(@RequestBody User user) {
-        return userRepository.save(user);
+    public ResponseEntity<User> createUser(@RequestBody User user) {
+        User createdUser = userRepository.save(user);
+        return ResponseEntity.ok(createdUser);
     }
 
     @GetMapping("/private/users/{id}")
-    public Optional<User> getUser(@PathVariable long id) {
-        return userRepository.findById(id);
+    public ResponseEntity<User> getUser(@PathVariable long id) {
+        Optional<User> user = userRepository.findById(id);
+        return user.map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
     }
 
     @DeleteMapping("/private/users/{id}")
-    public ResponseEntity<?> deleteUser(@PathVariable long id) {
+    public ResponseEntity<Void> deleteUser(@PathVariable long id) {
         userRepository.deleteById(id);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.noContent().build();
     }
 
     @PutMapping("/private/users/{id}/password")
-    public User updateUserPassword(@PathVariable long id, @RequestBody String password) {
-        User user = userRepository.findById(id).get();
-        user.setPassword(password);
-        return userRepository.save(user);
+    public ResponseEntity<User> updateUserPassword(@PathVariable long id, @RequestBody String password) {
+        Optional<User> optionalUser = userRepository.findById(id);
+        if (optionalUser.isPresent()) {
+            User user = optionalUser.get();
+            user.setPassword(password);
+            User updatedUser = userRepository.save(user);
+            return ResponseEntity.ok(updatedUser);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
-
-
 }
+
