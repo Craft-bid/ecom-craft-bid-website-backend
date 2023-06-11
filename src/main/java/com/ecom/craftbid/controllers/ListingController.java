@@ -64,6 +64,7 @@ public class ListingController {
         return ResponseEntity.ok(listingDto);
     }
 
+    // TODO: probably not needed
     @PutMapping("/private/listings/{id}")
     public ResponseEntity<ListingDTO> updateListing(@PathVariable long id, @RequestBody Listing updatedListing, @RequestParam long winnerId, @RequestParam long advertiserId) {
         ListingDTO listingDto = listingService.updateListing(id, updatedListing, winnerId, advertiserId);
@@ -100,6 +101,7 @@ public class ListingController {
         return ResponseEntity.ok(listingDto);
     }
 
+    // TODO: make BidAddRequest instead of Bid
     @PostMapping("/private/{listingId}/bids")
     public ResponseEntity<ListingDTO> addBidToListing(@PathVariable long listingId, @RequestBody Bid bid) {
         ListingDTO listingDto = listingService.addBidToListing(listingId, bid);
@@ -112,6 +114,7 @@ public class ListingController {
         return ResponseEntity.ok(listingDto);
     }
 
+    // TODO: probably not needed
     @PutMapping("/private/{listingId}/winner/{userId}")
     public ResponseEntity<ListingDTO> setWinnerForListing(@PathVariable long listingId, @PathVariable long userId) {
         ListingDTO listingDto = listingService.setWinnerForListing(listingId, userId);
