@@ -3,6 +3,7 @@ package com.ecom.craftbid.integration;
 import com.ecom.craftbid.entities.listing.Tag;
 import com.ecom.craftbid.exceptions.NotFoundException;
 import com.ecom.craftbid.repositories.TagRepository;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
@@ -14,13 +15,14 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
+import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -53,5 +55,28 @@ public class TagControllerTest {
 
         tag = tagRepository.findByName(name).orElse(null);
         assertNull(tag);
+    }
+
+    @Test
+    public void testGetAllTags() throws Exception {
+        addTag("testTag1");
+        addTag("testTag2");
+
+        MvcResult result = mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/public/tags"))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andReturn();
+
+        String responseContent = result.getResponse().getContentAsString();
+
+        ObjectMapper mapper = new ObjectMapper();
+        List<Tag> responseTags = mapper.readValue(responseContent, new TypeReference<>() {});
+        assertEquals(2, responseTags.size());
+    }
+
+    private void addTag(String name) throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/private/tags")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(name))
+            .andExpect(MockMvcResultMatchers.status().isOk());
     }
 }
