@@ -1,9 +1,6 @@
 package com.ecom.craftbid.services;
 
-import com.ecom.craftbid.dtos.ListingCreateRequest;
-import com.ecom.craftbid.dtos.ListingDTO;
-import com.ecom.craftbid.dtos.SearchCriteriaDto;
-import com.ecom.craftbid.dtos.UserDTO;
+import com.ecom.craftbid.dtos.*;
 import com.ecom.craftbid.entities.listing.Bid;
 import com.ecom.craftbid.entities.listing.Listing;
 import com.ecom.craftbid.entities.listing.Tag;
@@ -55,7 +52,7 @@ public class ListingService {
         User advertiser = userService.findUserById(listingCreateRequest.getAdvertiserId());
 
         createdListing.setAdvertiser(advertiser);
-        createdListing.setEnded(listingCreateRequest.isEnded());
+        createdListing.setEnded(listingCreateRequest.getEnded());
 
         listingRepository.save(createdListing);
         return ListingDTO.fromListing(createdListing);
@@ -257,7 +254,7 @@ public class ListingService {
     }
 
 
-    public ListingDTO patchListing(long id, Listing updatedListing) {
+    public ListingDTO patchListing(long id, ListingUpdateRequest updatedListing) {
         Listing listing = findListingById(id);
 
         if (updatedListing.getTitle() != null) {
@@ -275,18 +272,16 @@ public class ListingService {
         if (updatedListing.getDescription() != null) {
             listing.setDescription(updatedListing.getDescription());
         }
-        if (updatedListing.getAdvertiser() != null) {
-            listing.setAdvertiser(updatedListing.getAdvertiser());
+        if (updatedListing.getAdvertiserId() > 0) {
+            listing.setAdvertiser(userService.findUserById(updatedListing.getAdvertiserId()));
         }
-        if (updatedListing.getWinner() != null) {
-            listing.setWinner(updatedListing.getWinner());
+        if (updatedListing.getWinnerId() > 0) {
+            listing.setWinner(userService.findUserById(updatedListing.getWinnerId()));
         }
-
 
         listingRepository.flush();
 
         return ListingDTO.fromListing(listing);
-
     }
 
     public List<ListingDTO> getListingsPage(Pageable pageable) {
