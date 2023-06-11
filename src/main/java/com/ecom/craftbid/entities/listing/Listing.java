@@ -1,18 +1,16 @@
 package com.ecom.craftbid.entities.listing;
 
 import com.ecom.craftbid.entities.user.User;
+import jakarta.annotation.Nonnull;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.*;
 
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
 @Entity
+@AllArgsConstructor
+@Getter
+@Setter
 @Builder
 public class Listing {
     @Id
@@ -21,27 +19,40 @@ public class Listing {
 
     private String title;
 
-    private boolean ended;
+    private Boolean ended;
     private Date expirationDate;
     private Date creationDate;
 
     private String description;
 
     @ElementCollection
-    private List<String> photos = new ArrayList<>();
+    @Nonnull
+    private List<String> photos;
 
     @OneToMany(mappedBy = "listing", cascade = CascadeType.ALL)
+    @Nonnull
     private List<Bid> bids;
     @ManyToOne
     private User advertiser;
     @ManyToOne
     private User winner;
 
-    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-    @JoinTable(
-            name = "listing_tags",
-            joinColumns = @JoinColumn(name = "listing_id"),
-            inverseJoinColumns = @JoinColumn(name = "tag_id")
-    )
-    private Set<Tag> tags = new HashSet<>();
+
+    @ManyToMany(mappedBy="listings")
+    @Nonnull
+    private Set<Tag> tags;
+
+    public Listing() {
+    }
+
+    public void addTag(Tag tag) {
+        if(this.tags == null)
+            this.tags = new HashSet<>();
+        this.tags.add(tag);
+        tag.addListing(this);
+    }
+    public void removeTag(Tag tag) {
+        this.tags.remove(tag);
+        tag.getListings().remove(this);
+    }
 }

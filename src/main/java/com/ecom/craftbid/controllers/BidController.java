@@ -2,9 +2,9 @@ package com.ecom.craftbid.controllers;
 
 
 import com.ecom.craftbid.entities.listing.Bid;
-import com.ecom.craftbid.repositories.BidRepository;
+import com.ecom.craftbid.services.BidService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.crossstore.ChangeSetPersister;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -14,34 +14,29 @@ import java.util.List;
 public class BidController {
 
     @Autowired
-    private BidRepository bidRepository;
+    private BidService bidService;
 
     @GetMapping("/public/bids")
-    public List<Bid> getAllBids() {
-        return bidRepository.findAll();
+    public ResponseEntity<List<Bid>> getAllBids() {
+        List<Bid> bids = bidService.getAllBids();
+        return ResponseEntity.ok(bids);
     }
 
     @PostMapping("/private/bids")
-    public Bid createBid(Bid bid) {
-        return bidRepository.save(bid);
+    public ResponseEntity<Bid> createBid(@RequestBody Bid bid) {
+        Bid createdBid = bidService.createBid(bid);
+        return ResponseEntity.ok(createdBid);
     }
 
     @PutMapping("/private/bids/{id}")
-    public Bid updateBid(@PathVariable long id, @RequestBody Bid updatedBid) throws ChangeSetPersister.NotFoundException {
-        Bid existingBid = bidRepository.findById(id).orElseThrow(ChangeSetPersister.NotFoundException::new);
-
-        existingBid.setPrice(updatedBid.getPrice());
-        existingBid.setDescription(updatedBid.getDescription());
-        existingBid.setCreationDate(updatedBid.getCreationDate());
-        existingBid.setDaysToDeliver(updatedBid.getDaysToDeliver());
-        existingBid.setBidder(updatedBid.getBidder());
-        existingBid.setListing(updatedBid.getListing());
-
-        return bidRepository.save(existingBid);
+    public ResponseEntity<Bid> updateBid(@PathVariable long id, @RequestBody Bid updatedBid) {
+        Bid updatedBidObj = bidService.updateBid(id, updatedBid);
+        return ResponseEntity.ok(updatedBidObj);
     }
 
     @DeleteMapping("/private/bids/{id}")
-    public void deleteBid(@PathVariable long id) {
-        bidRepository.deleteById(id);
+    public ResponseEntity<Void> deleteBid(@PathVariable long id) {
+        bidService.deleteBid(id);
+        return ResponseEntity.noContent().build();
     }
 }

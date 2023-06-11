@@ -1,4 +1,4 @@
-package com.ecom.craftbid.controllers;
+package com.ecom.craftbid.dtos;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

@@ -1,267 +1,124 @@
 package com.ecom.craftbid.controllers;
 
+import com.ecom.craftbid.dtos.ListingCreateRequest;
+import com.ecom.craftbid.dtos.ListingDTO;
+import com.ecom.craftbid.dtos.ListingUpdateRequest;
+import com.ecom.craftbid.dtos.SearchCriteriaDto;
 import com.ecom.craftbid.entities.listing.Bid;
 import com.ecom.craftbid.entities.listing.Listing;
-import com.ecom.craftbid.entities.listing.Tag;
-import com.ecom.craftbid.entities.user.User;
-import com.ecom.craftbid.repositories.ListingRepository;
-import com.ecom.craftbid.repositories.TagRepository;
-import com.ecom.craftbid.repositories.UserRepository;
+import com.ecom.craftbid.services.ListingService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.crossstore.ChangeSetPersister;
-
-import org.springframework.data.jpa.domain.Specification;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Page;
-
-import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 @RestController
 @RequestMapping("/api/v1")
 public class ListingController {
 
     @Autowired
-    private ListingRepository listingRepository;
+    private ListingService listingService;
 
-    @Autowired
-    private TagRepository tagRepository;
+    @GetMapping("/public/listings/{id}")
+    public ResponseEntity<ListingDTO> getListingById(@PathVariable long id) {
+        ListingDTO listingDto = listingService.getListingById(id);
+        return ResponseEntity.ok(listingDto);
+    }
 
-    @Autowired
-    private UserRepository userRepository;
+    @GetMapping("/public/active-listings")
+    public ResponseEntity<Page<ListingDTO>> getActiveListingsSortedByExpirationDate(Pageable pageable) {
+        Page<ListingDTO> listingDtoPage = listingService.getActiveListingsSortedByExpirationDate(pageable);
+        return ResponseEntity.ok(listingDtoPage);
+    }
 
-    @GetMapping("/public/listings")
-    public List<Listing> getAllListings(Specification<Listing> spec, Pageable pageable) {
-        return listingRepository.findAll(spec, pageable).getContent();
+    @GetMapping("/public/ended-listings")
+    public ResponseEntity<Page<ListingDTO>> getEndedListingsSortedByExpirationDate(Pageable pageable) {
+        Page<ListingDTO> listingDtoPage = listingService.getEndedListingsSortedByExpirationDate(pageable);
+        return ResponseEntity.ok(listingDtoPage);
+    }
+
+    @GetMapping("/public/listings-by-tags")
+    public ResponseEntity<Page<ListingDTO>> getListingsByTags(@RequestParam List<String> tags, Pageable pageable) {
+        Page<ListingDTO> listingDtoPage = listingService.getListingsByTags(tags, pageable);
+        return ResponseEntity.ok(listingDtoPage);
+    }
+
+    @GetMapping("/public/listings/search")
+    public ResponseEntity<List<ListingDTO>> findBySearchCriteria(@ModelAttribute SearchCriteriaDto searchCriteriaDto, Pageable pageable) {
+        List<ListingDTO> listingDtoPage = listingService.findBySearchCriteria(searchCriteriaDto, pageable);
+        return ResponseEntity.ok(listingDtoPage);
     }
 
     @PostMapping("/private/listings")
-    public Listing createListing(@RequestBody Listing listing) {
-        return listingRepository.save(listing);
+    public ResponseEntity<ListingDTO> createListing(@RequestBody ListingCreateRequest listingCreateRequest) {
+        ListingDTO listingDto = listingService.createListing(listingCreateRequest);
+        return ResponseEntity.ok(listingDto);
     }
 
-    @GetMapping("/public/listings/{id}")
-    public Listing getListingById(@PathVariable long id) {
-        return listingRepository.findById(id);
+    @PatchMapping("/private/listings/{id}")
+    public ResponseEntity<ListingDTO> patchListing(@PathVariable long id, @RequestBody ListingUpdateRequest updatedListing) {
+        ListingDTO listingDto = listingService.patchListing(id, updatedListing);
+        return ResponseEntity.ok(listingDto);
     }
 
+    // TODO: probably not needed
     @PutMapping("/private/listings/{id}")
-    public Listing updateListing(@PathVariable long id, @RequestBody Listing updatedListing, @RequestParam long winnerId, @RequestParam long advertiserId) {
-        Listing existingListing = listingRepository.findById(id);
-
-        existingListing.setTitle(updatedListing.getTitle());
-        existingListing.setDescription(updatedListing.getDescription());
-
-        return listingRepository.save(existingListing);
-    }
-
-    @PutMapping("/private/listings/{id}/winner")
-    public Listing updateListingWinner(@PathVariable long id, @RequestParam long winnerId) throws ChangeSetPersister.NotFoundException {
-        Listing existingListing = listingRepository.findById(id);
-
-        User winner = userRepository.findById(winnerId)
-                .orElseThrow(ChangeSetPersister.NotFoundException::new);
-        existingListing.setWinner(winner);
-
-        return listingRepository.save(existingListing);
-    }
-
-    @PutMapping("/private/listings/{id}/advertiser")
-    public Listing updateListingAdvertiser(@PathVariable long id, @RequestParam long advertiserId) throws ChangeSetPersister.NotFoundException {
-        Listing existingListing = listingRepository.findById(id);
-
-        User advertiser = userRepository.findById(advertiserId)
-                .orElseThrow(ChangeSetPersister.NotFoundException::new);
-        existingListing.setAdvertiser(advertiser);
-
-        return listingRepository.save(existingListing);
-    }
-
-    @PutMapping("/private/listings/{id}/status")
-    public Listing updateListingStatus(@PathVariable long id, @RequestParam Boolean ended) {
-        Listing existingListing = listingRepository.findById(id);
-
-        existingListing.setEnded(ended);
-
-        return listingRepository.save(existingListing);
-    }
-
-    @PutMapping("/private/listings/{id}/expirationDate")
-    public Listing updateListingExpirationDate(@PathVariable long id, @RequestParam Date expirationDate) {
-        Listing existingListing = listingRepository.findById(id);
-
-        existingListing.setExpirationDate(expirationDate);
-
-        return listingRepository.save(existingListing);
-    }
-
-    @PutMapping("/private/listings/{id}/creationDate")
-    public Listing updateListingCreationDate(@PathVariable long id, @RequestParam Date creationDate) {
-        Listing existingListing = listingRepository.findById(id);
-
-        existingListing.setCreationDate(creationDate);
-
-        return listingRepository.save(existingListing);
+    public ResponseEntity<ListingDTO> updateListing(@PathVariable long id, @RequestBody Listing updatedListing, @RequestParam long winnerId, @RequestParam long advertiserId) {
+        ListingDTO listingDto = listingService.updateListing(id, updatedListing, winnerId, advertiserId);
+        return ResponseEntity.ok(listingDto);
     }
 
     @DeleteMapping("/private/listings/{id}")
-    public ResponseEntity<?> deleteListing(@PathVariable long id) {
-        listingRepository.deleteById(id);
+    public ResponseEntity<Void> deleteListing(@PathVariable long id) {
+        listingService.deleteListing(id);
         return ResponseEntity.noContent().build();
     }
 
     @PostMapping("/private/{listingId}/tags")
-    public Listing addTagsToListing(@PathVariable long listingId, @RequestBody List<Long> tagIds) {
-        Listing listing = listingRepository.findById(listingId);
-
-        Set<Tag> tags = new HashSet<>(tagRepository.findAllById(tagIds));
-
-        listing.getTags().addAll(tags);
-
-        return listingRepository.save(listing);
+    public ResponseEntity<ListingDTO> addTagsToListing(@PathVariable long listingId, @RequestBody List<Long> tagIds) {
+        ListingDTO listingDto = listingService.addTagsToListing(listingId, tagIds);
+        return ResponseEntity.ok(listingDto);
     }
 
     @DeleteMapping("/private/{listingId}/tags/{tagId}")
-    public Listing removeTagFromListing(@PathVariable long listingId, @PathVariable long tagId) throws ChangeSetPersister.NotFoundException {
-        Listing listing = listingRepository.findById(listingId);
-
-        Tag tag = tagRepository.findById(tagId)
-                .orElseThrow(ChangeSetPersister.NotFoundException::new);
-
-        listing.getTags().remove(tag);
-
-        return listingRepository.save(listing);
+    public ResponseEntity<ListingDTO> removeTagFromListing(@PathVariable long listingId, @PathVariable long tagId) {
+        ListingDTO listingDto = listingService.removeTagFromListing(listingId, tagId);
+        return ResponseEntity.ok(listingDto);
     }
 
     @PostMapping("/private/{listingId}/photos")
-    public Listing addPhotosToListing(@PathVariable long listingId, @RequestBody List<String> photos) {
-        Listing listing = listingRepository.findById(listingId);
-
-        listing.getPhotos().addAll(photos);
-
-        return listingRepository.save(listing);
+    public ResponseEntity<ListingDTO> addPhotosToListing(@PathVariable long listingId, @RequestBody List<String> photos) {
+        ListingDTO listingDto = listingService.addPhotosToListing(listingId, photos);
+        return ResponseEntity.ok(listingDto);
     }
 
     @DeleteMapping("/private/{listingId}/photos")
-    public Listing removePhotoFromListing(@PathVariable long listingId, @RequestParam String photoPath) {
-        Listing listing = listingRepository.findById(listingId);
-
-        // Find the photo in the photos list by comparing the full path
-        listing.getPhotos().removeIf(photo -> photo.equals(photoPath));
-
-        return listingRepository.save(listing);
+    public ResponseEntity<ListingDTO> removePhotoFromListing(@PathVariable long listingId, @RequestParam String photoPath) {
+        ListingDTO listingDto = listingService.removePhotoFromListing(listingId, photoPath);
+        return ResponseEntity.ok(listingDto);
     }
 
+    // TODO: make BidAddRequest instead of Bid
     @PostMapping("/private/{listingId}/bids")
-    public Listing addBidToListing(@PathVariable long listingId, @RequestBody Bid bid) {
-        Listing listing = listingRepository.findById(listingId);
-
-        bid.setListing(listing);
-        listing.getBids().add(bid);
-
-        return listingRepository.save(listing);
+    public ResponseEntity<ListingDTO> addBidToListing(@PathVariable long listingId, @RequestBody Bid bid) {
+        ListingDTO listingDto = listingService.addBidToListing(listingId, bid);
+        return ResponseEntity.ok(listingDto);
     }
 
     @DeleteMapping("/private/{listingId}/bids/{bidId}")
-    public Listing removeBidFromListing(@PathVariable long listingId, @PathVariable long bidId) throws ChangeSetPersister.NotFoundException {
-        Listing listing = listingRepository.findById(listingId);
-
-        Bid bidToRemove = listing.getBids().stream()
-                .filter(bid -> bid.getId() == bidId)
-                .findFirst()
-                .orElseThrow(ChangeSetPersister.NotFoundException::new);
-
-        listing.getBids().remove(bidToRemove);
-
-        return listingRepository.save(listing);
+    public ResponseEntity<ListingDTO> removeBidFromListing(@PathVariable long listingId, @PathVariable long bidId) {
+        ListingDTO listingDto = listingService.removeBidFromListing(listingId, bidId);
+        return ResponseEntity.ok(listingDto);
     }
 
+    // TODO: probably not needed
     @PutMapping("/private/{listingId}/winner/{userId}")
-    public Listing setWinnerForListing(@PathVariable long listingId, @PathVariable long userId) throws ChangeSetPersister.NotFoundException {
-        Listing listing = listingRepository.findById(listingId);
-
-        User winner = userRepository.findById(userId)
-                .orElseThrow(ChangeSetPersister.NotFoundException::new);
-
-        listing.setWinner(winner);
-
-        return listingRepository.save(listing);
+    public ResponseEntity<ListingDTO> setWinnerForListing(@PathVariable long listingId, @PathVariable long userId) {
+        ListingDTO listingDto = listingService.setWinnerForListing(listingId, userId);
+        return ResponseEntity.ok(listingDto);
     }
-
-    @GetMapping("/public/listings/active-listings")
-    public Page<Listing> getActiveListingsSortedByExpirationDate(Pageable pageable) {
-        return listingRepository.findByEndedFalseOrderByExpirationDateDesc(pageable);
-    }
-
-    @GetMapping("/public/listings/ended-listings")
-    public Page<Listing> getEndedListingsSortedByExpirationDate(Pageable pageable) {
-        return listingRepository.findByEndedTrueOrderByExpirationDateDesc(pageable);
-    }
-
-    @GetMapping("/public/listings/listings-by-title")
-    public Page<Listing> getListingsByTitle(@RequestParam String title, Pageable pageable) {
-        return listingRepository.findByTitleContaining(title, pageable);
-    }
-
-    @GetMapping("/public/listings/listings-by-tags")
-    public Page<Listing> getListingsByTags(@RequestParam List<String> tags, Pageable pageable) {
-        return listingRepository.findByTags_NameIn(tags, pageable);
-    }
-
-    @GetMapping("/public/listings/search")
-    public Page<Listing> findBySearchCriteria(
-            @RequestParam(required = false) String title,
-            @RequestParam(required = false) String advertiserName,
-            @RequestParam(required = false) String winnerName,
-            @RequestParam(required = false) List<String> tagNames,
-            @RequestParam(required = false) Date dateFrom,
-            @RequestParam(required = false) Date dateTo,
-            Pageable pageable) {
-
-        Specification<Listing> spec = Specification.where(null);
-
-        if (title != null && !title.isEmpty()) {
-            spec = spec.or((root, query, criteriaBuilder) ->
-                    criteriaBuilder.like(criteriaBuilder.lower(root.get("title")), "%" + title.toLowerCase() + "%"));
-        }
-
-        if (advertiserName != null && !advertiserName.isEmpty()) {
-            spec = spec.or((root, query, criteriaBuilder) ->
-                    criteriaBuilder.like(criteriaBuilder.lower(root.get("advertiser").get("name")),
-                            "%" + advertiserName.toLowerCase() + "%"));
-        }
-
-        if (winnerName != null && !winnerName.isEmpty()) {
-            spec = spec.or((root, query, criteriaBuilder) ->
-                    criteriaBuilder.like(criteriaBuilder.lower(root.get("winner").get("name")),
-                            "%" + winnerName.toLowerCase() + "%"));
-        }
-
-        if (tagNames != null && !tagNames.isEmpty()) {
-            spec = spec.or((root, query, criteriaBuilder) ->
-                    root.join("tags").get("name").in(tagNames));
-        }
-
-        if (dateFrom != null) {
-            spec = spec.and((root, query, criteriaBuilder) ->
-                    criteriaBuilder.equal(root.get("creationDate"), dateFrom)
-            );
-        }
-
-        if (dateTo != null) {
-            spec = spec.and((root, query, criteriaBuilder) ->
-                    criteriaBuilder.equal(root.get("expirationDate"), dateTo)
-            );
-
-        }
-
-        return listingRepository.findAll(spec, pageable);
-    }
-
 }
 

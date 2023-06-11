@@ -1,5 +1,9 @@
 package com.ecom.craftbid.controllers;
 
+import com.ecom.craftbid.dtos.AuthenticationRequest;
+import com.ecom.craftbid.dtos.AuthenticationResponse;
+import com.ecom.craftbid.dtos.RegisterRequest;
+import com.ecom.craftbid.services.AuthenticationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
