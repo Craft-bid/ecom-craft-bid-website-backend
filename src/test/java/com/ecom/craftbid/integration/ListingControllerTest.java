@@ -2,10 +2,12 @@ package com.ecom.craftbid.integration;
 
 import com.ecom.craftbid.dtos.ListingCreateRequest;
 import com.ecom.craftbid.dtos.ListingDTO;
+import com.ecom.craftbid.dtos.ListingUpdateRequest;
 import com.ecom.craftbid.entities.listing.Bid;
 import com.ecom.craftbid.entities.listing.Listing;
 import com.ecom.craftbid.entities.user.User;
 import com.ecom.craftbid.repositories.ListingRepository;
+import com.ecom.craftbid.repositories.UserRepository;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.EntityManager;
@@ -138,6 +140,26 @@ public class ListingControllerTest {
         assertEquals(updatedListing.getTitle(), updatedListingInDb.getTitle());
         assertEquals(updatedListing.getEnded(), updatedListingInDb.getEnded());
         assertEquals(updatedListing.getDescription(), updatedListingInDb.getDescription());
+    }
+
+    @Test
+    public void testPatchListingWinner() throws Exception {
+            Listing listing = createListing();
+
+            ListingUpdateRequest updatedListing = new ListingUpdateRequest();
+            updatedListing.setWinnerId(1L);
+            updatedListing.setEnded(true);
+
+            ObjectMapper objectMapper = new ObjectMapper();
+            String requestContent = objectMapper.writeValueAsString(updatedListing);
+
+            mockMvc.perform(MockMvcRequestBuilders.patch("/api/v1/private/listings/{id}", listing.getId())
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(requestContent))
+                    .andExpect(MockMvcResultMatchers.status().isOk());
+
+            Listing updatedListingInDb = listingRepository.findById(listing.getId()).orElseThrow();
+            assertEquals(1L, updatedListingInDb.getWinner().getId());
     }
 
     private Listing createListing() {
