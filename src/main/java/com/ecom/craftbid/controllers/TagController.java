@@ -22,8 +22,8 @@ public class TagController {
     }
 
     @PostMapping("/private/tags")
-    public ResponseEntity<Tag> createTag(@RequestBody Tag tag) {
-        Tag createdTag = tagService.createTag(tag);
+    public ResponseEntity<Tag> createTag(@RequestBody String name) {
+        Tag createdTag = tagService.createTag(name);
         return ResponseEntity.ok(createdTag);
     }
 

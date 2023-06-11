@@ -22,6 +22,13 @@ public class TagService {
         return tagRepository.save(tag);
     }
 
+    public Tag createTag(String name) {
+        Tag tag = new Tag();
+        tag.setName(name);
+        Tag save = tagRepository.save(tag);
+        return save;
+    }
+
     public void deleteTag(long id) {
         tagRepository.deleteById(id);
     }
