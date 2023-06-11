@@ -2,6 +2,7 @@ package com.ecom.craftbid.controllers;
 
 import com.ecom.craftbid.dtos.ListingCreateRequest;
 import com.ecom.craftbid.dtos.ListingDTO;
+import com.ecom.craftbid.dtos.ListingUpdateRequest;
 import com.ecom.craftbid.dtos.SearchCriteriaDto;
 import com.ecom.craftbid.entities.listing.Bid;
 import com.ecom.craftbid.entities.listing.Listing;
@@ -24,12 +25,6 @@ public class ListingController {
     @GetMapping("/public/listings/{id}")
     public ResponseEntity<ListingDTO> getListingById(@PathVariable long id) {
         ListingDTO listingDto = listingService.getListingById(id);
-        return ResponseEntity.ok(listingDto);
-    }
-
-    @GetMapping("/public/listings/{page}")
-    public ResponseEntity<List<ListingDTO>> getListingsPage(@PathVariable Pageable pageable) {
-        List<ListingDTO> listingDto = listingService.getListingsPage(pageable);
         return ResponseEntity.ok(listingDto);
     }
 
@@ -64,7 +59,7 @@ public class ListingController {
     }
 
     @PatchMapping("/private/listings/{id}")
-    public ResponseEntity<ListingDTO> patchListing(@PathVariable long id, @RequestBody Listing updatedListing) {
+    public ResponseEntity<ListingDTO> patchListing(@PathVariable long id, @RequestBody ListingUpdateRequest updatedListing) {
         ListingDTO listingDto = listingService.patchListing(id, updatedListing);
         return ResponseEntity.ok(listingDto);
     }
