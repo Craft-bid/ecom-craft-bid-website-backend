@@ -13,5 +13,5 @@ public class ListingCreateRequest {
     private String title;
     private String description;
     private long advertiserId;
-    private boolean ended = false;
+    private Boolean ended = false;
 }
