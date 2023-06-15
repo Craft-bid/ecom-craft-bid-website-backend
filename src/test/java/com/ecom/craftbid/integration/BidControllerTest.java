@@ -99,6 +99,28 @@ public class BidControllerTest {
         }
     }
 
+    @Test
+    public void getUsersBids() throws Exception {
+        createBid(100, "test bid");
+        createBid(200, "test bid 2");
+        createBid(300, "test bid 3");
+
+        long userId = 1;
+        MvcResult result = mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/public/bids/user/" + userId))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andReturn();
+
+        String responseContent = result.getResponse().getContentAsString();
+        List<BidDTO> bidDTOList = new ObjectMapper().readValue(responseContent, new TypeReference<List<BidDTO>>() {
+        });
+
+        assertNotNull(bidDTOList);
+        assertEquals(3, bidDTOList.size());
+        assertEquals(bidDTOList.get(0).getDescription(), "test bid");
+        assertEquals(bidDTOList.get(1).getDescription(), "test bid 2");
+        assertEquals(bidDTOList.get(2).getDescription(), "test bid 3");
+    }
+
     private BidDTO createBid(long price, String description) throws Exception {
         BidCreateRequest bidCreateRequest1 = new BidCreateRequest();
         bidCreateRequest1.setPrice(price);

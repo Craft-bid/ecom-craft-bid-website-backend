@@ -47,6 +47,10 @@ public class BidService {
         return BidDTO.fromBid(save);
     }
 
+    public List<BidDTO> getBidsByUser(long userId) {
+        return BidDTO.fromBids(bidRepository.findByBidderId(userId));
+    }
+
     public void deleteBid(long id) {
         bidRepository.deleteById(id);
     }

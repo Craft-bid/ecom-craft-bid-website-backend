@@ -40,4 +40,10 @@ public class BidController {
         bidService.deleteBid(id);
         return ResponseEntity.noContent().build();
     }
+
+    @GetMapping("/public/bids/user/{userId}")
+    public ResponseEntity<List<BidDTO>> getBidsByUser(@PathVariable long userId) {
+        List<BidDTO> bids = bidService.getBidsByUser(userId);
+        return ResponseEntity.ok(bids);
+    }
 }
