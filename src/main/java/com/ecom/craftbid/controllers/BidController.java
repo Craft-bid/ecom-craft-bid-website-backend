@@ -19,9 +19,15 @@ public class BidController {
     private BidService bidService;
 
     @GetMapping("/public/bids")
-    public ResponseEntity<List<Bid>> getAllBids() {
-        List<Bid> bids = bidService.getAllBids();
+    public ResponseEntity<List<BidDTO>> getAllBids() {
+        List<BidDTO> bids = bidService.getAllBids();
         return ResponseEntity.ok(bids);
+    }
+
+    @GetMapping("/public/bids/{id}")
+    public ResponseEntity<BidDTO> getBidById(@PathVariable long id) {
+        BidDTO bid = bidService.getBidById(id);
+        return ResponseEntity.ok(bid);
     }
 
     @PostMapping("/private/bids")

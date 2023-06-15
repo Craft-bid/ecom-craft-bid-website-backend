@@ -26,8 +26,13 @@ public class BidService {
     @Autowired
     private UserService userService;
 
-    public List<Bid> getAllBids() {
-        return bidRepository.findAll();
+    public List<BidDTO> getAllBids() {
+        return BidDTO.fromBids(bidRepository.findAll());
+    }
+
+    public BidDTO getBidById(long id) {
+        Bid bid = bidRepository.findById(id).orElseThrow(NotFoundException::new);
+        return BidDTO.fromBid(bid);
     }
 
     public BidDTO createBid(BidCreateRequest bidRequest) {
@@ -43,6 +48,7 @@ public class BidService {
         return BidDTO.fromBid(save);
     }
 
+    // TODO: Remove
     public Bid updateBid(long id, Bid updatedBid) {
         Bid bid = bidRepository.findById(id).orElseThrow(NotFoundException::new);
 
