@@ -1,6 +1,8 @@
 package com.ecom.craftbid.controllers;
 
 
+import com.ecom.craftbid.dtos.BidCreateRequest;
+import com.ecom.craftbid.dtos.BidDTO;
 import com.ecom.craftbid.entities.listing.Bid;
 import com.ecom.craftbid.services.BidService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,8 +25,8 @@ public class BidController {
     }
 
     @PostMapping("/private/bids")
-    public ResponseEntity<Bid> createBid(@RequestBody Bid bid) {
-        Bid createdBid = bidService.createBid(bid);
+    public ResponseEntity<BidDTO> createBid(@RequestBody BidCreateRequest bid) {
+        BidDTO createdBid = bidService.createBid(bid);
         return ResponseEntity.ok(createdBid);
     }
 
