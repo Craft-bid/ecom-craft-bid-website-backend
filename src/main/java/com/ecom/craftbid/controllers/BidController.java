@@ -30,12 +30,6 @@ public class BidController {
         return ResponseEntity.ok(createdBid);
     }
 
-    @PutMapping("/private/bids/{id}")
-    public ResponseEntity<Bid> updateBid(@PathVariable long id, @RequestBody Bid updatedBid) {
-        Bid updatedBidObj = bidService.updateBid(id, updatedBid);
-        return ResponseEntity.ok(updatedBidObj);
-    }
-
     @DeleteMapping("/private/bids/{id}")
     public ResponseEntity<Void> deleteBid(@PathVariable long id) {
         bidService.deleteBid(id);
