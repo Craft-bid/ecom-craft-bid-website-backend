@@ -1,11 +1,13 @@
 package com.ecom.craftbid.controllers;
 
+import com.ecom.craftbid.dtos.TagDTO;
 import com.ecom.craftbid.entities.listing.Tag;
 import com.ecom.craftbid.services.TagService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -16,9 +18,13 @@ public class TagController {
     private TagService tagService;
 
     @GetMapping("/public/tags")
-    public ResponseEntity<List<Tag>> getAllTags() {
+    public ResponseEntity<List<TagDTO>> getAllTags() {
         List<Tag> tags = tagService.getAllTags();
-        return ResponseEntity.ok(tags);
+        List<TagDTO> ntags = new ArrayList<>();
+        for(Tag t : tags){
+            ntags.add(new TagDTO(t.getId(), t.getName()));
+        }
+        return ResponseEntity.ok(ntags);
     }
 
     @PostMapping("/private/tags")
