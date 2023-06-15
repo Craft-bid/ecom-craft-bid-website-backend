@@ -48,20 +48,6 @@ public class BidService {
         return BidDTO.fromBid(save);
     }
 
-    // TODO: Remove
-    public Bid updateBid(long id, Bid updatedBid) {
-        Bid bid = bidRepository.findById(id).orElseThrow(NotFoundException::new);
-
-        bid.setPrice(updatedBid.getPrice());
-        bid.setDescription(updatedBid.getDescription());
-        bid.setCreationDate(updatedBid.getCreationDate());
-        bid.setDaysToDeliver(updatedBid.getDaysToDeliver());
-        bid.setBidder(updatedBid.getBidder());
-        bid.setListing(updatedBid.getListing());
-        return bidRepository.save(bid);
-
-    }
-
     public void deleteBid(long id) {
         bidRepository.deleteById(id);
     }
