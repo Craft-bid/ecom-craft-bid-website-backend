@@ -3,7 +3,6 @@ package com.ecom.craftbid.services;
 import com.ecom.craftbid.dtos.BidCreateRequest;
 import com.ecom.craftbid.dtos.BidDTO;
 import com.ecom.craftbid.entities.listing.Bid;
-import com.ecom.craftbid.entities.listing.Listing;
 import com.ecom.craftbid.exceptions.NotFoundException;
 import com.ecom.craftbid.repositories.BidRepository;
 import com.ecom.craftbid.repositories.ListingRepository;

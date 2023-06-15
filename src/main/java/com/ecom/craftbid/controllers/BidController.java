@@ -3,7 +3,6 @@ package com.ecom.craftbid.controllers;
 
 import com.ecom.craftbid.dtos.BidCreateRequest;
 import com.ecom.craftbid.dtos.BidDTO;
-import com.ecom.craftbid.entities.listing.Bid;
 import com.ecom.craftbid.services.BidService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

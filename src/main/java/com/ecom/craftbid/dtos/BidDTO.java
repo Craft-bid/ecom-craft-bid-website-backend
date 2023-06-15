@@ -1,7 +1,6 @@
 package com.ecom.craftbid.dtos;
 
 import com.ecom.craftbid.entities.listing.Bid;
-import com.ecom.craftbid.entities.user.User;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
