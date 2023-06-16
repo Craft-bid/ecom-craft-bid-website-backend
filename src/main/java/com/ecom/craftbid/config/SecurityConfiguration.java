@@ -40,6 +40,7 @@ public class SecurityConfiguration {
                 .requestMatchers("/api/v1/auth/**").permitAll()
                 .requestMatchers("/api/v1/public/**").permitAll()
                 .requestMatchers("/api/v1/private/**").permitAll() // TODO: change to authenticated()
+                .requestMatchers("/assets/photos/").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .sessionManagement()
