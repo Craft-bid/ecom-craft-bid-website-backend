@@ -170,7 +170,7 @@ public class ListingControllerTest {
     }
 
     @Test
-    public void testAddPhotosAndRemoveThem() throws Exception {
+    public void testAddPhotosAndRemoveOne() throws Exception {
         long listingId = 1L;
         Listing listing = listingRepository.findById(listingId).orElseThrow();
         assertEquals(0, listing.getPhotos().size());
