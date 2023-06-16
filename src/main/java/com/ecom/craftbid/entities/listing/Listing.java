@@ -44,12 +44,11 @@ public class Listing {
     @ManyToMany(mappedBy = "listings", cascade = CascadeType.ALL)
     @Nonnull
     @Setter(value = AccessLevel.NONE)
-    private Set<Tag> tags;
+    private final Set<Tag> tags = new HashSet<>();
 
     public Listing() {
         bids = new ArrayList<>();
         photos = new ArrayList<>();
-        tags = new HashSet<>();
     }
 
     public void addTag(Tag tag) {
