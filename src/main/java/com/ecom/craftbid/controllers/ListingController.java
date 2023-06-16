@@ -4,7 +4,6 @@ import com.ecom.craftbid.dtos.ListingCreateRequest;
 import com.ecom.craftbid.dtos.ListingDTO;
 import com.ecom.craftbid.dtos.ListingUpdateRequest;
 import com.ecom.craftbid.dtos.SearchCriteriaDto;
-import com.ecom.craftbid.entities.listing.Bid;
 import com.ecom.craftbid.entities.listing.Listing;
 import com.ecom.craftbid.services.ListingService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -101,10 +100,9 @@ public class ListingController {
         return ResponseEntity.ok(listingDto);
     }
 
-    // TODO: make BidAddRequest instead of Bid
     @PostMapping("/private/{listingId}/bids")
-    public ResponseEntity<ListingDTO> addBidToListing(@PathVariable long listingId, @RequestBody Bid bid) {
-        ListingDTO listingDto = listingService.addBidToListing(listingId, bid);
+    public ResponseEntity<ListingDTO> addBidToListing(@PathVariable long listingId, @RequestBody List<Long> bidIds) {
+        ListingDTO listingDto = listingService.addBidsToListing(listingId, bidIds);
         return ResponseEntity.ok(listingDto);
     }
 

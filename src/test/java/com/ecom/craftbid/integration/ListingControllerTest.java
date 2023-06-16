@@ -7,6 +7,7 @@ import com.ecom.craftbid.entities.listing.Bid;
 import com.ecom.craftbid.entities.listing.Listing;
 import com.ecom.craftbid.entities.listing.Tag;
 import com.ecom.craftbid.entities.user.User;
+import com.ecom.craftbid.repositories.BidRepository;
 import com.ecom.craftbid.repositories.ListingRepository;
 import com.ecom.craftbid.repositories.TagRepository;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -26,6 +27,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -47,6 +49,9 @@ public class ListingControllerTest {
 
     @Autowired
     private TagRepository tagRepository;
+
+    @Autowired
+    private BidRepository bidRepository;
 
     @Test
     public void testGetListingById() throws Exception {
@@ -198,6 +203,52 @@ public class ListingControllerTest {
         responseListing = new ObjectMapper().readValue(responseContent, ListingDTO.class);
         assertEquals(responseListing.getId(), listingId);
         assertEquals(tags.size() - 1, responseListing.getTags().size());
+    }
+
+    @Test
+    public void testAddBidToListingAndRemoveIt() throws Exception {
+        Listing listing = createListing();
+        long listingId = listing.getId();
+        Bid bid = createBid("Test Bid", 100, 1, listingId);
+        List<Long> bidIds = new ArrayList<>();
+        bidIds.add(bid.getId());
+
+        MvcResult result = mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/private/" + listingId + "/bids")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(new ObjectMapper().writeValueAsString(bidIds)))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andReturn();
+
+
+        String responseContent = result.getResponse().getContentAsString();
+        ListingDTO responseListing = new ObjectMapper().readValue(responseContent, ListingDTO.class);
+
+        assertEquals(1, responseListing.getBids().size());
+
+        mockMvc.perform(MockMvcRequestBuilders.delete("/api/v1/private/" + listingId + "/bids/" + bid.getId()))
+                .andExpect(MockMvcResultMatchers.status().isOk());
+
+        result = mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/public/listings/" + listingId))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andReturn();
+
+        responseContent = result.getResponse().getContentAsString();
+        responseListing = new ObjectMapper().readValue(responseContent, ListingDTO.class);
+        assertEquals(responseListing.getId(), listingId);
+        assertEquals(0, responseListing.getBids().size());
+    }
+
+    private Bid createBid(String description, long price, long bidderId, long listingId) {
+        Bid bid = new Bid();
+        bid.setDescription(description);
+        bid.setPrice(price);
+        Date date = new Date();
+        bid.setCreationDate(date);
+        bid.setDaysToDeliver(1);
+        bid.setBidder(entityManager.getReference(User.class, bidderId));
+        bid.setListing(entityManager.getReference(Listing.class, listingId));
+
+        return bidRepository.save(bid);
     }
 
     private Tag createTag(String name) {

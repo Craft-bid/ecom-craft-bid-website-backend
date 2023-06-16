@@ -6,9 +6,10 @@ import com.ecom.craftbid.entities.listing.Listing;
 import com.ecom.craftbid.entities.listing.Tag;
 import com.ecom.craftbid.entities.user.User;
 import com.ecom.craftbid.exceptions.NotFoundException;
+import com.ecom.craftbid.repositories.BidRepository;
 import com.ecom.craftbid.repositories.ListingRepository;
 import com.ecom.craftbid.repositories.TagRepository;
-import com.ecom.craftbid.repositories.UserRepository;
+import jakarta.persistence.EntityManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -31,7 +32,16 @@ public class ListingService {
     private UserService userService;
 
     @Autowired
+    private BidService bidService;
+
+    @Autowired
     private TagRepository tagRepository;
+
+    @Autowired
+    private BidRepository bidRepository;
+
+    @Autowired
+    private EntityManager entityManager;
 
 
     private Listing findListingById(long listingId) throws NotFoundException {
@@ -155,11 +165,12 @@ public class ListingService {
         return saveAndReturnListingDTO(listing);
     }
 
-    public ListingDTO addBidToListing(long listingId, Bid bid) {
+    public ListingDTO addBidsToListing(long listingId, List<Long> bidIds) {
         Listing listing = findListingById(listingId);
-        bid.setListing(listing);
-        listing.getBids().add(bid);
-        return saveAndReturnListingDTO(listing);
+        List<Bid> bids = bidRepository.findAllById(bidIds);
+        listing.getBids().addAll(bids);
+        Listing savedListing = listingRepository.save(listing);
+        return ListingDTO.fromListing(savedListing);
     }
 
     public ListingDTO removeBidFromListing(long listingId, long bidId) {

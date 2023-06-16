@@ -55,4 +55,16 @@ public class Listing {
         this.tags.remove(tag);
         tag.getListings().remove(this);
     }
+
+    public void addBid(Bid bid) {
+        if(this.bids == null)
+            this.bids = new ArrayList<>();
+        this.bids.add(bid);
+        bid.setListing(this);
+    }
+
+    public void removeBid(Bid bid) {
+        this.bids.remove(bid);
+        bid.setListing(null);
+    }
 }
