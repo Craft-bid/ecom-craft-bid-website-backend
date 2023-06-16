@@ -230,6 +230,75 @@ public class ListingControllerTest {
         assertEquals(1, photosRemovedListing.getPhotos().size());
     }
 
+    /* edge case test for the situation when photos list is not null */
+    @Test
+    public void testAddPhotosOneByOne() throws Exception {
+        long listingId = 1L;
+        Listing listing = listingRepository.findById(listingId).orElseThrow();
+
+        MockMultipartFile kraftowyKowal = null;
+        MockMultipartFile kraftowaJava = null;
+        try {
+            ClassPathResource photoResource = new ClassPathResource("test-photos/kraftowy_kowal.jpg");
+            byte[] photoBytes = StreamUtils.copyToByteArray(photoResource.getInputStream());
+            kraftowyKowal = new MockMultipartFile(
+                    "photos",
+                    photoResource.getFilename(),
+                    "image/jpeg",
+                    photoBytes
+            );
+
+            photoResource = new ClassPathResource("test-photos/kraftowa_java.jpg");
+            photoBytes = StreamUtils.copyToByteArray(photoResource.getInputStream());
+            kraftowaJava = new MockMultipartFile(
+                    "photos",
+                    photoResource.getFilename(),
+                    "image/jpeg",
+                    photoBytes
+            );
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        assertNotNull(kraftowyKowal);
+        assertNotNull(kraftowaJava);
+
+        mockMvc.perform(MockMvcRequestBuilders.multipart("/api/v1/private/" + listingId + "/photos")
+                        .file(kraftowyKowal))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andReturn();
+
+        MvcResult result = mockMvc.perform(MockMvcRequestBuilders.multipart("/api/v1/private/" + listingId + "/photos")
+                        .file(kraftowaJava))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andReturn();
+
+        Listing updatedListing = listingRepository.findById(listingId).orElseThrow();
+        assertEquals(2, updatedListing.getPhotos().size());
+        assertNotNull(updatedListing.getPhotos().get(0));
+        assertNotNull(updatedListing.getPhotos().get(1));
+
+        String responseContent = result.getResponse().getContentAsString();
+        ListingDTO responseListings = new ObjectMapper().readValue(responseContent, ListingDTO.class);
+        Collection<String> responsePhotos = responseListings.getPhotos();
+
+        /* Remove photos */
+        mockMvc.perform(MockMvcRequestBuilders.delete("/api/v1/private/" + listingId + "/photos")
+                        .param("photoPath", responsePhotos.iterator().next()))
+                .andExpect(MockMvcResultMatchers.status().isOk());
+
+        Listing photosRemovedListing = listingRepository.findById(listingId).orElseThrow();
+        assertEquals(1, photosRemovedListing.getPhotos().size());
+
+        /* add one again */
+        mockMvc.perform(MockMvcRequestBuilders.multipart("/api/v1/private/" + listingId + "/photos")
+                        .file(kraftowyKowal))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andReturn();
+
+        photosRemovedListing = listingRepository.findById(listingId).orElseThrow();
+        assertEquals(2, photosRemovedListing.getPhotos().size());
+    }
+
     private Listing createListing() {
         Listing listing = new Listing();
         listing.setTitle("Test Listing");
