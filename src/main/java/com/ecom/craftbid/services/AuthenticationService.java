@@ -8,7 +8,6 @@ import com.ecom.craftbid.enums.Role;
 import com.ecom.craftbid.enums.TokenType;
 import com.ecom.craftbid.repositories.TokenRepository;
 import com.ecom.craftbid.repositories.UserRepository;
-import com.ecom.craftbid.services.JwtService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
