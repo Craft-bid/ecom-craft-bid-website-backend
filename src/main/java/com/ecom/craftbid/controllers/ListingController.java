@@ -1,15 +1,13 @@
 package com.ecom.craftbid.controllers;
 
-import com.ecom.craftbid.dtos.ListingCreateRequest;
-import com.ecom.craftbid.dtos.ListingDTO;
-import com.ecom.craftbid.dtos.ListingUpdateRequest;
-import com.ecom.craftbid.dtos.SearchCriteriaDto;
+import com.ecom.craftbid.dtos.*;
 import com.ecom.craftbid.entities.listing.Listing;
 import com.ecom.craftbid.services.ListingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -77,8 +75,8 @@ public class ListingController {
     }
 
     @PostMapping("/private/{listingId}/tags")
-    public ResponseEntity<ListingDTO> addTagsToListing(@PathVariable long listingId, @RequestBody List<Long> tagIds) {
-        ListingDTO listingDto = listingService.addTagsToListing(listingId, tagIds);
+    public ResponseEntity<ListingDTO> addTagsToListing(@PathVariable long listingId, @RequestBody List<TagDTO> tags) {
+        ListingDTO listingDto = listingService.addTagsToListing(listingId, tags);
         return ResponseEntity.ok(listingDto);
     }
 
@@ -101,8 +99,8 @@ public class ListingController {
     }
 
     @PostMapping("/private/{listingId}/bids")
-    public ResponseEntity<ListingDTO> addBidToListing(@PathVariable long listingId, @RequestBody List<Long> bidIds) {
-        ListingDTO listingDto = listingService.addBidsToListing(listingId, bidIds);
+    public ResponseEntity<ListingDTO> addBidToListing(@PathVariable long listingId, @RequestBody BidCreateRequest bidDto) {
+        ListingDTO listingDto = listingService.addBidToListing(bidDto,listingId );
         return ResponseEntity.ok(listingDto);
     }
 

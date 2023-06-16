@@ -27,38 +27,44 @@ public class Listing {
 
     @ElementCollection
     @Nonnull
+    @Setter(value = AccessLevel.NONE)
     private List<String> photos;
 
     @OneToMany(mappedBy = "listing", cascade = CascadeType.ALL)
     @Nonnull
+    @Setter(value = AccessLevel.NONE)
     private List<Bid> bids;
+
     @ManyToOne
     private User advertiser;
     @ManyToOne
     private User winner;
 
 
-    @ManyToMany(mappedBy="listings")
+    @ManyToMany(mappedBy = "listings", cascade = CascadeType.ALL)
     @Nonnull
+    @Setter(value = AccessLevel.NONE)
     private Set<Tag> tags;
 
     public Listing() {
+        bids = new ArrayList<>();
+        photos = new ArrayList<>();
+        tags = new HashSet<>();
     }
 
     public void addTag(Tag tag) {
-        if(this.tags == null)
-            this.tags = new HashSet<>();
+
         this.tags.add(tag);
-        tag.addListing(this);
+        if (!tag.getListings().contains(this))
+            tag.addListing(this);
     }
+
     public void removeTag(Tag tag) {
         this.tags.remove(tag);
         tag.getListings().remove(this);
     }
 
     public void addBid(Bid bid) {
-        if(this.bids == null)
-            this.bids = new ArrayList<>();
         this.bids.add(bid);
         bid.setListing(this);
     }
@@ -66,5 +72,13 @@ public class Listing {
     public void removeBid(Bid bid) {
         this.bids.remove(bid);
         bid.setListing(null);
+    }
+
+    public void addPhoto(String url) {
+        photos.add(url);
+    }
+
+    public void removePhoto(String url) {
+        photos.remove(url);
     }
 }

@@ -9,15 +9,15 @@ import com.ecom.craftbid.exceptions.NotFoundException;
 import com.ecom.craftbid.repositories.BidRepository;
 import com.ecom.craftbid.repositories.ListingRepository;
 import com.ecom.craftbid.repositories.TagRepository;
+import com.ecom.craftbid.repositories.UserRepository;
 import jakarta.persistence.EntityManager;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.ModelAttribute;
-
 import java.util.Date;
 import java.util.List;
 
@@ -42,6 +42,8 @@ public class ListingService {
 
     @Autowired
     private EntityManager entityManager;
+    @Autowired
+    private UserRepository userRepository;
 
 
     private Listing findListingById(long listingId) throws NotFoundException {
@@ -137,10 +139,11 @@ public class ListingService {
         listingRepository.delete(listing);
     }
 
-    public ListingDTO addTagsToListing(long listingId, List<Long> tagIds) {
+    public ListingDTO addTagsToListing(long listingId, List<TagDTO> tags) {
         Listing listing = listingRepository.findById(listingId).orElseThrow(NotFoundException::new);
-        List<Tag> tags = tagRepository.findAllById(tagIds);
-        listing.getTags().addAll(tags);
+        for (TagDTO tagDTO : tags) {
+            listing.addTag(TagDTO.toTag(tagDTO));
+        }
         Listing savedListing = listingRepository.save(listing);
         return ListingDTO.fromListing(savedListing);
     }
@@ -165,12 +168,13 @@ public class ListingService {
         return saveAndReturnListingDTO(listing);
     }
 
-    public ListingDTO addBidsToListing(long listingId, List<Long> bidIds) {
+    public ListingDTO addBidToListing(BidCreateRequest bidCreateRequest, long listingId) {
         Listing listing = findListingById(listingId);
-        List<Bid> bids = bidRepository.findAllById(bidIds);
-        listing.getBids().addAll(bids);
-        Listing savedListing = listingRepository.save(listing);
-        return ListingDTO.fromListing(savedListing);
+        User bidder = userService.findUserById(bidCreateRequest.getBidderId());
+        Bid bid = bidCreateRequest.toBid();
+        bid.setBidder(bidder);
+        listing.addBid(bid);
+        return saveAndReturnListingDTO(listing);
     }
 
     public ListingDTO removeBidFromListing(long listingId, long bidId) {
