@@ -9,6 +9,7 @@ import java.util.*;
 
 @Entity
 @AllArgsConstructor
+@NoArgsConstructor
 @Getter
 @Setter
 @Builder
@@ -25,31 +26,19 @@ public class Listing {
 
     private String description;
 
-    @ElementCollection
-    @Nonnull
-    @Setter(value = AccessLevel.NONE)
-    private List<String> photos;
-
-    @OneToMany(mappedBy = "listing", cascade = CascadeType.ALL)
-    @Nonnull
-    @Setter(value = AccessLevel.NONE)
-    private List<Bid> bids;
-
     @ManyToOne
     private User advertiser;
     @ManyToOne
     private User winner;
 
+    @ElementCollection
+    private final List<String> photos = new ArrayList<>();
+
+    @OneToMany(mappedBy = "listing", cascade = CascadeType.ALL)
+    private final List<Bid> bids = new ArrayList<>();
 
     @ManyToMany(mappedBy = "listings", cascade = CascadeType.ALL)
-    @Nonnull
-    @Setter(value = AccessLevel.NONE)
     private final Set<Tag> tags = new HashSet<>();
-
-    public Listing() {
-        bids = new ArrayList<>();
-        photos = new ArrayList<>();
-    }
 
     public void addTag(Tag tag) {
 
