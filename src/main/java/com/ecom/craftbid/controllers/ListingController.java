@@ -91,7 +91,7 @@ public class ListingController {
     }
 
     @PostMapping("/private/{listingId}/photos")
-    public ResponseEntity<ListingDTO> addPhotosToListing(@PathVariable long listingId, @RequestParam("files") MultipartFile[] photos) {
+    public ResponseEntity<ListingDTO> addPhotosToListing(@PathVariable long listingId, @RequestParam("photos") MultipartFile[] photos) {
         ListingDTO listingDto = listingService.addPhotosToListing(listingId, photos);
         return ResponseEntity.ok(listingDto);
     }

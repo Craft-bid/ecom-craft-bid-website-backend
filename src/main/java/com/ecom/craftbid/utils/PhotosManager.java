@@ -12,11 +12,11 @@ import java.util.List;
 public class PhotosManager {
 
     // TODO: probably transfer to application.properties as: assets-dir=
-    private final static String PHOTOS_PATH = "/assets/photos/";
+    private final static String PHOTOS_PATH = "assets/photos/";
 
     /**
      * Save photo filename is constructed as follows:
-     * originalFilename_listingTitle_listingId
+     * listingId_originalFilename
      * If filename repeats, it is overwritten
      *
      * @param photos - array of photos to be saved
@@ -30,9 +30,13 @@ public class PhotosManager {
                 continue;
 
             try {
-                String photoName = photo.getOriginalFilename() + "_" + listingTitle + "_" + listingId;
-                Path path = Path.of(PHOTOS_PATH + photoName);
-                Files.copy(photo.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
+                String photoName = listingId + "_" + photo.getOriginalFilename();
+                Path directoryPath = Path.of(PHOTOS_PATH);
+                Path filePath = directoryPath.resolve(photoName);
+                if (!Files.exists(directoryPath)) {
+                    Files.createDirectories(directoryPath);
+                }
+                Files.copy(photo.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
 
                 String fileUrl = ServletUriComponentsBuilder.fromCurrentContextPath()
                         .path(PHOTOS_PATH)
