@@ -12,6 +12,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -90,7 +91,7 @@ public class ListingController {
     }
 
     @PostMapping("/private/{listingId}/photos")
-    public ResponseEntity<ListingDTO> addPhotosToListing(@PathVariable long listingId, @RequestBody List<String> photos) {
+    public ResponseEntity<ListingDTO> addPhotosToListing(@PathVariable long listingId, @RequestParam("files") MultipartFile[] photos) {
         ListingDTO listingDto = listingService.addPhotosToListing(listingId, photos);
         return ResponseEntity.ok(listingDto);
     }

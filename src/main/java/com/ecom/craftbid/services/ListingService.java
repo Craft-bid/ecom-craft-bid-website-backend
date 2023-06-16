@@ -9,6 +9,7 @@ import com.ecom.craftbid.exceptions.NotFoundException;
 import com.ecom.craftbid.repositories.ListingRepository;
 import com.ecom.craftbid.repositories.TagRepository;
 import com.ecom.craftbid.repositories.UserRepository;
+import com.ecom.craftbid.utils.PhotosManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -16,6 +17,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Date;
 import java.util.List;
@@ -143,9 +145,12 @@ public class ListingService {
         return ListingDTO.fromListing(savedListing);
     }
 
-    public ListingDTO addPhotosToListing(long listingId, List<String> photos) {
+    public ListingDTO addPhotosToListing(long listingId, MultipartFile[] photos) {
         Listing listing = findListingById(listingId);
-        listing.getPhotos().addAll(photos);
+
+        List<String> addedPhotosPaths = PhotosManager.saveFiles(photos, listing.getTitle(), listing.getId());
+        listing.getPhotos().addAll(addedPhotosPaths);
+
         return saveAndReturnListingDTO(listing);
     }
 
