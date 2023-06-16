@@ -3,7 +3,6 @@ package com.ecom.craftbid.integration;
 import com.ecom.craftbid.dtos.AuthenticationRequest;
 import com.ecom.craftbid.dtos.AuthenticationResponse;
 import com.ecom.craftbid.dtos.RegisterRequest;
-import com.ecom.craftbid.repositories.UserRepository;
 import com.ecom.craftbid.services.AuthenticationService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
