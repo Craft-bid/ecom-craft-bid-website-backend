@@ -2,10 +2,7 @@ package com.ecom.craftbid.entities.listing;
 
 import com.ecom.craftbid.entities.user.User;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.Date;
 
@@ -27,6 +24,19 @@ public class Bid {
     @OneToOne
     private User bidder;
 
-    @ManyToOne
+    @ManyToOne()
+//    @JoinColumn(name = "listing_id")
     private Listing listing;
+
+//    @Override
+//    public boolean equals(Object o) {
+//        if (this == o) return true;
+//        if (!(o instanceof Bid )) return false;
+//        return id != 0 && id == (((Bid) o).getId());
+//    }
+//
+//    @Override
+//    public int hashCode() {
+//        return getClass().hashCode();
+//    }
 }

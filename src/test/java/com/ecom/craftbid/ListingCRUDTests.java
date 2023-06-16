@@ -1,8 +1,10 @@
 package com.ecom.craftbid;
 
+import com.ecom.craftbid.entities.listing.Bid;
 import com.ecom.craftbid.entities.listing.Listing;
 import com.ecom.craftbid.entities.listing.Tag;
 import com.ecom.craftbid.entities.user.User;
+import com.ecom.craftbid.repositories.BidRepository;
 import com.ecom.craftbid.repositories.ListingRepository;
 import com.ecom.craftbid.repositories.TagRepository;
 import com.ecom.craftbid.repositories.UserRepository;
@@ -13,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 
@@ -21,6 +24,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @Slf4j
 @SpringBootTest
 public class ListingCRUDTests {
+    @Autowired
+    private BidRepository bidRepository;
     /* if set to true it clears the whole database before each test */
     static final boolean DEBUG = true;
 
@@ -51,11 +56,10 @@ public class ListingCRUDTests {
         listingRepository.save(car3DListing);
 
         Tag car3DTag = Tag.builder().name("3d printing").build();
-        List<Listing> list = new ArrayList<>(Collections.singletonList(car3DListing));
-        car3DTag.setListings(list);
+        car3DListing.addTag(car3DTag);
         tagRepository.save(car3DTag);
 
-        car3DListing.setTags((Set<Tag>) new HashSet<>(Collections.singletonList(car3DTag)));
+        car3DListing.addTag(car3DTag);
         listingRepository.save(car3DListing);
 
     }
@@ -137,6 +141,46 @@ public class ListingCRUDTests {
         assert listingRepository.findByWinnerId(winner.getId(), pageable).getTotalElements() == 1;
         assertEquals(advertiser.getName(), "Advertiser");
         assertEquals(winner.getName(), "Winner");
+    }
+
+    @Test
+    @Transactional
+    void addBidToListing(){
+        User user = new User();
+        user.setName("user");
+        userRepository.save(user);
+
+        Bid bid = new Bid();
+        bid.setPrice(100);
+        bid.setDescription("I will 3d print you a car");
+        bid.setDaysToDeliver(7);
+        bid.setBidder(user);
+
+        Bid bid2 = new Bid();
+        bid2.setPrice(100);
+        bid2.setDescription("I will 3d print you a car");
+        bid2.setDaysToDeliver(7);
+        bid2.setBidder(user);
+
+        Listing listing = new Listing();
+        listing.setTitle("car 3d printing");
+        listing.setDescription("I will 3d print you a car");
+        listing.setEnded(false);
+        listing.setCreationDate(new java.util.Date(System.currentTimeMillis()));
+        listing.setExpirationDate(new java.util.Date(System.currentTimeMillis() + 7 * 24 * 60 * 60 * 1000));
+        listing.addPhoto("https://www.google.com");
+        listing.setAdvertiser(userRepository.findAll().get(0));
+        Listing after = listingRepository.save(listing);
+
+        listing.addBid(bid);
+        listing.addBid(bid2);
+        listingRepository.save(listing);
+
+        List<Bid> bids = after.getBids();
+        List<Bid> allBids = bidRepository.findAll();
+
+        assert bids.size() == 2;
+
     }
 
 

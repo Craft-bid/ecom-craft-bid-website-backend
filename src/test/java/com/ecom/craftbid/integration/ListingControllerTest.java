@@ -1,12 +1,13 @@
 package com.ecom.craftbid.integration;
 
-import com.ecom.craftbid.dtos.ListingCreateRequest;
-import com.ecom.craftbid.dtos.ListingDTO;
-import com.ecom.craftbid.dtos.ListingUpdateRequest;
+import com.ecom.craftbid.dtos.*;
 import com.ecom.craftbid.entities.listing.Bid;
 import com.ecom.craftbid.entities.listing.Listing;
+import com.ecom.craftbid.entities.listing.Tag;
 import com.ecom.craftbid.entities.user.User;
+import com.ecom.craftbid.repositories.BidRepository;
 import com.ecom.craftbid.repositories.ListingRepository;
+import com.ecom.craftbid.repositories.TagRepository;
 import com.ecom.craftbid.repositories.UserRepository;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -24,10 +25,11 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -43,6 +45,15 @@ public class ListingControllerTest {
 
     @Autowired
     private EntityManager entityManager;
+
+    @Autowired
+    private TagRepository tagRepository;
+
+    @Autowired
+    private BidRepository bidRepository;
+
+    @Autowired
+    private UserRepository userRepository;
 
     @Test
     public void testGetListingById() throws Exception {
@@ -119,7 +130,7 @@ public class ListingControllerTest {
     @Test
     public void testPatchListing() throws Exception {
 
-        Listing listing = createListing();
+        Listing listing = createListingInDatabase();
 
         Listing updatedListing = new Listing();
         updatedListing.setTitle("Updated Title");
@@ -144,7 +155,7 @@ public class ListingControllerTest {
 
     @Test
     public void testPatchListingWinner() throws Exception {
-            Listing listing = createListing();
+            Listing listing = createListingInDatabase();
 
             ListingUpdateRequest updatedListing = new ListingUpdateRequest();
             updatedListing.setWinnerId(1L);
@@ -162,15 +173,121 @@ public class ListingControllerTest {
             assertEquals(1L, updatedListingInDb.getWinner().getId());
     }
 
+    @Test
+    public void testAddTagsToListingThenRemoveOne() throws Exception {
+        long listingId = 1;
+
+        TagDTO tag1 = TagDTO.builder().name("tag1").build();
+        TagDTO tag2 = TagDTO.builder().name("tag2").build();
+
+        List<TagDTO> tags = new ArrayList<>();
+        tags.add(tag1);
+        tags.add(tag2);
+
+        String json = new ObjectMapper().writeValueAsString(tags);
+
+        MvcResult result = mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/private/" + listingId + "/tags")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andReturn();
+
+        String responseContent = result.getResponse().getContentAsString();
+        ListingDTO responseListing = new ObjectMapper().readValue(responseContent, ListingDTO.class);
+
+        assertEquals(tags.size(), responseListing.getTags().size());
+
+        long tagIdToRemove = responseListing.getTags().iterator().next().getId();
+        mockMvc.perform(MockMvcRequestBuilders.delete("/api/v1/private/" + listingId + "/tags/" + tagIdToRemove))
+                .andExpect(MockMvcResultMatchers.status().isOk());
+
+        result = mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/public/listings/" + listingId))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andReturn();
+
+        responseContent = result.getResponse().getContentAsString();
+        responseListing = new ObjectMapper().readValue(responseContent, ListingDTO.class);
+        assertEquals(responseListing.getId(), listingId);
+        assertEquals(tags.size() - 1, responseListing.getTags().size());
+    }
+
+    @Test
+    public void testAddBidToListingAndRemoveIt() throws Exception {
+        Listing listing = createListingInDatabase();
+        long listingId = listing.getId();
+        Bid bid = new Bid();
+        bid.setPrice(100);
+        bid.setDescription("I will 3d print you a car");
+        bid.setDaysToDeliver(7);
+        bid.setBidder(userRepository.findAll().get(0));
+
+        BidCreateRequest bidCreateRequest = BidCreateRequest.fromBid(bid);
+        bidCreateRequest.setListingId(listingId);
+        String json = new ObjectMapper().writeValueAsString(bidCreateRequest);
+
+        MvcResult result = mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/private/" + listingId + "/bids")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andReturn();
+
+
+        String responseContent = result.getResponse().getContentAsString();
+        ListingDTO responseListing = new ObjectMapper().readValue(responseContent, ListingDTO.class);
+
+        assertEquals(2, responseListing.getBids().size());
+
+        mockMvc.perform(MockMvcRequestBuilders.delete("/api/v1/private/" + listingId + "/bids/" + responseListing.getBids().iterator().next().getId()))
+                .andExpect(MockMvcResultMatchers.status().isOk());
+
+        result = mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/public/listings/" + listingId))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andReturn();
+
+        responseContent = result.getResponse().getContentAsString();
+        responseListing = new ObjectMapper().readValue(responseContent, ListingDTO.class);
+        assertEquals(responseListing.getId(), listingId);
+        assertEquals(1, responseListing.getBids().size());
+    }
+
+    private Bid createBidInDatabase(String description, long price, long bidderId, long listingId) {
+        Bid bid = createBid(description, price, bidderId, listingId, 1);
+        return bidRepository.save(bid);
+    }
+
+    private Bid createBid(String description, long price, long bidderId, long listingId, int daysToDeliver) {
+        Bid bid = new Bid();
+        bid.setDescription(description);
+        bid.setPrice(price);
+        Date date = new Date();
+        bid.setCreationDate(date);
+        bid.setDaysToDeliver(daysToDeliver);
+        bid.setBidder(entityManager.getReference(User.class, bidderId));
+        bid.setListing(entityManager.getReference(Listing.class, listingId));
+        return bid;
+    }
+
+    private Tag createTag(String name) {
+        Tag tag = new Tag();
+        tag.setName(name);
+        tag.addListing(entityManager.getReference(Listing.class, 1L));
+
+        return tag;
+    }
+
+    private Listing createListingInDatabase() {
+        Listing listing = createListing();
+        return listingRepository.save(listing);
+    }
+
     private Listing createListing() {
         Listing listing = new Listing();
         listing.setTitle("Test Listing");
         listing.setEnded(false);
         listing.setDescription("Test Description");
         listing.setAdvertiser(entityManager.getReference(User.class, 1L));
-        listing.setBids(List.of(entityManager.getReference(Bid.class, 1L)));
-
-        return listingRepository.save(listing);
+        listing.addBid(entityManager.getReference(Bid.class, 1L));
+        return listing;
     }
 
 }

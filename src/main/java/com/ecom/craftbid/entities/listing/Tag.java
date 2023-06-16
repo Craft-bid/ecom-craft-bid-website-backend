@@ -2,19 +2,16 @@ package com.ecom.craftbid.entities.listing;
 
 import jakarta.annotation.Nonnull;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
+@Entity
 @Data
 @AllArgsConstructor
-@NoArgsConstructor
 @Builder
-@Entity
 public class Tag {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -27,21 +24,36 @@ public class Tag {
             joinColumns = {@JoinColumn(name = "listing_id")},
             inverseJoinColumns = {@JoinColumn(name = "tag_id")})
     @Nonnull
-    private List<Listing> listings = new ArrayList<>();
+    @Setter(value = AccessLevel.NONE)
+    @Singular
+    private final List<Listing> listings = new ArrayList<>();
+
+    public Tag() {
+    }
 
     public void addListing(Listing listing) {
-        if (this.listings == null)
-            this.listings = new ArrayList<>();
-
-        this.listings.add(listing);
-
+        if (!this.listings.contains(listing))
+            this.listings.add(listing);
         if (!listing.getTags().contains(this))
-            listing.getTags().add(this);
+            listing.addTag(this);
     }
+
     public List<Listing> getListings() {
-        if(this.listings == null)
-            this.listings = new ArrayList<>();
         return this.listings;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o)
+            return true;
+        if (!(o instanceof Tag tag))
+            return false;
+        return Objects.equals(getName(), tag.getName());
+    }
+
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
     }
 }
 

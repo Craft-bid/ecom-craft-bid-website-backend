@@ -6,6 +6,9 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -27,11 +30,16 @@ public class TagDTO {
 
     public static List<TagDTO> fromTags(Collection<Tag> tags) {
         if(tags == null)
-            return List.of();
+            return new ArrayList<>();
 
         return tags.stream()
                 .map(TagDTO::fromTag)
                 .collect(Collectors.toList());
     }
 
+    public static Tag toTag(TagDTO tagDTO) {
+        return Tag.builder()
+                .name(tagDTO.getName())
+                .build();
+    }
 }
