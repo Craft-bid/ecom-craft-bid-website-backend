@@ -51,8 +51,8 @@ public class ListingCRUDTests {
                 .ended(false)
                 .creationDate(new java.util.Date(System.currentTimeMillis()))
                 .expirationDate(new java.util.Date(System.currentTimeMillis() + 7 * 24 * 60 * 60 * 1000))
-                .photos(new ArrayList<>(Collections.singletonList("https://www.google.com")))
                 .build();
+        car3DListing.addPhoto("https://i.imgur.com/3d3d.png");
         listingRepository.save(car3DListing);
 
         Tag car3DTag = Tag.builder().name("3d printing").build();
