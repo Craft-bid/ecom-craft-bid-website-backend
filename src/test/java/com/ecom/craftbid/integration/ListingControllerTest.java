@@ -431,6 +431,7 @@ public class ListingControllerTest {
         List<ListingDTO> responseListings = new ObjectMapper().readValue(responseContent, new TypeReference<List<ListingDTO>>() {
         });
 
+        assertNotNull(responseListings);
         for (ListingDTO listing : responseListings) {
             double avg = 0;
             for (BidDTO bid : listing.getBids()) {
