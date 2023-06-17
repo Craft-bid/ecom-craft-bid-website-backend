@@ -1,5 +1,6 @@
 package com.ecom.craftbid.init;
 
+import com.ecom.craftbid.dtos.ListingDTO;
 import com.ecom.craftbid.entities.listing.Bid;
 import com.ecom.craftbid.entities.listing.Listing;
 import com.ecom.craftbid.entities.listing.Tag;
@@ -171,11 +172,13 @@ public class DataInitializer implements CommandLineRunner {
         Tag cnc = createTag("CNCOperating");
         Tag wood = createTag("Woodworking");
         Tag machining = createTag("Machining");
-        Tag polishing = createTag("polishing");
+        Tag polishing = createTag("Polishing");
         Tag metal = createTag("Metalworking");
         Tag eng = createTag("English");
         Tag pl = createTag("Polish");
         Tag ger = createTag("German");
+        Tag fullTime = createTag("Full Time");
+        Tag partTime = createTag("Part Time");
 
         User georgeTheBidder = createUser("george@yahoo.com", "georgy2137", 5, "Hello my name is George. I like to buy things.",
                 "201 W Washington Blvd", "Los Angeles", "USA", "George", "Bidman", "123456789", "CA90007",
@@ -202,6 +205,7 @@ public class DataInitializer implements CommandLineRunner {
         Bid bidJames = createBid(georgeTheBidder, listingJames, 100, "I want one");
         Bid bidJames2 = createBid(pawelKrawczyk, listingJames, 150, "");
         Bid bidJames3 = createBid(georgeTheBidder, listingJames, 200, "");
+        listingRepository.save(listingJames);
 
         /* another listing */
         List<String> photosPawel = new ArrayList<>();
@@ -213,6 +217,7 @@ public class DataInitializer implements CommandLineRunner {
 
         Bid bidPawel = createBid(jamesWilson, listingPawel, 300, "I know i guy who can do it");
         Bid bidPawel2 = createBid(elonProCNC, listingPawel, 600, "Checkout my profile");
+        listingRepository.save(listingPawel);
 
         /* another listing */
         List<String> photosElon = new ArrayList<>();
@@ -222,6 +227,7 @@ public class DataInitializer implements CommandLineRunner {
         listingElon.addTag(eng);
 
         Bid bidElon = createBid(jamesWilson, listingElon, 500, "I create such statues");
+        listingRepository.save(listingElon);
 
         /* another listing */
         List<String> photosGeorge = new ArrayList<>();
@@ -232,6 +238,7 @@ public class DataInitializer implements CommandLineRunner {
         listingGeorge.addTag(eng);
 
         Bid bidGeorge = createBid(elonProCNC, listingGeorge, 5000, "I have one to sell");
+        listingRepository.save(listingGeorge);
 
         /* another listing */
         List<String> photosGeorge2 = new ArrayList<>();
@@ -240,6 +247,7 @@ public class DataInitializer implements CommandLineRunner {
         Listing listingGeorge2 = createListing("Need two sets of metal parts", new Date(System.currentTimeMillis()), "I need someone to provide me with two sets of metal parts, they will look some like the ones from the photos", georgeTheBidder, photosGeorge2);
         listingGeorge2.addTag(metal);
         listingGeorge2.addTag(pl);
+        listingRepository.save(listingGeorge2);
 
         /* another listing */
         List<String> photosJames2 = new ArrayList<>();
@@ -249,6 +257,7 @@ public class DataInitializer implements CommandLineRunner {
         listingJames2.addTag(eng);
 
         Bid bidJames4 = createBid(pawelKrawczyk, listingJames2, 150, "");
+        listingRepository.save(listingJames2);
     }
 
     private User createUser(String mail, String password, double averageRating, String description, String address,
