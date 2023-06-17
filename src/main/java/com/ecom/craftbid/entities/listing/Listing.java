@@ -4,6 +4,8 @@ import com.ecom.craftbid.entities.user.User;
 import jakarta.annotation.Nonnull;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import java.util.*;
 
@@ -29,10 +31,11 @@ public class Listing {
     @Nonnull
     private List<String> photos;
 
-    @OneToMany(mappedBy = "listing", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "listing", cascade = CascadeType.ALL,orphanRemoval = true)
     @Nonnull
     private List<Bid> bids;
     @ManyToOne
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private User advertiser;
     @ManyToOne
     private User winner;

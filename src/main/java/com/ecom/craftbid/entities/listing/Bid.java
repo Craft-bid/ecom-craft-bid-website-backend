@@ -6,6 +6,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import java.util.Date;
 
@@ -25,8 +27,10 @@ public class Bid {
     private long daysToDeliver;
 
     @OneToOne
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private User bidder;
 
     @ManyToOne
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Listing listing;
 }

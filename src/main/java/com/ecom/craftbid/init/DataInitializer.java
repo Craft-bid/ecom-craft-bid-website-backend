@@ -34,8 +34,8 @@ public class DataInitializer implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        initializeUsers();
-        initializeListingsAndBids();
+        //initializeUsers();
+        //initializeListingsAndBids();
         List<Listing> listings = listingRepository.findAll();
         System.out.println("fsfsdfsd");
     }
