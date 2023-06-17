@@ -2,20 +2,20 @@ package com.ecom.craftbid.init;
 
 import com.ecom.craftbid.entities.listing.Bid;
 import com.ecom.craftbid.entities.listing.Listing;
+import com.ecom.craftbid.entities.listing.Tag;
 import com.ecom.craftbid.entities.user.*;
 import com.ecom.craftbid.enums.FeedbackStar;
 import com.ecom.craftbid.enums.Role;
 import com.ecom.craftbid.repositories.BidRepository;
 import com.ecom.craftbid.repositories.ListingRepository;
+import com.ecom.craftbid.repositories.TagRepository;
 import com.ecom.craftbid.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 @Component
 public class DataInitializer implements CommandLineRunner {
@@ -23,24 +23,27 @@ public class DataInitializer implements CommandLineRunner {
     private final UserRepository userRepository;
     private final ListingRepository listingRepository;
     private final BidRepository bidRepository;
+    private final TagRepository tagRepository;
     private final PasswordEncoder passwordEncoder;
     private final FeedbackRepository feedbackRepository;
 
     @Autowired
     public DataInitializer(UserRepository userRepository, ListingRepository listingRepository,
                            BidRepository bidRepository, PasswordEncoder passwordEncoder,
-                           FeedbackRepository feedbackRepository) {
+                           FeedbackRepository feedbackRepository, TagRepository tagRepository) {
         this.userRepository = userRepository;
         this.listingRepository = listingRepository;
         this.bidRepository = bidRepository;
         this.passwordEncoder = passwordEncoder;
         this.feedbackRepository = feedbackRepository;
+        this.tagRepository = tagRepository;
     }
 
     @Override
     public void run(String... args) throws Exception {
         initializeUsers();
         initializeListingsAndBids();
+        initializePopulatedListings();
         System.out.println("Example data initialized");
     }
 
@@ -69,7 +72,6 @@ public class DataInitializer implements CommandLineRunner {
         user2.setProfile(profile2);
 
         profile2.setUser(user2);
-
 
         userRepository.saveAll(Arrays.asList(user1, user2));
 
@@ -116,8 +118,6 @@ public class DataInitializer implements CommandLineRunner {
         user1.addReceivedFeedback(feedback2);
 
         userRepository.saveAll(Arrays.asList(user1, user2));
-
-
     }
 
     private void initializeListingsAndBids() {
@@ -135,7 +135,6 @@ public class DataInitializer implements CommandLineRunner {
                     .build();
             listing1.addPhoto("https://www.kisscom.co.uk/media/pages/news/3d-printing-a-world-of-possibilities/5824bcf0fe-1666776023/blog_31.08.18.png");
             listing1.addPhoto("https://wpvip.edutopia.org/wp-content/uploads/2022/11/shutterstock_1668411985-crop.jpg");
-
 
             Listing listing2 = Listing.builder()
                     .title("Item 2")
@@ -164,5 +163,149 @@ public class DataInitializer implements CommandLineRunner {
 
             bidRepository.saveAll(Arrays.asList(bid1, bid2));
         }
+    }
+
+    private void initializePopulatedListings() {
+        /* universal tags */
+        Tag cnc = createTag("CNCOperating");
+        Tag wood = createTag("Woodworking");
+        Tag machining = createTag("Machining");
+        Tag polishing = createTag("polishing");
+        Tag eng = createTag("English");
+        Tag pl = createTag("Polish");
+        Tag ger = createTag("German");
+
+        User georgeTheBidder = createUser("george@yahoo.com", "georgy2137", 5, "Hello my name is George. I like to buy things.",
+                "201 W Washington Blvd", "Los Angeles", "USA", "George", "Bidman", "123456789", "CA90007",
+                "Great buyer, quick payment", FeedbackStar.FIVE_STARS);
+        User pawelKrawczyk = createUser("pawel.krawczyk@wp.pl", "kraftowyPawel", 5, "Hi I'm Pawel Krawczyk!",
+                "Politechniki 81", "Warszawa", "Poland", "Pawel", "Krawczyk", "123456789", "12-100",
+                "nice", FeedbackStar.FIVE_STARS);
+        User jamesWilson = createUser("james@uk.co", "jamesOneTwo3", 5, "Hello my name is James Wilson. I am professional woodworker and I love to create new things.",
+                "221B Baker Street ", "London", "UK", "James", "Wilson", "123456789", "99-200",
+                "Great seller, would buy again!", FeedbackStar.FIVE_STARS);
+        User elonProCNC = createUser("elon@gmail.com", "elonNowak", 5, "Hello my name is Elon. I am professional CNC operator with 10 years of experience.",
+                "23A Millers", "Brussels", "Belgium", "Elon", "Nowak", "31353142", "29312",
+                "Great products", FeedbackStar.FIVE_STARS);
+
+        /* listing */
+        List<String> photosJames = new ArrayList<>();
+        photosJames.add("https://cdn3.coco-papaya.com/32374-thickbox_default/moai-statue-20cm-in-suar-wood.jpg");
+        photosJames.add("https://img.freepik.com/premium-photo/traditional-wooden-statue-moai-from-easter-island-dark-background_118047-8551.jpg");
+        Listing listingJames = createListing("Wooden statues", new Date(System.currentTimeMillis() - 1000000000), "Commission me to create a wooden statue for you!", jamesWilson, photosJames);
+        listingJames.addTag(wood);
+        listingJames.addTag(polishing);
+        listingJames.addTag(eng);
+
+        Bid bidJames = createBid(georgeTheBidder, listingJames, 100, "I want one");
+        Bid bidJames2 = createBid(pawelKrawczyk, listingJames, 150, "");
+        Bid bidJames3 = createBid(georgeTheBidder, listingJames, 200, "");
+
+        /* another listing */
+        List<String> photosPawel = new ArrayList<>();
+        photosPawel.add("https://p.globalsources.com/IMAGES/PDT/B1188408209/custom-keyboard-for-CNC.jpg");
+        Listing listingPawel = createListing("CNC milling", new Date(System.currentTimeMillis() - 1000000000), "I need someone to machine me a case", pawelKrawczyk, photosPawel);
+        listingPawel.addTag(cnc);
+        listingPawel.addTag(machining);
+        listingPawel.addTag(pl);
+
+        Bid bidPawel = createBid(jamesWilson, listingPawel, 300, "I know i guy who can do it");
+        Bid bidPawel2 = createBid(elonProCNC, listingPawel, 600, "Checkout my profile");
+
+        /* another listing */
+        List<String> photosElon = new ArrayList<>();
+        photosElon.add("https://cdn3.coco-papaya.com/32374-thickbox_default/moai-statue-20cm-in-suar-wood.jpg");
+        Listing listingElon = createListing("Wooden statues", new Date(System.currentTimeMillis() - 2000000), "In need of a wooden statue", elonProCNC, photosElon);
+        listingElon.addTag(wood);
+        listingElon.addTag(eng);
+
+        Bid bidElon = createBid(jamesWilson, listingElon, 500, "I create such statues");
+
+    }
+
+    private User createUser(String mail, String password, double averageRating, String description, String address,
+                            String city, String country, String firstName, String lastName, String number, String zipCode,
+                            String comment, FeedbackStar feedbackStar) {
+        User user = new User();
+        user.setEmail(mail);
+        user.setRole(Role.USER);
+        user.setDisplayName(firstName + " " + lastName);
+        user.setPassword(passwordEncoder.encode(password));
+
+        Profile profile = Profile.builder()
+                .averageRating(averageRating)
+                .description(description)
+                .build();
+        user.setProfile(profile);
+        profile.setUser(user);
+        userRepository.save(user);
+
+        PersonalData personalData = PersonalData.builder()
+                .address(address)
+                .city(city)
+                .country(country)
+                .firstName(firstName)
+                .lastName(lastName)
+                .phoneNumber(number)
+                .zipCode(zipCode)
+                .build();
+        user.getProfile().addPersonalData(personalData);
+        userRepository.save(user);
+
+        Feedback feedback = new Feedback();
+        feedback.setComment(comment);
+        feedback.setStars(feedbackStar);
+        feedback.setAuthor(user.getProfile());
+        feedback.setReceiver(user.getProfile());
+
+        user.addReceivedFeedback(feedback);
+        userRepository.save(user);
+
+        return user;
+    }
+
+    private Tag createTag(String name) {
+        Tag tag = Tag.builder()
+                .name(name)
+                .build();
+        tagRepository.save(tag);
+        
+        return tag;
+    }
+    
+    private Bid createBid(User bidder, Listing listing, int price, String description) {
+        Random random = new Random();
+        Bid bid = Bid.builder()
+                .bidder(bidder)
+                .listing(listing)
+                .price(price)
+                .creationDate(new Date())
+                .description(description)
+                .daysToDeliver(random.nextInt(10))
+                .build();
+        bidRepository.save(bid);
+        
+        return bid;
+    }
+
+
+    private Listing createListing(String title, Date creationDate, String description, User advertiser, List<String> photos) {
+        Listing listing2 = Listing.builder()
+                .title(title)
+                .creationDate(creationDate)
+                .expirationDate(new Date(creationDate.getTime() + 1000000000))
+                .description(description)
+                .advertiser(advertiser)
+                .ended(false)
+                .build();
+        listingRepository.save(listing2);
+
+        if (photos != null) {
+            for (String photo : photos) {
+                listing2.addPhoto(photo);
+            }
+        }
+
+        return listing2;
     }
 }
