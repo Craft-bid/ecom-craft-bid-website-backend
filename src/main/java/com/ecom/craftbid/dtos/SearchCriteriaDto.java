@@ -15,4 +15,6 @@ public class SearchCriteriaDto {
     private List<String> tagNames;
     private Date dateFrom;
     private Date dateTo;
+    private Double minPrice;
+    private Double maxPrice;
 }
