@@ -1,5 +1,6 @@
 package com.ecom.craftbid.utils;
 
+import com.ecom.craftbid.enums.Role;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
@@ -23,7 +24,23 @@ public class TokenParser {
                     .parseClaimsJws(token)
                     .getBody();
 
-            return claims.getSubject();
+            return claims.get("email", String.class);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    static public Role getRoleFromToken(String token, String secretKey) {
+        try {
+            Claims claims = Jwts.parserBuilder()
+                    .setSigningKey(secretKey)
+                    .build()
+                    .parseClaimsJws(token)
+                    .getBody();
+
+            String role = claims.get("role", String.class);
+            return Role.valueOf(role);
         } catch (Exception e) {
             e.printStackTrace();
             return null;
