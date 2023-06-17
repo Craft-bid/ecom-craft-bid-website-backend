@@ -31,7 +31,7 @@ public class BidDTO {
                 .description(bid.getDescription())
                 .creationDate(bid.getCreationDate())
                 .daysToDeliver(bid.getDaysToDeliver())
-                .bidderName(bid.getBidder().getName())
+                .bidderName(bid.getBidder().getDisplayName())
                 .listingId(bid.getListing().getId())
                 .bidderId(bid.getBidder().getId())
                 .build();

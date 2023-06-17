@@ -4,16 +4,14 @@ import com.ecom.craftbid.dtos.AuthenticationRequest;
 import com.ecom.craftbid.dtos.AuthenticationResponse;
 import com.ecom.craftbid.dtos.RegisterRequest;
 import com.ecom.craftbid.entities.Token;
+import com.ecom.craftbid.entities.user.User;
 import com.ecom.craftbid.enums.Role;
 import com.ecom.craftbid.enums.TokenType;
 import com.ecom.craftbid.repositories.TokenRepository;
 import com.ecom.craftbid.repositories.UserRepository;
-import com.ecom.craftbid.services.JwtService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-
-import com.ecom.craftbid.entities.user.User;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -27,12 +25,13 @@ public class AuthenticationService {
     private final AuthenticationManager authenticationManager;
 
     public AuthenticationResponse register(RegisterRequest request) {
-        var user = User.builder()
-                .name(request.getName())
-                .email(request.getEmail())
-                .password(passwordEncoder.encode(request.getPassword()))
-                .role(Role.USER)
-                .build();
+        var user = new User();
+
+        user.setDisplayName(request.getName());
+        user.setEmail(request.getEmail());
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
+        user.setRole(Role.USER);
+
         var savedUser = repository.save(user);
         var jwtToken = jwtService.generateToken(user);
         saveUserToken(savedUser, jwtToken);
@@ -59,13 +58,13 @@ public class AuthenticationService {
     }
 
     private void saveUserToken(User user, String jwtToken) {
-        var token = Token.builder()
-                .user(user)
-                .token(jwtToken)
-                .tokenType(TokenType.BEARER)
-                .expired(false)
-                .revoked(false)
-                .build();
+        var token = new Token();
+        token.setUser(user);
+        token.setToken(jwtToken);
+        token.setTokenType(TokenType.BEARER);
+        token.setExpired(false);
+        token.setRevoked(false);
+
         tokenRepository.save(token);
     }
 

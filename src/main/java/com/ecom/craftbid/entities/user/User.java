@@ -19,19 +19,18 @@ import java.util.Set;
 @NoArgsConstructor
 @Entity
 @Table(name = "_user")
-@Builder
 public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_id")
     private long id;
 
-    private String name;
+    private String displayName;
     private String password;
     @Column(unique = true)
     private String email;
 
-    @OneToOne
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     private Profile profile;
 
     @Enumerated(EnumType.STRING)
@@ -41,6 +40,10 @@ public class User implements UserDetails {
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority(role.name()));
     }
+    public void setProfile(Profile data){
+        this.profile = data;
+    }
+
 
     @Override
     public String getUsername() {
@@ -65,5 +68,9 @@ public class User implements UserDetails {
     @Override
     public boolean isEnabled() {
         return true;
+    }
+
+    public void addReceivedFeedback(Feedback feedback) {
+        this.profile.addReceivedFeedback(feedback);
     }
 }

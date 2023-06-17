@@ -11,7 +11,6 @@ import java.util.Calendar;
 import java.util.Date;
 
 @Data
-@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 public class BidCreateRequest {
@@ -24,13 +23,14 @@ public class BidCreateRequest {
     private Date creationDate = Calendar.getInstance().getTime();
 
     public static BidCreateRequest fromBid(Bid bid) {
-        return BidCreateRequest.builder()
-                .price(bid.getPrice())
-                .description(bid.getDescription())
-                .creationDate(bid.getCreationDate())
-                .daysToDeliver(bid.getDaysToDeliver())
-                .bidderId(bid.getBidder().getId())
-                .build();
+
+        BidCreateRequest bidCreateRequest = new BidCreateRequest();
+        bidCreateRequest.setPrice(bid.getPrice());
+        bidCreateRequest.setDescription(bid.getDescription());
+        bidCreateRequest.setCreationDate(bid.getCreationDate());
+        bidCreateRequest.setDaysToDeliver(bid.getDaysToDeliver());
+        bidCreateRequest.setBidderId(bid.getBidder().getId());
+        return bidCreateRequest;
     }
 
     public Bid toBid() {
