@@ -94,7 +94,8 @@ public class ListingControllerTest {
 
     @Test
     public void testSearchByTitle() throws Exception {
-        String title = "Item 1";
+        Listing listing = createListingInDatabase();
+        String title = listing.getTitle();
 
         MvcResult result = mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/public/listings/search?title=" + title))
                 .andExpect(MockMvcResultMatchers.status().isOk())
@@ -182,7 +183,8 @@ public class ListingControllerTest {
 
     @Test
     public void testAddTagsToListingThenRemoveOne() throws Exception {
-        long listingId = 1;
+        Listing listing = createListingInDatabase();
+        long listingId = listing.getId();
 
         TagDTO tag1 = TagDTO.builder().name("tag1").build();
         TagDTO tag2 = TagDTO.builder().name("tag2").build();
