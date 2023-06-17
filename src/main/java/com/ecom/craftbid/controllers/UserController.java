@@ -17,14 +17,14 @@ public class UserController {
     private UserService userService;
 
     @GetMapping("/public/users")
-    public ResponseEntity<List<User>> getAllUsers() {
-        List<User> users = userService.getAllUsers();
+    public ResponseEntity<List<UserDTO>> getAllUsers() {
+        List<UserDTO> users = userService.getAllUsers();
         return ResponseEntity.ok(users);
     }
 
     @GetMapping("/public/users/{id}")
-    public ResponseEntity<User> getUser(@PathVariable long id) {
-        User user = userService.findById(id);
+    public ResponseEntity<UserDTO> getUser(@PathVariable long id) {
+        UserDTO user = userService.findById(id);
         return ResponseEntity.ok(user);
     }
 
@@ -35,8 +35,8 @@ public class UserController {
     }
 
     @PostMapping("/private/users")
-    public ResponseEntity<User> createUser(@RequestBody User user) {
-        User createdUser = userService.createUser(user);
+    public ResponseEntity<UserDTO> createUser(@RequestBody User user) {
+        UserDTO createdUser = userService.createUser(user);
         return ResponseEntity.ok(createdUser);
     }
 
@@ -47,8 +47,8 @@ public class UserController {
     }
 
     @PutMapping("/private/users/{id}/password")
-    public ResponseEntity<User> updateUserPassword(@PathVariable long id, @RequestBody String password) {
-        User updatedUser = userService.updateUserPassword(id, password);
+    public ResponseEntity<UserDTO> updateUserPassword(@PathVariable long id, @RequestBody String password) {
+        UserDTO updatedUser = userService.updateUserPassword(id, password);
         return ResponseEntity.ok(updatedUser);
     }
 }
