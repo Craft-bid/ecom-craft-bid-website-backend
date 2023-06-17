@@ -37,6 +37,8 @@ public class Profile {
 
     private Double averageRating;
 
+    private String image;
+
     public void addPersonalData(PersonalData data) {
         this.personalData.add(data);
         data.setProfile(this);
