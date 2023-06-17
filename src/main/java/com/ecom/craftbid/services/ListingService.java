@@ -278,19 +278,37 @@ public class ListingService {
         if (minPrice != null && maxPrice != null && minPrice <= maxPrice && minPrice != 0 && maxPrice != 0) {
             spec = spec.and((root, query, criteriaBuilder) -> {
                 Subquery<Double> subquery = query.subquery(Double.class);
-                Root<Listing> subqueryRoot = subquery.from(Listing.class);
-                Join<Listing, Bid> bidJoin = subqueryRoot.join("bids");
-                Expression<Double> averagePriceExpression = criteriaBuilder.avg(bidJoin.get("price"));
-                subquery.select(averagePriceExpression)
-                        .where(criteriaBuilder.equal(subqueryRoot, root))
-                        .groupBy(subqueryRoot);
+                filterByPriceConstruct(root, criteriaBuilder, subquery);
 
                 return criteriaBuilder.between(subquery.getSelection(), minPrice, maxPrice);
+            });
+        } else if (minPrice != null && minPrice >= 0) {
+            spec = spec.and((root, query, criteriaBuilder) -> {
+                Subquery<Double> subquery = query.subquery(Double.class);
+                filterByPriceConstruct(root, criteriaBuilder, subquery);
+
+                return criteriaBuilder.greaterThanOrEqualTo(subquery.getSelection(), minPrice);
+            });
+        } else if (maxPrice != null && maxPrice != 0) {
+            spec = spec.and((root, query, criteriaBuilder) -> {
+                Subquery<Double> subquery = query.subquery(Double.class);
+                filterByPriceConstruct(root, criteriaBuilder, subquery);
+
+                return criteriaBuilder.lessThanOrEqualTo(subquery.getSelection(), maxPrice);
             });
         }
 
         Page<Listing> searchResults = listingRepository.findAll(spec, pageable);
         return searchResults.stream().map(ListingDTO::fromListing).toList();
+    }
+
+    private static void filterByPriceConstruct(Root<Listing> root, CriteriaBuilder criteriaBuilder, Subquery<Double> subquery) {
+        Root<Listing> subqueryRoot = subquery.from(Listing.class);
+        Join<Listing, Bid> bidJoin = subqueryRoot.join("bids");
+        Expression<Double> averagePriceExpression = criteriaBuilder.avg(bidJoin.get("price"));
+        subquery.select(averagePriceExpression)
+                .where(criteriaBuilder.equal(subqueryRoot, root))
+                .groupBy(subqueryRoot);
     }
 
 

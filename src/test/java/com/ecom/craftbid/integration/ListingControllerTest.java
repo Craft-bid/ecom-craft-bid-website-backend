@@ -444,6 +444,49 @@ public class ListingControllerTest {
         }
     }
 
+    @Test
+    public void testSearchByBidAvgMinMaxPrice() throws Exception {
+        double minPrice = 0.0;
+
+        MvcResult result = mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/public/listings/search?minPrice=" + minPrice))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andReturn();
+
+        String responseContent = result.getResponse().getContentAsString();
+        List<ListingDTO> responseListings = new ObjectMapper().readValue(responseContent, new TypeReference<List<ListingDTO>>() {
+        });
+
+        assertNotNull(responseListings);
+        for (ListingDTO listing : responseListings) {
+            double avg = 0;
+            for (BidDTO bid : listing.getBids()) {
+                avg += bid.getPrice();
+            }
+            avg /= listing.getBids().size();
+            assertTrue(avg >= minPrice);
+        }
+
+        double maxPrice = 400.0;
+
+        result = mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/public/listings/search?maxPrice=" + maxPrice))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andReturn();
+
+        responseContent = result.getResponse().getContentAsString();
+        responseListings = new ObjectMapper().readValue(responseContent, new TypeReference<List<ListingDTO>>() {
+        });
+
+        assertNotNull(responseListings);
+        for (ListingDTO listing : responseListings) {
+            double avg = 0;
+            for (BidDTO bid : listing.getBids()) {
+                avg += bid.getPrice();
+            }
+            avg /= listing.getBids().size();
+            assertTrue(avg <= maxPrice);
+        }
+    }
+
     private Listing createListing() {
         Listing listing = new Listing();
         listing.setTitle("Test Listing");
