@@ -290,8 +290,8 @@ public class ListingControllerTest {
     @Test
     public void testAddPhotosAndRemoveOne() throws Exception {
         long listingId = 1L;
+        long photosAddedByDataInit = listingRepository.findById(listingId).orElseThrow().getPhotos().size();
         Listing listing = listingRepository.findById(listingId).orElseThrow();
-        assertEquals(0, listing.getPhotos().size());
 
         MockMultipartFile kraftowyKowal = null;
         MockMultipartFile kraftowaJava = null;
@@ -331,7 +331,7 @@ public class ListingControllerTest {
                 .andReturn();
 
         Listing updatedListing = listingRepository.findById(listingId).orElseThrow();
-        assertEquals(2, updatedListing.getPhotos().size());
+        assertEquals(2 + photosAddedByDataInit, updatedListing.getPhotos().size());
         assertNotNull(updatedListing.getPhotos().get(0));
         assertNotNull(updatedListing.getPhotos().get(1));
 
@@ -345,13 +345,14 @@ public class ListingControllerTest {
                 .andExpect(MockMvcResultMatchers.status().isOk());
 
         Listing photosRemovedListing = listingRepository.findById(listingId).orElseThrow();
-        assertEquals(1, photosRemovedListing.getPhotos().size());
+        assertEquals(1 + photosAddedByDataInit, photosRemovedListing.getPhotos().size());
     }
 
     /* edge case test for the situation when photos list is not null */
     @Test
     public void testAddPhotosOneByOne() throws Exception {
         long listingId = 1L;
+        long photosAddedByDataInit = listingRepository.findById(listingId).orElseThrow().getPhotos().size();
         Listing listing = listingRepository.findById(listingId).orElseThrow();
 
         MockMultipartFile kraftowyKowal = null;
@@ -391,7 +392,7 @@ public class ListingControllerTest {
                 .andReturn();
 
         Listing updatedListing = listingRepository.findById(listingId).orElseThrow();
-        assertEquals(2, updatedListing.getPhotos().size());
+        assertEquals(2 + photosAddedByDataInit, updatedListing.getPhotos().size());
         assertNotNull(updatedListing.getPhotos().get(0));
         assertNotNull(updatedListing.getPhotos().get(1));
 
@@ -405,7 +406,7 @@ public class ListingControllerTest {
                 .andExpect(MockMvcResultMatchers.status().isOk());
 
         Listing photosRemovedListing = listingRepository.findById(listingId).orElseThrow();
-        assertEquals(1, photosRemovedListing.getPhotos().size());
+        assertEquals(1 + photosAddedByDataInit, photosRemovedListing.getPhotos().size());
 
         /* add one again */
         mockMvc.perform(MockMvcRequestBuilders.multipart("/api/v1/private/" + listingId + "/photos")
@@ -414,7 +415,7 @@ public class ListingControllerTest {
                 .andReturn();
 
         photosRemovedListing = listingRepository.findById(listingId).orElseThrow();
-        assertEquals(2, photosRemovedListing.getPhotos().size());
+        assertEquals(2 + photosAddedByDataInit, photosRemovedListing.getPhotos().size());
     }
 
     private Listing createListing() {

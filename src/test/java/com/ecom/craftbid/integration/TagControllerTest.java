@@ -7,7 +7,6 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
-import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -20,7 +19,6 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import java.util.List;
-import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -59,6 +57,7 @@ public class TagControllerTest {
 
     @Test
     public void testGetAllTags() throws Exception {
+        long tagsAddedByDataInit = tagRepository.count();
         addTag("testTag1");
         addTag("testTag2");
 
@@ -70,7 +69,7 @@ public class TagControllerTest {
 
         ObjectMapper mapper = new ObjectMapper();
         List<Tag> responseTags = mapper.readValue(responseContent, new TypeReference<>() {});
-        assertEquals(2, responseTags.size());
+        assertEquals(2 + tagsAddedByDataInit, responseTags.size());
     }
 
     private void addTag(String name) throws Exception {
