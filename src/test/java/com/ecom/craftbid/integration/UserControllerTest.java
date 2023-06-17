@@ -4,11 +4,14 @@ import com.ecom.craftbid.dtos.AuthenticationRequest;
 import com.ecom.craftbid.dtos.AuthenticationResponse;
 import com.ecom.craftbid.dtos.RegisterRequest;
 import com.ecom.craftbid.entities.user.User;
+import com.ecom.craftbid.enums.Role;
 import com.ecom.craftbid.repositories.UserRepository;
 import com.ecom.craftbid.services.AuthenticationService;
 import com.ecom.craftbid.services.UserService;
 import com.ecom.craftbid.utils.TokenParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
@@ -101,5 +104,33 @@ public class UserControllerTest {
 
         String userIdResponse = result.getResponse().getContentAsString();
         assertEquals(userId, Long.parseLong(userIdResponse));
+    }
+
+    @Test
+    public void testGetUserRoleFromToken() throws Exception {
+        String email = "james.wilson@roletest.ca";
+        String password = "james1@role";
+        String username = "jameswilson";
+        RegisterRequest registerRequest = RegisterRequest.builder()
+                .name(username)
+                .email(email)
+                .password(password)
+                .build();
+
+        MvcResult result = mockMvc.perform(post("/api/v1/auth/register")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(registerRequest)))
+                .andExpect(status().isCreated())
+                .andReturn();
+
+        String response = result.getResponse().getContentAsString();
+        AuthenticationResponse authenticationResponse = objectMapper.readValue(response, AuthenticationResponse.class);
+        String token = authenticationResponse.getToken();
+
+        Role role = TokenParser.getRoleFromToken(token, SECRET_KEY);
+        Optional<User> user = userRepository.findByEmail(email);
+        assertNotNull(user);
+        User jamesWilson = user.get();
+        assertEquals(role, jamesWilson.getRole());
     }
 }
