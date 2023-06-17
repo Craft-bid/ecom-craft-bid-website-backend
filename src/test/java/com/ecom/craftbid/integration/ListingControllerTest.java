@@ -418,6 +418,30 @@ public class ListingControllerTest {
         assertEquals(2 + photosAddedByDataInit, photosRemovedListing.getPhotos().size());
     }
 
+    @Test
+    public void testSearchByBidAvgBetween() throws Exception {
+        Double minPrice = 50.0;
+        Double maxPrice = 100.0;
+
+        MvcResult result = mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/public/listings/search?minPrice=" + minPrice + "&maxPrice=" + maxPrice))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andReturn();
+
+        String responseContent = result.getResponse().getContentAsString();
+        List<ListingDTO> responseListings = new ObjectMapper().readValue(responseContent, new TypeReference<List<ListingDTO>>() {
+        });
+
+        assertNotNull(responseListings);
+        for (ListingDTO listing : responseListings) {
+            double avg = 0;
+            for (BidDTO bid : listing.getBids()) {
+                avg += bid.getPrice();
+            }
+            avg /= listing.getBids().size();
+            assertTrue(avg >= minPrice && avg <= maxPrice);
+        }
+    }
+
     private Listing createListing() {
         Listing listing = new Listing();
         listing.setTitle("Test Listing");

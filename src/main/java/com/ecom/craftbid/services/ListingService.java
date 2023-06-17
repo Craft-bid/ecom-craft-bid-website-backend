@@ -11,6 +11,7 @@ import com.ecom.craftbid.repositories.ListingRepository;
 import com.ecom.craftbid.repositories.TagRepository;
 import com.ecom.craftbid.repositories.UserRepository;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.criteria.*;
 import jakarta.transaction.Transactional;
 
 import com.ecom.craftbid.utils.PhotosManager;
@@ -237,6 +238,8 @@ public class ListingService {
         List<String> tagNames = searchRequest.getTagNames();
         Date dateFrom = searchRequest.getDateFrom();
         Date dateTo = searchRequest.getDateTo();
+        Double minPrice = searchRequest.getMinPrice();
+        Double maxPrice = searchRequest.getMaxPrice();
 
         if (title != null && !title.isEmpty()) {
             spec = spec.or((root, query, criteriaBuilder) ->
@@ -270,6 +273,20 @@ public class ListingService {
             spec = spec.and((root, query, criteriaBuilder) ->
                     criteriaBuilder.equal(root.get("expirationDate"), dateTo)
             );
+        }
+
+        if (minPrice != null && maxPrice != null && minPrice <= maxPrice && minPrice != 0 && maxPrice != 0) {
+            spec = spec.and((root, query, criteriaBuilder) -> {
+                Subquery<Double> subquery = query.subquery(Double.class);
+                Root<Listing> subqueryRoot = subquery.from(Listing.class);
+                Join<Listing, Bid> bidJoin = subqueryRoot.join("bids");
+                Expression<Double> averagePriceExpression = criteriaBuilder.avg(bidJoin.get("price"));
+                subquery.select(averagePriceExpression)
+                        .where(criteriaBuilder.equal(subqueryRoot, root))
+                        .groupBy(subqueryRoot);
+
+                return criteriaBuilder.between(subquery.getSelection(), minPrice, maxPrice);
+            });
         }
 
         Page<Listing> searchResults = listingRepository.findAll(spec, pageable);
