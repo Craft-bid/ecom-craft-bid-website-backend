@@ -171,6 +171,7 @@ public class DataInitializer implements CommandLineRunner {
         Tag wood = createTag("Woodworking");
         Tag machining = createTag("Machining");
         Tag polishing = createTag("polishing");
+        Tag metal = createTag("Metalworking");
         Tag eng = createTag("English");
         Tag pl = createTag("Polish");
         Tag ger = createTag("German");
@@ -221,6 +222,32 @@ public class DataInitializer implements CommandLineRunner {
 
         Bid bidElon = createBid(jamesWilson, listingElon, 500, "I create such statues");
 
+        /* another listing */
+        List<String> photosGeorge = new ArrayList<>();
+        photosGeorge.add("https://upload.wikimedia.org/wikipedia/commons/thumb/a/ac/CNC_machine.jpg/1200px-CNC_machine.jpg");
+        Listing listingGeorge = createListing("In need of top CNC machine", new Date(System.currentTimeMillis()), "I need help of experienced cnc machine factory to provide one for my workshop.", georgeTheBidder, photosGeorge);
+        listingGeorge.addTag(cnc);
+        listingGeorge.addTag(machining);
+        listingGeorge.addTag(eng);
+
+        Bid bidGeorge = createBid(elonProCNC, listingGeorge, 5000, "I have one to sell");
+
+        /* another listing */
+        List<String> photosGeorge2 = new ArrayList<>();
+        photosGeorge2.add("https://exn9cid2c47.exactdn.com/wp-content/uploads/2022/03/laser-parts-hero-1-768x562.jpg?strip=all&lossy=1&ssl=1");
+        photosGeorge2.add("https://sendcutsend.com/wp-content/uploads/2022/01/stainless-hero-1.jpg");
+        Listing listingGeorge2 = createListing("Need two sets of metal parts", new Date(System.currentTimeMillis()), "I need someone to provide me with two sets of metal parts, they will look some like the ones from the photos", georgeTheBidder, photosGeorge2);
+        listingGeorge2.addTag(metal);
+        listingGeorge2.addTag(pl);
+
+        /* another listing */
+        List<String> photosJames2 = new ArrayList<>();
+        photosJames2.add("https://bwp.lt/wp-content/uploads/2020/04/4Pcs-Universal-Solid-Home-Table-Feet-Right-Angle-Square-Wooden-DIY-Replacement-Furniture-Leg-Tool-Reliable.jpg");
+        Listing listingJames2 = createListing("Will create wooden furniture legs", new Date(System.currentTimeMillis()), "Willing to create custom furniture legs", jamesWilson, photosJames2);
+        listingJames2.addTag(wood);
+        listingJames2.addTag(eng);
+
+        Bid bidJames4 = createBid(pawelKrawczyk, listingJames2, 150, "");
     }
 
     private User createUser(String mail, String password, double averageRating, String description, String address,
