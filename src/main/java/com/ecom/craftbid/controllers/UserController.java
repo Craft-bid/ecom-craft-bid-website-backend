@@ -1,5 +1,6 @@
 package com.ecom.craftbid.controllers;
 
+import com.ecom.craftbid.dtos.UserDTO;
 import com.ecom.craftbid.entities.user.User;
 import com.ecom.craftbid.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,9 +22,9 @@ public class UserController {
         return ResponseEntity.ok(users);
     }
 
-    @GetMapping("/private/users/{id}")
+    @GetMapping("/public/users/{id}")
     public ResponseEntity<User> getUser(@PathVariable long id) {
-        User user = userService.getUser(id);
+        User user = userService.findById(id);
         return ResponseEntity.ok(user);
     }
 

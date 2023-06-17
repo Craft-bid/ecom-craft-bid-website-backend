@@ -1,5 +1,6 @@
 package com.ecom.craftbid.services;
 
+import com.ecom.craftbid.dtos.UserDTO;
 import com.ecom.craftbid.entities.user.User;
 import com.ecom.craftbid.exceptions.NotFoundException;
 import com.ecom.craftbid.repositories.UserRepository;
@@ -36,6 +37,11 @@ public class UserService {
 
     public User getUser(long id) {
         return findUserById(id);
+    }
+
+    public User findById(long id) {
+        User user = userRepository.findById(id).orElseThrow(NotFoundException::new);
+        return user;
     }
 
     public User createUser(User user) {
