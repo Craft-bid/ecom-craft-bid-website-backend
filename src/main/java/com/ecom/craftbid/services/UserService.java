@@ -3,6 +3,7 @@ package com.ecom.craftbid.services;
 import com.ecom.craftbid.entities.user.User;
 import com.ecom.craftbid.exceptions.NotFoundException;
 import com.ecom.craftbid.repositories.UserRepository;
+import com.ecom.craftbid.utils.TokenParser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -45,5 +46,11 @@ public class UserService {
         user.setPassword(password);
         return userRepository.save(user);
 
+    }
+
+    public Long getMyId(String jwtToken) {
+        String email = TokenParser.getEmailFromToken(jwtToken);
+        User user = userRepository.findByEmail(email).orElseThrow(NotFoundException::new);
+        return user.getId();
     }
 }

@@ -9,81 +9,48 @@ import com.ecom.craftbid.services.AuthenticationService;
 import com.ecom.craftbid.services.UserService;
 import com.ecom.craftbid.utils.TokenParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.persistence.EntityManager;
+import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
-import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@Slf4j
 @SpringBootTest
 @AutoConfigureMockMvc
 @Transactional
-public class AuthenticationControllerTest {
-
+@ActiveProfiles("test")
+public class UserControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
     @Autowired
-    private ObjectMapper objectMapper;
-
-    @MockBean
-    private AuthenticationService authenticationService;
-
-    @MockBean
-    private PasswordEncoder passwordEncoder;
-
-    @Autowired
-    private UserRepository userRepository;
+    private EntityManager entityManager;
 
     @Autowired
     private UserService userService;
 
-    @Test
-    public void testRegister() throws Exception {
-        RegisterRequest registerRequest = RegisterRequest.builder()
-                .name("username")
-                .email("mailmail@mail.com")
-                .password("Password@34")
-                .build();
+    @Autowired
+    private AuthenticationService authenticationService;
 
+    @Autowired
+    private ObjectMapper objectMapper;
 
-        mockMvc.perform(post("/api/v1/auth/register")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(registerRequest)))
-                .andExpect(status().isCreated());
-    }
-
-    @Test
-    public void testAuthenticate() throws Exception {
-        AuthenticationRequest authenticationRequest = new AuthenticationRequest("testuser", "password123");
-        AuthenticationResponse authenticationResponse = new AuthenticationResponse("token123");
-
-        when(authenticationService.authenticate(any(AuthenticationRequest.class))).thenReturn(authenticationResponse);
-
-        mockMvc.perform(post("/api/v1/auth/authenticate")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(authenticationRequest)))
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.token").value("token123"));
-    }
+    @Autowired
+    private UserRepository userRepository;
 
     @Test
     public void testGetUserIdFromToken() throws Exception {
@@ -103,8 +70,6 @@ public class AuthenticationControllerTest {
                         .content(objectMapper.writeValueAsString(registerRequest)))
                 .andExpect(status().isCreated());
 
-        List<User> users = userRepository.findAll();
-
         /* auth the user */
         AuthenticationRequest authenticationRequest = new AuthenticationRequest(username, password);
 
@@ -114,13 +79,12 @@ public class AuthenticationControllerTest {
                 .andExpect(status().isOk())
                 .andReturn();
 
-        String responseContent = result.getResponse().getContentAsString();
-        JSONObject responseObject = new JSONObject(responseContent);
-        String tokenResponse = responseObject.getString("token");
-        assertNotEquals("", tokenResponse);
-
         /* get the user id from the token */
-        String parsedEmail = TokenParser.getEmailFromToken(tokenResponse);
+        String tokenResponse = result.getResponse().getContentAsString();
+        AuthenticationResponse authenticationResponse = objectMapper.readValue(tokenResponse, AuthenticationResponse.class);
+        String tokenFromResponse = authenticationResponse.getToken();
+
+        String parsedEmail = TokenParser.getEmailFromToken(tokenFromResponse);
         assertEquals(email, parsedEmail);
 
         Optional<User> user = userRepository.findByEmail(parsedEmail);
@@ -129,6 +93,6 @@ public class AuthenticationControllerTest {
         Long userId = user.get().getId();
         assertNotNull(userId);
 
-        assertEquals(userId, userService.getMyId(tokenResponse));
+        assertEquals(userId, userService.getMyId(tokenFromResponse));
     }
 }
