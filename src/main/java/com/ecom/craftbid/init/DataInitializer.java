@@ -43,8 +43,8 @@ public class DataInitializer implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        initializeUsers();
-        initializeListingsAndBids();
+        //initializeUsers();
+        //initializeListingsAndBids();
         initializePopulatedListings();
         System.out.println("Example data initialized");
     }
