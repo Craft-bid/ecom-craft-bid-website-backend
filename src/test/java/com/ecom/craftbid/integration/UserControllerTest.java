@@ -14,6 +14,7 @@ import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
@@ -26,6 +27,8 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -34,6 +37,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Transactional
 @ActiveProfiles("test")
 public class UserControllerTest {
+    @Value("${secureTokenSIgnKey}")
+    private String SECRET_KEY;
+
     @Autowired
     private MockMvc mockMvc;
 
@@ -55,7 +61,6 @@ public class UserControllerTest {
     @Test
     public void testGetUserIdFromToken() throws Exception {
         /* register the user */
-        String token = "token69";
         String email = "darthjava@springboot.com";
         String password = "darthjava2137";
         String username = "darthjava";
@@ -65,18 +70,10 @@ public class UserControllerTest {
                 .password(password)
                 .build();
 
-        mockMvc.perform(post("/api/v1/auth/register")
+        MvcResult result = mockMvc.perform(post("/api/v1/auth/register")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(registerRequest)))
-                .andExpect(status().isCreated());
-
-        /* auth the user */
-        AuthenticationRequest authenticationRequest = new AuthenticationRequest(username, password);
-
-        MvcResult result = mockMvc.perform(post("/api/v1/auth/authenticate")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(authenticationRequest)))
-                .andExpect(status().isOk())
+                .andExpect(status().isCreated())
                 .andReturn();
 
         /* get the user id from the token */
@@ -84,7 +81,7 @@ public class UserControllerTest {
         AuthenticationResponse authenticationResponse = objectMapper.readValue(tokenResponse, AuthenticationResponse.class);
         String tokenFromResponse = authenticationResponse.getToken();
 
-        String parsedEmail = TokenParser.getEmailFromToken(tokenFromResponse);
+        String parsedEmail = TokenParser.getEmailFromToken(tokenFromResponse, SECRET_KEY);
         assertEquals(email, parsedEmail);
 
         Optional<User> user = userRepository.findByEmail(parsedEmail);
@@ -94,5 +91,15 @@ public class UserControllerTest {
         assertNotNull(userId);
 
         assertEquals(userId, userService.getMyId(tokenFromResponse));
+
+        /* test endpoint */
+        result = mockMvc.perform(get("/api/v1/public/users/myId")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(tokenFromResponse))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        String userIdResponse = result.getResponse().getContentAsString();
+        assertEquals(userId, Long.parseLong(userIdResponse));
     }
 }

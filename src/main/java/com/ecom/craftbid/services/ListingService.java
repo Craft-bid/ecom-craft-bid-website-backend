@@ -222,6 +222,12 @@ public class ListingService {
         return listings.map(ListingDTO::fromListing);
     }
 
+    public Page<ListingDTO> findAllAdmin(Pageable pageable)
+    {
+        Page<Listing> listings = listingRepository.findAll(pageable);
+        return listings.map(ListingDTO::fromListing);
+    }
+
     public List<ListingDTO> findBySearchCriteria(@ModelAttribute SearchCriteriaDto searchRequest, Pageable pageable) {
         Specification<Listing> spec = Specification.where(null);
 
