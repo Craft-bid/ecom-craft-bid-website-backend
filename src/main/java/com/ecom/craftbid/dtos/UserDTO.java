@@ -24,7 +24,7 @@ public class UserDTO {
     public static UserDTO fromUser(User user) {
         return UserDTO.builder()
                 .id(user.getId())
-                .name(user.getName())
+                .name(user.getDisplayName())
                 .email(user.getEmail())
                 .profile(ProfileDTO.fromProfile(user.getProfile()))
                 .role(user.getRole())

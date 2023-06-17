@@ -57,6 +57,7 @@ public class TagControllerTest {
 
     @Test
     public void testGetAllTags() throws Exception {
+        long tagsAddedByDataInit = tagRepository.count();
         addTag("testTag1");
         addTag("testTag2");
 
@@ -68,7 +69,7 @@ public class TagControllerTest {
 
         ObjectMapper mapper = new ObjectMapper();
         List<Tag> responseTags = mapper.readValue(responseContent, new TypeReference<>() {});
-        assertEquals(2, responseTags.size());
+        assertEquals(2 + tagsAddedByDataInit, responseTags.size());
     }
 
     private void addTag(String name) throws Exception {

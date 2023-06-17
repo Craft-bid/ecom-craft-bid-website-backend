@@ -100,8 +100,8 @@ public class ListingCRUDTests {
     void createAndSetAdvertiserAndWinnerUser() {
         User advertiser = new User();
         User winner = new User();
-        advertiser.setName("Advertiser");
-        winner.setName("Winner");
+        advertiser.setDisplayName("Advertiser");
+        winner.setDisplayName("Winner");
         userRepository.save(advertiser);
         userRepository.save(winner);
 
@@ -123,8 +123,8 @@ public class ListingCRUDTests {
 
         assert listingRepository.findByAdvertiserId(advertiser.getId(), pageable).getTotalElements() == 1;
         assert listingRepository.findByWinnerId(winner.getId(), pageable).getTotalElements() == 1;
-        assertEquals(advertiser.getName(), "Advertiser");
-        assertEquals(winner.getName(), "Winner");
+        assertEquals(advertiser.getDisplayName(), "Advertiser");
+        assertEquals(winner.getDisplayName(), "Winner");
     }
 
     @Test
@@ -139,15 +139,15 @@ public class ListingCRUDTests {
 
         assert listingRepository.findByAdvertiserId(advertiser.getId(), pageable).getTotalElements() == 1;
         assert listingRepository.findByWinnerId(winner.getId(), pageable).getTotalElements() == 1;
-        assertEquals(advertiser.getName(), "Advertiser");
-        assertEquals(winner.getName(), "Winner");
+        assertEquals(advertiser.getDisplayName(), "Advertiser");
+        assertEquals(winner.getDisplayName(), "Winner");
     }
 
     @Test
     @Transactional
     void addBidToListing(){
         User user = new User();
-        user.setName("user");
+        user.setDisplayName("user");
         userRepository.save(user);
 
         Bid bid = new Bid();

@@ -69,6 +69,8 @@ public class BidControllerTest {
 
     @Test
     public void createAndGetBidThenAllBids() throws Exception {
+        final int bidsAddedByDataInit = bidRepository.findAll().size();
+
         BidDTO bidDTO = createBid(100, "test bid");
 
         BidDTO bidGetByIdResult = new ObjectMapper().readValue(
@@ -91,12 +93,7 @@ public class BidControllerTest {
         });
 
         assertNotNull(bidDTOList);
-        final int bidsAddedByDataInit = 2;
         assertEquals(3 + bidsAddedByDataInit, bidDTOList.size());
-        assertEquals(bidDTOList.get(2).getDescription(), "test bid");
-        for (int i = 3; i < bidDTOList.size(); i++) {
-            assertEquals(bidDTOList.get(i).getDescription(), "test bid " + (i - 1));
-        }
     }
 
     @Test

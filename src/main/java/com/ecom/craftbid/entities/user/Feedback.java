@@ -26,8 +26,8 @@ public class Feedback {
 
     @ManyToOne
     @JoinColumn(name = "giver_id")
-    private Profile giver;
+    private Profile author;
 
     private FeedbackStar stars;
-    private String description;
+    private String comment;
 }

@@ -18,17 +18,17 @@ import java.util.stream.Collectors;
 public class FeedbackDTO {
     private long id;
     private ProfileDTO receiver;
-    private ProfileDTO giver;
+    private ProfileDTO author;
     private FeedbackStar stars;
-    private String description;
+    private String comment;
 
     public static FeedbackDTO fromFeedback(Feedback feedback) {
         return FeedbackDTO.builder()
                 .id(feedback.getId())
                 .receiver(ProfileDTO.fromProfile(feedback.getReceiver()))
-                .giver(ProfileDTO.fromProfile(feedback.getGiver()))
+                .author(ProfileDTO.fromProfile(feedback.getAuthor()))
                 .stars(feedback.getStars())
-                .description(feedback.getDescription())
+                .comment(feedback.getComment())
                 .build();
     }
 
