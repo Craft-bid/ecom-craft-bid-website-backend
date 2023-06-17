@@ -1,7 +1,6 @@
 package com.ecom.craftbid.repositories;
 
 import com.ecom.craftbid.entities.listing.Listing;
-import lombok.NonNull;
 import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
