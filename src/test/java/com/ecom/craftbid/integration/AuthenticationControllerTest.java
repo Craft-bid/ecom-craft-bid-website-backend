@@ -3,9 +3,14 @@ package com.ecom.craftbid.integration;
 import com.ecom.craftbid.dtos.AuthenticationRequest;
 import com.ecom.craftbid.dtos.AuthenticationResponse;
 import com.ecom.craftbid.dtos.RegisterRequest;
+import com.ecom.craftbid.entities.user.User;
+import com.ecom.craftbid.repositories.UserRepository;
 import com.ecom.craftbid.services.AuthenticationService;
+import com.ecom.craftbid.services.UserService;
+import com.ecom.craftbid.utils.TokenParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
+import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -14,8 +19,13 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+import java.util.Optional;
+
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -38,6 +48,12 @@ public class AuthenticationControllerTest {
 
     @MockBean
     private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private UserService userService;
 
     @Test
     public void testRegister() throws Exception {

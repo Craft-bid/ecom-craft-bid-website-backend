@@ -13,4 +13,4 @@ spring.jpa.properties.hibernate.dialect = org.hibernate.dialect.PostgreSQLDialec
 spring.jpa.show-sql=true
 spring.jpa.properties.hibernate.format_sql=true
 
-secureTokenSIgnKey=703273357638792F423F4528482B4D6251655468576D5A7133743677397A2443e.dialect.PostgreSQLDialect
+secureTokenSIgnKey=703273357638792F423F4528482B4D6251655468576D5A7133743677397A2443e
