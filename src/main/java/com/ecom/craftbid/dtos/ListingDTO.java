@@ -52,6 +52,10 @@ public class ListingDTO {
     }
 
     private static double calculateAvgBid(List<Bid> bids) {
+        if (bids == null || bids.isEmpty()) {
+            return 0;
+        }
+
     	double sum = 0;
     	for(Bid b : bids) {
     		sum += b.getPrice();
