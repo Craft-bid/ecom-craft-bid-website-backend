@@ -28,7 +28,7 @@ public class UserController {
         return ResponseEntity.ok(user);
     }
 
-    @GetMapping("/public/users/myId")
+    @PostMapping("/public/users/myId")
     public ResponseEntity<Long> getMyId(@RequestBody String jwtToken) {
         Long id = userService.getMyId(jwtToken);
         return ResponseEntity.ok(id);
