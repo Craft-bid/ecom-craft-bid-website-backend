@@ -39,8 +39,7 @@ public class AuthenticationService {
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setRole(Role.USER);
 
-        Profile profile = new Profile();
-        profile.setUser(user);
+        Profile profile = new Profile();;
         profile.setDescription("");
         profile.setAverageRating(5.0);
         profile.setAvatarUri(defaultProfPic);

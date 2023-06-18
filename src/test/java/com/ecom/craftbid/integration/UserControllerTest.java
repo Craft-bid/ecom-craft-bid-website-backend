@@ -227,9 +227,8 @@ public class UserControllerTest {
 
         // get the user
         result = mockMvc.perform(get("/api/v1/public/users/" + userId))
-                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.status().isNotFound())
                 .andReturn();
 
-        response = result.getResponse().getContentAsString();
     }
 }

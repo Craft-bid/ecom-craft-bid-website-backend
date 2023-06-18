@@ -24,9 +24,7 @@ public class Profile {
     @Column(length = 2500)
     private String description;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    private User user;
-    @OneToMany(mappedBy = "profile", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     private final List<PersonalData> personalData = new ArrayList<>();
 
     @OneToMany(mappedBy = "receiver", cascade = CascadeType.ALL, orphanRemoval = true)

@@ -62,7 +62,7 @@ public class DataInitializer implements CommandLineRunner {
         user1.setPassword(passwordEncoder.encode("1234"));
         user1.setProfile(profile1);
 
-        profile1.setUser(user1);
+        user1.setProfile(profile1);
 
         Profile profile2 = new Profile();
         profile2.setAverageRating(4.5);
@@ -74,7 +74,7 @@ public class DataInitializer implements CommandLineRunner {
         user2.setPassword(passwordEncoder.encode("1234"));
         user2.setProfile(profile2);
 
-        profile2.setUser(user2);
+        user2.setProfile(profile2);
 
         userRepository.saveAll(Arrays.asList(user1, user2));
 
@@ -276,7 +276,6 @@ public class DataInitializer implements CommandLineRunner {
                 .avatarUri(defaultProfPic)
                 .build();
         user.setProfile(profile);
-        profile.setUser(user);
         userRepository.save(user);
 
         PersonalData personalData = PersonalData.builder()
