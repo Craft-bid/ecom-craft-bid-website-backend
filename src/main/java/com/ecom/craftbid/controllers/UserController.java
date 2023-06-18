@@ -6,6 +6,7 @@ import com.ecom.craftbid.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -46,6 +47,17 @@ public class UserController {
         return ResponseEntity.noContent().build();
     }
 
+    @PostMapping(path = "/public/users/{userId}/photo")
+    public ResponseEntity<UserDTO> addUserAvatar(@PathVariable long userId, @RequestParam("photo") MultipartFile photo) {
+        UserDTO userDto = userService.addUserAvatar(userId, photo);
+        return ResponseEntity.ok(userDto);
+    }
+
+    @DeleteMapping("/public/users/{userId}/photo")
+    public ResponseEntity<UserDTO> removeUserAvatar(@PathVariable long userId, @RequestParam String photoPath) {
+        UserDTO userDTO = userService.removeUserAvatar(userId, photoPath);
+        return ResponseEntity.ok(userDTO);
+    }
     @PutMapping("/private/users/{id}/password")
     public ResponseEntity<UserDTO> updateUserPassword(@PathVariable long id, @RequestBody String password) {
         UserDTO updatedUser = userService.updateUserPassword(id, password);

@@ -1,8 +1,9 @@
 package com.ecom.craftbid.integration;
 
-import com.ecom.craftbid.dtos.AuthenticationRequest;
+
 import com.ecom.craftbid.dtos.AuthenticationResponse;
 import com.ecom.craftbid.dtos.RegisterRequest;
+import com.ecom.craftbid.dtos.UserDTO;
 import com.ecom.craftbid.entities.user.User;
 import com.ecom.craftbid.enums.Role;
 import com.ecom.craftbid.repositories.UserRepository;
@@ -17,17 +18,24 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
+import org.springframework.util.StreamUtils;
 
+import java.io.IOException;
+import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
@@ -37,7 +45,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class UserControllerTest {
     @Value("${secureTokenSIgnKey}")
     private String SECRET_KEY;
-
     @Autowired
     private MockMvc mockMvc;
 
@@ -127,5 +134,102 @@ public class UserControllerTest {
         assertNotNull(user);
         User jamesWilson = user.get();
         assertEquals(role, jamesWilson.getRole());
+    }
+
+    @Test
+    public void addPhotoToUser() throws Exception {
+        /* register the user */
+        String email = "phototest@test.pl";
+        String password = "photo!@312";
+        String username = "photoTest";
+        RegisterRequest registerRequest = RegisterRequest.builder()
+                .name(username)
+                .email(email)
+                .password(password)
+                .build();
+
+        MvcResult result = mockMvc.perform(post("/api/v1/auth/register")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(registerRequest)))
+                .andExpect(status().isCreated())
+                .andReturn();
+
+        String response = result.getResponse().getContentAsString();
+        AuthenticationResponse authenticationResponse = objectMapper.readValue(response, AuthenticationResponse.class);
+        String token = authenticationResponse.getToken();
+
+        long userId = userService.getMyId(token);
+        User user = userService.getUser(userId);
+        assertNotNull(user);
+
+        /* add photo from resources/test-photos/profile_pic.jpg to the user */
+        /* post to /public/users/{userId}/photo */
+        MockMultipartFile profPic = null;
+        try {
+            ClassPathResource photoResource = new ClassPathResource("test-photos/profile_pic.jpg");
+            byte[] photoBytes = StreamUtils.copyToByteArray(photoResource.getInputStream());
+            profPic = new MockMultipartFile(
+                    "photo",
+                    photoResource.getFilename(),
+                    "image/jpeg",
+                    photoBytes
+            );
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        assertNotNull(profPic);
+
+        MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+        params.add("photo", profPic.getOriginalFilename());
+
+        result = mockMvc.perform(MockMvcRequestBuilders.multipart("/api/v1/public/users/" + userId + "/photo")
+                    .file(profPic)
+                    .params(params))
+            .andExpect(status().isOk())
+            .andReturn();
+
+        UserDTO userDTO = objectMapper.readValue(result.getResponse().getContentAsString(), UserDTO.class);
+        assertNotNull(userDTO);
+
+        User userWithPhoto = userService.getUser(userId);
+        assertNotNull(userWithPhoto);
+        assertNotNull(userWithPhoto.getProfile().getAvatarUri());
+        assertTrue(userWithPhoto.getProfile().getAvatarUri().contains("profile_pic.jpg"));
+    }
+
+    @Test
+    public void testAddUserAndRemoveUser() throws Exception {
+        String email = "test@test.com";
+        String password = "test1234";
+        String username = "test";
+        RegisterRequest registerRequest = RegisterRequest.builder()
+                .name(username)
+                .email(email)
+                .password(password)
+                .build();
+
+        MvcResult result = mockMvc.perform(post("/api/v1/auth/register")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(registerRequest)))
+                .andExpect(status().isCreated())
+                .andReturn();
+
+        String response = result.getResponse().getContentAsString();
+        AuthenticationResponse authenticationResponse = objectMapper.readValue(response, AuthenticationResponse.class);
+        String token = authenticationResponse.getToken();
+
+        long userId = userService.getMyId(token);
+        List<User> users = userRepository.findAll();
+
+        mockMvc.perform(delete("/api/v1/private/users/" + userId))
+                .andExpect(MockMvcResultMatchers.status().isNoContent())
+                .andReturn();
+
+        // get the user
+        result = mockMvc.perform(get("/api/v1/public/users/" + userId))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andReturn();
+
+        response = result.getResponse().getContentAsString();
     }
 }

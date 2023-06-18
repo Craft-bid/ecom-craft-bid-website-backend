@@ -3,17 +3,23 @@ package com.ecom.craftbid.services;
 import com.ecom.craftbid.dtos.ListingDTO;
 import com.ecom.craftbid.dtos.UserDTO;
 import com.ecom.craftbid.entities.listing.Listing;
+import com.ecom.craftbid.dtos.ListingDTO;
+import com.ecom.craftbid.dtos.UserDTO;
+import com.ecom.craftbid.entities.user.Profile;
 import com.ecom.craftbid.entities.user.User;
 import com.ecom.craftbid.exceptions.NotFoundException;
 import com.ecom.craftbid.repositories.ListingRepository;
+import com.ecom.craftbid.repositories.ProfileRepository;
 import com.ecom.craftbid.repositories.UserRepository;
 import com.ecom.craftbid.utils.TokenParser;
+import com.ecom.craftbid.utils.PhotosManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -27,6 +33,8 @@ public class UserService {
     private UserRepository userRepository;
     @Autowired
     private ListingRepository listingRepository;
+    @Autowired
+    private ProfileRepository profileRepository;
 
     protected User findUserById(long userId) throws NotFoundException {
         return userRepository.findById(userId)
@@ -36,7 +44,7 @@ public class UserService {
     public List<UserDTO> getAllUsers() {
         List<User> users = userRepository.findAll();
         List<UserDTO> userDTOS = UserDTO.fromUsers(users);
-        
+
         for (UserDTO userDTO : userDTOS) {
             setUserDTOListings(userDTO);
             setUserDTOWorkedIn(userDTO);
@@ -79,7 +87,7 @@ public class UserService {
     }
 
     public UserDTO updateUserPassword(long id, String password) {
-        User user = userRepository.findById(id).orElseThrow(NotFoundException::new);
+        User user = findUserById(id);
 
         user.setPassword(password);
         userRepository.save(user);
@@ -120,5 +128,21 @@ public class UserService {
         }
 
         return count;
+    }
+
+    public UserDTO addUserAvatar(long userId, MultipartFile photo) {
+        User user = findUserById(userId);
+        String addedPhoto = PhotosManager.saveUserAvatar(photo, userId);
+
+        Profile profile = user.getProfile();
+        profile.setAvatarUri(addedPhoto);
+        user.setProfile(profile);
+
+        userRepository.save(user);
+        return UserDTO.fromUser(user);
+    }
+
+    public UserDTO removeUserAvatar(long userId, String photoPath) {
+        throw new RuntimeException("Not implemented");
     }
 }

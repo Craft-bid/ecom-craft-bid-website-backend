@@ -21,6 +21,7 @@ import java.util.*;
 
 @Component
 public class DataInitializer implements CommandLineRunner {
+    private final String defaultProfPic = "https://icon-library.com/images/default-profile-icon/default-profile-icon-24.jpg";
 
     private final UserRepository userRepository;
     private final ListingRepository listingRepository;
@@ -272,6 +273,7 @@ public class DataInitializer implements CommandLineRunner {
         Profile profile = Profile.builder()
                 .averageRating(averageRating)
                 .description(description)
+                .avatarUri(defaultProfPic)
                 .build();
         user.setProfile(profile);
         profile.setUser(user);

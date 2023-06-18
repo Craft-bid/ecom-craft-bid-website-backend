@@ -4,12 +4,15 @@ import com.ecom.craftbid.dtos.AuthenticationRequest;
 import com.ecom.craftbid.dtos.AuthenticationResponse;
 import com.ecom.craftbid.dtos.RegisterRequest;
 import com.ecom.craftbid.entities.Token;
+import com.ecom.craftbid.entities.user.Profile;
 import com.ecom.craftbid.entities.user.User;
 import com.ecom.craftbid.enums.Role;
 import com.ecom.craftbid.enums.TokenType;
+import com.ecom.craftbid.repositories.ProfileRepository;
 import com.ecom.craftbid.repositories.TokenRepository;
 import com.ecom.craftbid.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -24,6 +27,10 @@ public class AuthenticationService {
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
 
+    @Autowired
+    private ProfileRepository profileRepository;
+    private final String defaultProfPic = "https://icon-library.com/images/default-profile-icon/default-profile-icon-24.jpg";
+
     public AuthenticationResponse register(RegisterRequest request) {
         var user = new User();
 
@@ -31,6 +38,14 @@ public class AuthenticationService {
         user.setEmail(request.getEmail());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setRole(Role.USER);
+
+        Profile profile = new Profile();
+        profile.setUser(user);
+        profile.setDescription("");
+        profile.setAverageRating(5.0);
+        profile.setAvatarUri(defaultProfPic);
+        profile.setImage(defaultProfPic);
+        user.setProfile(profile);
 
         var savedUser = repository.save(user);
         var jwtToken = jwtService.generateToken(user);
