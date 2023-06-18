@@ -14,7 +14,7 @@ import java.util.List;
 public class PhotosManager {
 
     // TODO: probably transfer to application.properties as: assets-dir=
-    private final static String PHOTOS_PATH = "/assets/photos/";
+    private final static String PHOTOS_PATH = "assets/photos/";
 
     /**
      * Save photo filename is constructed as follows:

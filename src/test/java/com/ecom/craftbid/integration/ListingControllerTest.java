@@ -301,7 +301,7 @@ public class ListingControllerTest {
             ClassPathResource photoResource = new ClassPathResource("test-photos/kraftowy_kowal.jpg");
             byte[] photoBytes = StreamUtils.copyToByteArray(photoResource.getInputStream());
             kraftowyKowal = new MockMultipartFile(
-                    "assets/photos",
+                    "photos",
                     photoResource.getFilename(),
                     "image/jpeg",
                     photoBytes
@@ -310,7 +310,7 @@ public class ListingControllerTest {
             photoResource = new ClassPathResource("test-photos/kraftowa_java.jpg");
             photoBytes = StreamUtils.copyToByteArray(photoResource.getInputStream());
             kraftowaJava = new MockMultipartFile(
-                    "assets/photos",
+                    "photos",
                     photoResource.getFilename(),
                     "image/jpeg",
                     photoBytes
@@ -322,10 +322,10 @@ public class ListingControllerTest {
         assertNotNull(kraftowaJava);
 
         MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
-        params.add("assets/photos", kraftowyKowal.getOriginalFilename());
-        params.add("assets/photos", kraftowaJava.getOriginalFilename());
+        params.add("photos", kraftowyKowal.getOriginalFilename());
+        params.add("photos", kraftowaJava.getOriginalFilename());
 
-        MvcResult result = mockMvc.perform(MockMvcRequestBuilders.multipart("/api/v1/private/" + listingId + "/assets/photos")
+        MvcResult result = mockMvc.perform(MockMvcRequestBuilders.multipart("/api/v1/private/" + listingId + "/photos")
                         .file(kraftowyKowal)
                         .file(kraftowaJava)
                         .params(params))
@@ -342,7 +342,7 @@ public class ListingControllerTest {
         Collection<String> responsePhotos = responseListings.getPhotos();
 
         /* Remove photos */
-        mockMvc.perform(MockMvcRequestBuilders.delete("/api/v1/private/" + listingId + "/assets/photos")
+        mockMvc.perform(MockMvcRequestBuilders.delete("/api/v1/private/" + listingId + "/photos")
                         .param("photoPath", responsePhotos.iterator().next()))
                 .andExpect(MockMvcResultMatchers.status().isOk());
 
@@ -363,7 +363,7 @@ public class ListingControllerTest {
             ClassPathResource photoResource = new ClassPathResource("test-photos/kraftowy_kowal.jpg");
             byte[] photoBytes = StreamUtils.copyToByteArray(photoResource.getInputStream());
             kraftowyKowal = new MockMultipartFile(
-                    "assets/photos",
+                    "photos",
                     photoResource.getFilename(),
                     "image/jpeg",
                     photoBytes
@@ -372,7 +372,7 @@ public class ListingControllerTest {
             photoResource = new ClassPathResource("test-photos/kraftowa_java.jpg");
             photoBytes = StreamUtils.copyToByteArray(photoResource.getInputStream());
             kraftowaJava = new MockMultipartFile(
-                    "assets/photos",
+                    "photos",
                     photoResource.getFilename(),
                     "image/jpeg",
                     photoBytes
@@ -383,12 +383,12 @@ public class ListingControllerTest {
         assertNotNull(kraftowyKowal);
         assertNotNull(kraftowaJava);
 
-        mockMvc.perform(MockMvcRequestBuilders.multipart("/api/v1/private/" + listingId + "/assets/photos")
+        mockMvc.perform(MockMvcRequestBuilders.multipart("/api/v1/private/" + listingId + "/photos")
                         .file(kraftowyKowal))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andReturn();
 
-        MvcResult result = mockMvc.perform(MockMvcRequestBuilders.multipart("/api/v1/private/" + listingId + "/assets/photos")
+        MvcResult result = mockMvc.perform(MockMvcRequestBuilders.multipart("/api/v1/private/" + listingId + "/photos")
                         .file(kraftowaJava))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andReturn();
@@ -403,7 +403,7 @@ public class ListingControllerTest {
         Collection<String> responsePhotos = responseListings.getPhotos();
 
         /* Remove photos */
-        mockMvc.perform(MockMvcRequestBuilders.delete("/api/v1/private/" + listingId + "/assets/photos")
+        mockMvc.perform(MockMvcRequestBuilders.delete("/api/v1/private/" + listingId + "/photos")
                         .param("photoPath", responsePhotos.iterator().next()))
                 .andExpect(MockMvcResultMatchers.status().isOk());
 
@@ -411,7 +411,7 @@ public class ListingControllerTest {
         assertEquals(1 + photosAddedByDataInit, photosRemovedListing.getPhotos().size());
 
         /* add one again */
-        mockMvc.perform(MockMvcRequestBuilders.multipart("/api/v1/private/" + listingId + "/assets/photos")
+        mockMvc.perform(MockMvcRequestBuilders.multipart("/api/v1/private/" + listingId + "/photos")
                         .file(kraftowyKowal))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andReturn();
