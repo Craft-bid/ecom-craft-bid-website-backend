@@ -60,8 +60,6 @@ public class UserController {
 
     @DeleteMapping("/private/{userId}/photo")
     public ResponseEntity<UserDTO> removePhotoFromListing(@PathVariable long userId, @RequestParam String photoPath) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
         UserDTO userDTO = userService.removeUserAvatar(userId, photoPath);
         return ResponseEntity.ok(userDTO);
     }

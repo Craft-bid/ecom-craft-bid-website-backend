@@ -3,6 +3,8 @@ package com.ecom.craftbid.utils;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
@@ -12,7 +14,7 @@ import java.util.List;
 public class PhotosManager {
 
     // TODO: probably transfer to application.properties as: assets-dir=
-    private final static String PHOTOS_PATH = "assets/photos/";
+    private final static String PHOTOS_PATH = "/assets/photos/";
 
     /**
      * Save photo filename is constructed as follows:
@@ -68,5 +70,9 @@ public class PhotosManager {
                     + ". Please try again!", e);
         }
 
+    }
+
+    public static InputStream loadPhoto(String filename) throws IOException {
+        return PhotosManager.class.getResourceAsStream(PHOTOS_PATH + filename);
     }
 }
