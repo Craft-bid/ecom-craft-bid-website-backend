@@ -21,13 +21,14 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
@@ -127,5 +128,40 @@ public class UserControllerTest {
         assertNotNull(user);
         User jamesWilson = user.get();
         assertEquals(role, jamesWilson.getRole());
+    }
+
+    @Test
+    public void testAddUserAndRemoveUser() throws Exception {
+        String email = "test@test.com";
+        String password = "test1234";
+        String username = "test";
+        RegisterRequest registerRequest = RegisterRequest.builder()
+                .name(username)
+                .email(email)
+                .password(password)
+                .build();
+
+        MvcResult result = mockMvc.perform(post("/api/v1/auth/register")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(registerRequest)))
+                .andExpect(status().isCreated())
+                .andReturn();
+
+        String response = result.getResponse().getContentAsString();
+        AuthenticationResponse authenticationResponse = objectMapper.readValue(response, AuthenticationResponse.class);
+        String token = authenticationResponse.getToken();
+
+        long userId = userService.getMyId(token);
+
+        mockMvc.perform(delete("/api/v1/private/users/" + userId))
+                .andExpect(MockMvcResultMatchers.status().isNoContent())
+                .andReturn();
+
+        // get the user
+        result = mockMvc.perform(get("/api/v1/public/users"))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andReturn();
+
+        response = result.getResponse().getContentAsString();
     }
 }
