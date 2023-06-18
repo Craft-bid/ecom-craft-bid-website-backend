@@ -45,6 +45,7 @@ public class UserDTO {
             personalData = personalDataList.get(0);
 
         String lastName = personalData != null ? personalData.getLastName() : null;
+        String name = personalData != null ? personalData.getFirstName() : null;
         String country = personalData != null ? personalData.getCountry() : null;
         String city = personalData != null ? personalData.getCity() : null;
         Double averageRating = profile != null ? profile.getAverageRating() : null;
@@ -56,7 +57,7 @@ public class UserDTO {
 
         return UserDTO.builder()
                 .id(user.getId())
-                .name(user.getDisplayName())
+                .name(user.getProfile() != null ? name : null)
                 .email(user.getEmail())
                 .image(user.getProfile() != null ? user.getProfile().getAvatarUri() : null)
                 .role(user.getRole())
