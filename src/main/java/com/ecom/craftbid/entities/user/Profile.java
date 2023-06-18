@@ -35,6 +35,9 @@ public class Profile {
     @OneToMany(mappedBy = "author", cascade = CascadeType.ALL, orphanRemoval = true)
     private final List<Feedback> givenFeedback = new ArrayList<>();
 
+    @Column(name = "avatar_uri")
+    private String avatarUri;
+
     private Double averageRating;
 
     private String image;

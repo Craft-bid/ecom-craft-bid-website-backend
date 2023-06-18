@@ -165,7 +165,7 @@ public class ListingService {
     public ListingDTO addPhotosToListing(long listingId, MultipartFile[] photos) {
         Listing listing = findListingById(listingId);
 
-        List<String> addedPhotosPaths = PhotosManager.saveFiles(photos, listing.getTitle(), listing.getId());
+        List<String> addedPhotosPaths = PhotosManager.saveFiles(photos, listing.getId());
         listing.getPhotos().addAll(addedPhotosPaths);
 
         return saveAndReturnListingDTO(listing);

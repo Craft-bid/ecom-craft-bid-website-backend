@@ -1,6 +1,6 @@
 package com.ecom.craftbid.integration;
 
-import com.ecom.craftbid.dtos.AuthenticationRequest;
+
 import com.ecom.craftbid.dtos.AuthenticationResponse;
 import com.ecom.craftbid.dtos.RegisterRequest;
 import com.ecom.craftbid.entities.user.User;
@@ -18,10 +18,18 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+import org.springframework.web.context.WebApplicationContext;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -37,7 +45,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class UserControllerTest {
     @Value("${secureTokenSIgnKey}")
     private String SECRET_KEY;
-
     @Autowired
     private MockMvc mockMvc;
 
@@ -127,5 +134,26 @@ public class UserControllerTest {
         assertNotNull(user);
         User jamesWilson = user.get();
         assertEquals(role, jamesWilson.getRole());
+    }
+
+    @Test
+    public void addPhotosToListing_WithValidUser_ShouldReturnOk() throws Exception {
+        // Prepare the test file
+        Path file = Paths.get("testfile.jpg");
+        Files.write(file, "Test file content".getBytes());
+
+        // Prepare the request
+        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders
+                .multipart("/private/users/1/photo")
+                .file("photo", Files.readAllBytes(file))
+                .contentType(MediaType.MULTIPART_FORM_DATA_VALUE);
+
+        // Perform the request
+        mockMvc.perform(requestBuilder)
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.name").value("John Doe"));
+
+        // Clean up the test file
+        Files.deleteIfExists(file);
     }
 }

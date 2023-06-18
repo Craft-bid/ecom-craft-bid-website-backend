@@ -20,10 +20,12 @@ public class ProfileDTO {
     private List<FeedbackDTO> receivedFeedback;
     private List<FeedbackDTO> givenFeedback;
     private Double averageRating;
+    private String avatarUri;
 
     public static ProfileDTO fromProfile(Profile profile) {
         return ProfileDTO.builder()
                 .id(profile.getId())
+                .avatarUri(profile.getAvatarUri())
                 .description(profile.getDescription())
                 .personalData(PersonalDataDTO.fromPersonalDataList(profile.getPersonalData()))
                 .receivedFeedback(FeedbackDTO.fromFeedbackList(profile.getReceivedFeedback()))
