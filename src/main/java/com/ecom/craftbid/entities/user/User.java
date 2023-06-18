@@ -31,7 +31,7 @@ public class User implements UserDetails {
     private String email;
 
     @JsonIgnore
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private Profile profile;
 
     @Enumerated(EnumType.STRING)

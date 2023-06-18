@@ -5,9 +5,11 @@ import com.ecom.craftbid.dtos.UserDTO;
 import com.ecom.craftbid.entities.listing.Listing;
 import com.ecom.craftbid.dtos.ListingDTO;
 import com.ecom.craftbid.dtos.UserDTO;
+import com.ecom.craftbid.entities.user.Profile;
 import com.ecom.craftbid.entities.user.User;
 import com.ecom.craftbid.exceptions.NotFoundException;
 import com.ecom.craftbid.repositories.ListingRepository;
+import com.ecom.craftbid.repositories.ProfileRepository;
 import com.ecom.craftbid.repositories.UserRepository;
 import com.ecom.craftbid.utils.TokenParser;
 import com.ecom.craftbid.utils.PhotosManager;
@@ -31,6 +33,8 @@ public class UserService {
     private UserRepository userRepository;
     @Autowired
     private ListingRepository listingRepository;
+    @Autowired
+    private ProfileRepository profileRepository;
 
     protected User findUserById(long userId) throws NotFoundException {
         return userRepository.findById(userId)
@@ -130,7 +134,10 @@ public class UserService {
         User user = findUserById(userId);
         String addedPhoto = PhotosManager.saveUserAvatar(photo, userId);
 
-        user.getProfile().setAvatarUri(addedPhoto);
+        Profile profile = user.getProfile();
+        profile.setAvatarUri(addedPhoto);
+        user.setProfile(profile);
+
         userRepository.save(user);
         return UserDTO.fromUser(user);
     }

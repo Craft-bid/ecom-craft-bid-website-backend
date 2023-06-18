@@ -39,7 +39,10 @@ public class UserDTO {
 
     public static UserDTO fromUser(User user) {
         Profile profile = user.getProfile();
-        PersonalData personalData = profile != null ? profile.getPersonalData().get(0) : null;
+        List<PersonalData> personalDataList = profile != null ? profile.getPersonalData() : null;
+        PersonalData personalData = null;
+        if (personalDataList != null && personalDataList.size() >= 1)
+            personalData = personalDataList.get(0);
 
         String lastName = personalData != null ? personalData.getLastName() : null;
         String country = personalData != null ? personalData.getCountry() : null;
@@ -55,7 +58,7 @@ public class UserDTO {
                 .id(user.getId())
                 .name(user.getDisplayName())
                 .email(user.getEmail())
-                .image(user.getProfile() != null ? user.getProfile().getImage() : null)
+                .image(user.getProfile() != null ? user.getProfile().getAvatarUri() : null)
                 .role(user.getRole())
                 .surname(user.getProfile() != null ? lastName : null)
                 .country(user.getProfile() != null ? country : null)
@@ -66,6 +69,7 @@ public class UserDTO {
                 .aboutMe(aboutMe)
                 .joined(joined)
                 .averageRating(averageRating != null ? averageRating.longValue() : 0)
+                .listings(new ArrayList<>())
                 .build();
     }
 

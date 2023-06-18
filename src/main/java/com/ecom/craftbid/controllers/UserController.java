@@ -47,7 +47,7 @@ public class UserController {
         return ResponseEntity.noContent().build();
     }
 
-    @PostMapping(path = "/public/users/{id}/photo")
+    @PostMapping(path = "/public/users/{userId}/photo")
     public ResponseEntity<UserDTO> addUserAvatar(@PathVariable long userId, @RequestParam("photo") MultipartFile photo) {
         UserDTO userDto = userService.addUserAvatar(userId, photo);
         return ResponseEntity.ok(userDto);
