@@ -5,24 +5,15 @@ import com.ecom.craftbid.entities.listing.Bid;
 import com.ecom.craftbid.entities.listing.Listing;
 import com.ecom.craftbid.entities.listing.Tag;
 import com.ecom.craftbid.entities.user.User;
-import com.ecom.craftbid.repositories.BidRepository;
-import com.ecom.craftbid.repositories.ListingRepository;
-import com.ecom.craftbid.repositories.TagRepository;
-import com.ecom.craftbid.repositories.UserRepository;
+import com.ecom.craftbid.init.DataInitializer;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import jakarta.persistence.EntityManager;
-import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
@@ -30,37 +21,15 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.util.StreamUtils;
 
-import java.util.ArrayList;
-import java.util.Date;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@SpringBootTest
-@AutoConfigureMockMvc
-@Transactional
-@ActiveProfiles("test")
-public class ListingControllerTest {
-
-    @Autowired
-    private MockMvc mockMvc;
-
-    @Autowired
-    private ListingRepository listingRepository;
-
-    @Autowired
-    private EntityManager entityManager;
-
-    @Autowired
-    private TagRepository tagRepository;
-
-    @Autowired
-    private BidRepository bidRepository;
-
-    @Autowired
-    private UserRepository userRepository;
+public class ListingControllerTest extends BaseIntegrationTest {
 
     @Test
     public void testGetListingById() throws Exception {
@@ -94,7 +63,8 @@ public class ListingControllerTest {
 
     @Test
     public void testSearchByTitle() throws Exception {
-        Listing listing = createListingInDatabase();
+        Listing listing = listingRepository.findAll().get(0);
+
         String title = listing.getTitle();
 
         MvcResult result = mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/public/listings/search?title=" + title))
@@ -105,7 +75,8 @@ public class ListingControllerTest {
         List<ListingDTO> responseListings = new ObjectMapper().readValue(responseContent, new TypeReference<List<ListingDTO>>() {
         });
 
-        assertEquals(1, responseListings.size());
+        int expectedSize = (int) listingRepository.findAll().stream().filter(l -> l.getTitle().equals(title)).count();
+        assertEquals(expectedSize, responseListings.size());
         assertEquals(title, responseListings.get(0).getTitle());
     }
 
@@ -138,7 +109,7 @@ public class ListingControllerTest {
     @Test
     public void testPatchListing() throws Exception {
 
-        Listing listing = createListingInDatabase();
+        Listing listing = listingRepository.findAll().get(0);
 
         Listing updatedListing = new Listing();
         updatedListing.setTitle("Updated Title");
@@ -163,27 +134,27 @@ public class ListingControllerTest {
 
     @Test
     public void testPatchListingWinner() throws Exception {
-            Listing listing = createListingInDatabase();
+        Listing listing = listingRepository.findAll().get(0);
 
-            ListingUpdateRequest updatedListing = new ListingUpdateRequest();
-            updatedListing.setWinnerId(1L);
-            updatedListing.setEnded(true);
+        ListingUpdateRequest updatedListing = new ListingUpdateRequest();
+        updatedListing.setWinnerId(1L);
+        updatedListing.setEnded(true);
 
-            ObjectMapper objectMapper = new ObjectMapper();
-            String requestContent = objectMapper.writeValueAsString(updatedListing);
+        ObjectMapper objectMapper = new ObjectMapper();
+        String requestContent = objectMapper.writeValueAsString(updatedListing);
 
-            mockMvc.perform(MockMvcRequestBuilders.patch("/api/v1/private/listings/{id}", listing.getId())
-                            .contentType(MediaType.APPLICATION_JSON)
-                            .content(requestContent))
-                    .andExpect(MockMvcResultMatchers.status().isOk());
+        mockMvc.perform(MockMvcRequestBuilders.patch("/api/v1/private/listings/{id}", listing.getId())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestContent))
+                .andExpect(MockMvcResultMatchers.status().isOk());
 
-            Listing updatedListingInDb = listingRepository.findById(listing.getId()).orElseThrow();
-            assertEquals(1L, updatedListingInDb.getWinner().getId());
+        Listing updatedListingInDb = listingRepository.findById(listing.getId()).orElseThrow();
+        assertEquals(1L, updatedListingInDb.getWinner().getId());
     }
 
     @Test
     public void testAddTagsToListingThenRemoveOne() throws Exception {
-        Listing listing = createListingInDatabase();
+        Listing listing = listingRepository.findAll().get(0);
         long listingId = listing.getId();
 
         TagDTO tag1 = TagDTO.builder().name("tag1").build();
@@ -204,9 +175,10 @@ public class ListingControllerTest {
         String responseContent = result.getResponse().getContentAsString();
         ListingDTO responseListing = new ObjectMapper().readValue(responseContent, ListingDTO.class);
 
-        assertEquals(tags.size(), responseListing.getTags().size());
+        assertEquals(listing.getTags().size(), responseListing.getTags().size());
 
         long tagIdToRemove = responseListing.getTags().iterator().next().getId();
+        int tagCountBeforeDelete = responseListing.getTags().size();
         mockMvc.perform(MockMvcRequestBuilders.delete("/api/v1/private/" + listingId + "/tags/" + tagIdToRemove))
                 .andExpect(MockMvcResultMatchers.status().isOk());
 
@@ -217,12 +189,13 @@ public class ListingControllerTest {
         responseContent = result.getResponse().getContentAsString();
         responseListing = new ObjectMapper().readValue(responseContent, ListingDTO.class);
         assertEquals(responseListing.getId(), listingId);
-        assertEquals(tags.size() - 1, responseListing.getTags().size());
+        assertEquals( tagCountBeforeDelete - 1, responseListing.getTags().size());
     }
 
     @Test
+    @WithMockUser(username = DataInitializer.TESTING_USER2_EMAIL, roles = "USER")
     public void testAddBidToListingAndRemoveIt() throws Exception {
-        Listing listing = createListingInDatabase();
+        Listing listing = listingRepository.findAll().get(0);
         long listingId = listing.getId();
         Bid bid = new Bid();
         bid.setPrice(100);
@@ -234,6 +207,8 @@ public class ListingControllerTest {
         bidCreateRequest.setListingId(listingId);
         String json = new ObjectMapper().writeValueAsString(bidCreateRequest);
 
+        // bid count before
+        int bidCountBefore = listingRepository.findById(listingId).get().getBids().size();
         MvcResult result = mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/private/" + listingId + "/bids")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json))
@@ -244,9 +219,10 @@ public class ListingControllerTest {
         String responseContent = result.getResponse().getContentAsString();
         ListingDTO responseListing = new ObjectMapper().readValue(responseContent, ListingDTO.class);
 
-        assertEquals(2, responseListing.getBids().size());
+        assertEquals(bidCountBefore + 1, responseListing.getBids().size());
 
-        mockMvc.perform(MockMvcRequestBuilders.delete("/api/v1/private/" + listingId + "/bids/" + responseListing.getBids().iterator().next().getId()))
+        long bidId = responseListing.getBids().stream().filter(b -> b.getDescription().equals(bid.getDescription())).findFirst().get().getId();
+        mockMvc.perform(MockMvcRequestBuilders.delete("/api/v1/private/" + listingId + "/bids/" + bidId))
                 .andExpect(MockMvcResultMatchers.status().isOk());
 
         result = mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/public/listings/" + listingId))
@@ -256,12 +232,7 @@ public class ListingControllerTest {
         responseContent = result.getResponse().getContentAsString();
         responseListing = new ObjectMapper().readValue(responseContent, ListingDTO.class);
         assertEquals(responseListing.getId(), listingId);
-        assertEquals(1, responseListing.getBids().size());
-    }
-
-    private Bid createBidInDatabase(String description, long price, long bidderId, long listingId) {
-        Bid bid = createBid(description, price, bidderId, listingId, 1);
-        return bidRepository.save(bid);
+        assertEquals(bidCountBefore, responseListing.getBids().size());
     }
 
     private Bid createBid(String description, long price, long bidderId, long listingId, int daysToDeliver) {
@@ -282,11 +253,6 @@ public class ListingControllerTest {
         tag.addListing(entityManager.getReference(Listing.class, 1L));
 
         return tag;
-    }
-
-    private Listing createListingInDatabase() {
-        Listing listing = createListing();
-        return listingRepository.save(listing);
     }
 
     @Test
@@ -485,16 +451,6 @@ public class ListingControllerTest {
             avg /= listing.getBids().size();
             assertTrue(avg <= maxPrice);
         }
-    }
-
-    private Listing createListing() {
-        Listing listing = new Listing();
-        listing.setTitle("Test Listing");
-        listing.setEnded(false);
-        listing.setDescription("Test Description");
-        listing.setAdvertiser(entityManager.getReference(User.class, 1L));
-        listing.addBid(entityManager.getReference(Bid.class, 1L));
-        return listing;
     }
 
 }

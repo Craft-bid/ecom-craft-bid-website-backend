@@ -6,6 +6,7 @@ import com.ecom.craftbid.entities.listing.Listing;
 import com.ecom.craftbid.entities.listing.Tag;
 import com.ecom.craftbid.entities.user.User;
 import com.ecom.craftbid.exceptions.NotFoundException;
+import com.ecom.craftbid.exceptions.UnauthorizedException;
 import com.ecom.craftbid.repositories.BidRepository;
 import com.ecom.craftbid.repositories.ListingRepository;
 import com.ecom.craftbid.repositories.TagRepository;
@@ -51,7 +52,10 @@ public class ListingService {
     @Autowired
     private UserRepository userRepository;
 
-
+    public boolean isOwner(long listingId, String email) {
+        Listing listing = listingRepository.findById(listingId).orElseThrow(NotFoundException::new);
+        return listing.getAdvertiser().getId() == userService.findUserByEmail(email).getId();
+    }
     private Listing findListingById(long listingId) throws NotFoundException {
         return listingRepository.findById(listingId)
                 .orElseThrow(NotFoundException::new);
@@ -179,7 +183,7 @@ public class ListingService {
 
     public ListingDTO addBidToListing(BidCreateRequest bidCreateRequest, long listingId) {
         Listing listing = findListingById(listingId);
-        User bidder = userService.findUserById(bidCreateRequest.getBidderId());
+        User bidder = userService.findUserByEmail(bidCreateRequest.getBidderUsername());
         Bid bid = bidCreateRequest.toBid();
         bid.setBidder(bidder);
         listing.addBid(bid);
@@ -198,7 +202,12 @@ public class ListingService {
 
     public ListingDTO setWinnerForListing(long listingId, long userId) {
         Listing listing = findListingById(listingId);
+
         User winner = userService.findUserById(userId);
+        if (listing.getBids().stream().noneMatch(bid -> bid.getBidder().getId() == userId)) {
+            throw new NotFoundException("User with ID " + userId + " is not a bidder for listing with ID " + listingId);
+        }
+
         listing.setWinner(winner);
         return saveAndReturnListingDTO(listing);
     }

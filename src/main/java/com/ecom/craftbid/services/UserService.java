@@ -40,6 +40,10 @@ public class UserService {
         return userRepository.findById(userId)
                 .orElseThrow(NotFoundException::new);
     }
+    protected User findUserByEmail(String email) throws NotFoundException {
+        return userRepository.findByEmail(email)
+                .orElseThrow(NotFoundException::new);
+    }
 
     public List<UserDTO> getAllUsers() {
         List<User> users = userRepository.findAll();

@@ -17,7 +17,7 @@ public class BidCreateRequest {
     private long price;
     private String description;
     private long daysToDeliver;
-    private long bidderId;
+    private String bidderUsername;
     private long listingId;
 
     private Date creationDate = Calendar.getInstance().getTime();
@@ -29,7 +29,7 @@ public class BidCreateRequest {
         bidCreateRequest.setDescription(bid.getDescription());
         bidCreateRequest.setCreationDate(bid.getCreationDate());
         bidCreateRequest.setDaysToDeliver(bid.getDaysToDeliver());
-        bidCreateRequest.setBidderId(bid.getBidder().getId());
+        bidCreateRequest.setBidderUsername(bid.getBidder().getUsername());
         return bidCreateRequest;
     }
 
