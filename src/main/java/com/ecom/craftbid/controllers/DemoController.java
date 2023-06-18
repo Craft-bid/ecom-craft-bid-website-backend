@@ -12,8 +12,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public class DemoController {
     @GetMapping
     public ResponseEntity<String> helloWorld() {
-         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-         String currentUserName = authentication.getName();
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String currentUserName = authentication.getName();
         return ResponseEntity.ok("Hello from secured World: " + currentUserName + "!");
     }
 }

@@ -309,10 +309,10 @@ public class DataInitializer implements CommandLineRunner {
                 .name(name)
                 .build();
         tagRepository.save(tag);
-        
+
         return tag;
     }
-    
+
     private Bid createBid(User bidder, Listing listing, int price, String description) {
         Random random = new Random();
         Bid bid = Bid.builder()
@@ -324,7 +324,7 @@ public class DataInitializer implements CommandLineRunner {
                 .daysToDeliver(random.nextInt(10))
                 .build();
         bidRepository.save(bid);
-        
+
         return bid;
     }
 

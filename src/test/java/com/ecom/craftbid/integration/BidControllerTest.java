@@ -72,7 +72,7 @@ public class BidControllerTest extends BaseIntegrationTest {
                 .andReturn();
 
         String responseContent = result.getResponse().getContentAsString();
-        List<BidDTO> bidDTOList = new ObjectMapper().readValue(responseContent, new TypeReference<List<BidDTO>>() {
+        List<BidDTO> bidDTOList = new ObjectMapper().readValue(responseContent, new TypeReference<>() {
         });
 
         assertNotNull(bidDTOList);
@@ -93,12 +93,12 @@ public class BidControllerTest extends BaseIntegrationTest {
                 .andReturn();
 
         String responseContent = result.getResponse().getContentAsString();
-        List<BidDTO> bidDTOList = new ObjectMapper().readValue(responseContent, new TypeReference<List<BidDTO>>() {
+        List<BidDTO> bidDTOList = new ObjectMapper().readValue(responseContent, new TypeReference<>() {
         });
 
         assertNotNull(bidDTOList);
         assertEquals(3 + bidsAddedByDataInit, bidDTOList.size());
-        assertEquals(bidDTOList.get(0 + bidsAddedByDataInit).getDescription(), "test bid");
+        assertEquals(bidDTOList.get(bidsAddedByDataInit).getDescription(), "test bid");
         assertEquals(bidDTOList.get(1 + bidsAddedByDataInit).getDescription(), "test bid 2");
         assertEquals(bidDTOList.get(2 + bidsAddedByDataInit).getDescription(), "test bid 3");
     }

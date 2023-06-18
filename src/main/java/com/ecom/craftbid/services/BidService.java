@@ -33,6 +33,7 @@ public class BidService {
         Bid bid = bidRepository.findById(id).orElseThrow(NotFoundException::new);
         return BidDTO.fromBid(bid);
     }
+
     public boolean isBidOwner(long bidId, String username) {
         Bid bid = bidRepository.findById(bidId).orElseThrow(NotFoundException::new);
         return bid.getBidder().getId() == userService.findUserByEmail(username).getId();

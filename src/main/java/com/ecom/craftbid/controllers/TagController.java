@@ -21,7 +21,7 @@ public class TagController {
     public ResponseEntity<List<TagDTO>> getAllTags() {
         List<Tag> tags = tagService.getAllTags();
         List<TagDTO> ntags = new ArrayList<>();
-        for(Tag t : tags){
+        for (Tag t : tags) {
             ntags.add(new TagDTO(t.getId(), t.getName()));
         }
         return ResponseEntity.ok(ntags);

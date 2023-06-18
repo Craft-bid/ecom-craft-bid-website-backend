@@ -1,18 +1,15 @@
 package com.ecom.craftbid.services;
 
-import com.ecom.craftbid.dtos.ListingDTO;
 import com.ecom.craftbid.dtos.UserDTO;
 import com.ecom.craftbid.entities.listing.Listing;
-import com.ecom.craftbid.dtos.ListingDTO;
-import com.ecom.craftbid.dtos.UserDTO;
 import com.ecom.craftbid.entities.user.Profile;
 import com.ecom.craftbid.entities.user.User;
 import com.ecom.craftbid.exceptions.NotFoundException;
 import com.ecom.craftbid.repositories.ListingRepository;
 import com.ecom.craftbid.repositories.ProfileRepository;
 import com.ecom.craftbid.repositories.UserRepository;
-import com.ecom.craftbid.utils.TokenParser;
 import com.ecom.craftbid.utils.PhotosManager;
+import com.ecom.craftbid.utils.TokenParser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
@@ -40,6 +37,7 @@ public class UserService {
         return userRepository.findById(userId)
                 .orElseThrow(NotFoundException::new);
     }
+
     protected User findUserByEmail(String email) throws NotFoundException {
         return userRepository.findByEmail(email)
                 .orElseThrow(NotFoundException::new);

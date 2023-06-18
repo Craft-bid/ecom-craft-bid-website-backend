@@ -58,6 +58,7 @@ public class UserController {
         UserDTO userDTO = userService.removeUserAvatar(userId, photoPath);
         return ResponseEntity.ok(userDTO);
     }
+
     @PutMapping("/private/users/{id}/password")
     public ResponseEntity<UserDTO> updateUserPassword(@PathVariable long id, @RequestBody String password) {
         UserDTO updatedUser = userService.updateUserPassword(id, password);

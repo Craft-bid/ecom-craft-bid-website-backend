@@ -5,13 +5,11 @@ import com.ecom.craftbid.entities.listing.Listing;
 import com.ecom.craftbid.exceptions.UnauthorizedException;
 import com.ecom.craftbid.services.BidService;
 import com.ecom.craftbid.services.ListingService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -114,11 +112,11 @@ public class ListingController {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();
 
-        if(listingService.isOwner(listingId, username))
+        if (listingService.isOwner(listingId, username))
             throw new UnauthorizedException("Owner cannot bid on his own listing");
 
         bidDto.setBidderUsername(username);
-        ListingDTO listingDto = listingService.addBidToListing(bidDto,listingId);
+        ListingDTO listingDto = listingService.addBidToListing(bidDto, listingId);
         return ResponseEntity.ok(listingDto);
     }
 
@@ -126,7 +124,7 @@ public class ListingController {
     public ResponseEntity<ListingDTO> removeBidFromListing(@PathVariable long listingId, @PathVariable long bidId) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();
-        if(!bidService.isBidOwner(bidId, username))
+        if (!bidService.isBidOwner(bidId, username))
             throw new UnauthorizedException("Only the owner can modify bid");
 
         ListingDTO listingDto = listingService.removeBidFromListing(listingId, bidId);
@@ -137,7 +135,7 @@ public class ListingController {
     public ResponseEntity<ListingDTO> setWinnerForListing(@PathVariable long listingId, @PathVariable long userId) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();
-        if(!listingService.isOwner(listingId, username))
+        if (!listingService.isOwner(listingId, username))
             throw new UnauthorizedException("Only the advertiser can modify a listing");
 
         ListingDTO listingDto = listingService.setWinnerForListing(listingId, userId);

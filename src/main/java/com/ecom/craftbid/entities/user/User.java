@@ -4,7 +4,6 @@ import com.ecom.craftbid.enums.Role;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
@@ -39,13 +38,14 @@ public class User implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        if(role==null) {
+        if (role == null) {
 
-            role=Role.USER;
+            role = Role.USER;
         }
         return List.of(new SimpleGrantedAuthority(role.name()));
     }
-    public void setProfile(Profile data){
+
+    public void setProfile(Profile data) {
         this.profile = data;
     }
 
