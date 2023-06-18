@@ -3,6 +3,7 @@ package com.ecom.craftbid.integration;
 
 import com.ecom.craftbid.dtos.AuthenticationResponse;
 import com.ecom.craftbid.dtos.RegisterRequest;
+import com.ecom.craftbid.dtos.UserDTO;
 import com.ecom.craftbid.entities.user.User;
 import com.ecom.craftbid.enums.Role;
 import com.ecom.craftbid.repositories.UserRepository;
@@ -20,14 +21,19 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
+import org.springframework.util.StreamUtils;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.util.Optional;
 
@@ -137,25 +143,57 @@ public class UserControllerTest {
 
     @Test
     public void addPhotoToUser() throws Exception {
-        // Prepare the test file
-//        Path file = Paths.get("testfile.jpg");
-//        Files.write(file, "Test file content".getBytes());
-        String filePath = "/assets/photos/lena.jpg";
-        Resource resource = new ClassPathResource(filePath);
-        File file = resource.getFile();
+        /* register the user */
+        String email = "phototest@test.pl";
+        String password = "photo!@312";
+        String username = "photoTest";
+        RegisterRequest registerRequest = RegisterRequest.builder()
+                .name(username)
+                .email(email)
+                .password(password)
+                .build();
 
-        // Prepare the request
-        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders
-                .multipart("/public/users/1/photo")
-                .file("photo", Files.readAllBytes(file.toPath()))
-                .contentType(MediaType.MULTIPART_FORM_DATA_VALUE);
+        MvcResult result = mockMvc.perform(post("/api/v1/auth/register")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(registerRequest)))
+                .andExpect(status().isCreated())
+                .andReturn();
 
-        // Perform the request
-        mockMvc.perform(requestBuilder)
-                .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.name").value("John Doe"));
+        String response = result.getResponse().getContentAsString();
+        AuthenticationResponse authenticationResponse = objectMapper.readValue(response, AuthenticationResponse.class);
+        String token = authenticationResponse.getToken();
 
-        // Clean up the test file
-        //Files.deleteIfExists(file);
+        long userId = userService.getMyId(token);
+        User user = userService.getUser(userId);
+        assertNotNull(user);
+
+        /* add photo from resources/test-photos/profile_pic.jpg to the user */
+        /* post to /public/users/{userId}/photo */
+        MockMultipartFile profPic = null;
+        try {
+            ClassPathResource photoResource = new ClassPathResource("test-photos/profile_pic.jpg");
+            byte[] photoBytes = StreamUtils.copyToByteArray(photoResource.getInputStream());
+            profPic = new MockMultipartFile(
+                    "photo",
+                    photoResource.getFilename(),
+                    "image/jpeg",
+                    photoBytes
+            );
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        assertNotNull(profPic);
+
+        MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+        params.add("photo", profPic.getOriginalFilename());
+
+        result = mockMvc.perform(MockMvcRequestBuilders.multipart("/api/v1/public/users/" + userId + "/photo")
+                    .file(profPic)
+                    .params(params))
+            .andExpect(status().isOk())
+            .andReturn();
+
+        UserDTO userDTO = objectMapper.readValue(result.getResponse().getContentAsString(), UserDTO.class);
+        assertNotNull(userDTO);
     }
 }
