@@ -16,8 +16,11 @@ import java.util.List;
 @RequestMapping("/api/v1")
 public class BidController {
 
-    @Autowired
-    private BidService bidService;
+    private final BidService bidService;
+
+    public BidController(BidService bidService) {
+        this.bidService = bidService;
+    }
 
     @GetMapping("/public/bids")
     public ResponseEntity<List<BidDTO>> getAllBids() {

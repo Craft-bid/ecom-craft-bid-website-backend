@@ -7,7 +7,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Data
 @AllArgsConstructor
@@ -32,12 +31,6 @@ public class ProfileDTO {
                 .givenFeedback(FeedbackDTO.fromFeedbackList(profile.getGivenFeedback()))
                 .averageRating(profile.getAverageRating())
                 .build();
-    }
-
-    public static List<ProfileDTO> fromProfileList(List<Profile> profiles) {
-        return profiles.stream()
-                .map(ProfileDTO::fromProfile)
-                .collect(Collectors.toList());
     }
 
 }

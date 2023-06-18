@@ -14,8 +14,11 @@ import java.util.List;
 @RequestMapping("/api/v1")
 public class TagController {
 
-    @Autowired
-    private TagService tagService;
+    private final TagService tagService;
+
+    public TagController(TagService tagService) {
+        this.tagService = tagService;
+    }
 
     @GetMapping("/public/tags")
     public ResponseEntity<List<TagDTO>> getAllTags() {

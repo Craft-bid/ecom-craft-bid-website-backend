@@ -13,10 +13,13 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/v1/admin")
 public class AdminController {
-    @Autowired
-    private UserService userService;
-    @Autowired
-    private ListingService listingService;
+    private final UserService userService;
+    private final ListingService listingService;
+
+    public AdminController(UserService userService, ListingService listingService) {
+        this.userService = userService;
+        this.listingService = listingService;
+    }
 
     @GetMapping("/users")
     public ResponseEntity<Page<User>> getAllUsers(Pageable pageable) {

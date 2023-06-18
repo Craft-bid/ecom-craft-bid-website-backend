@@ -3,8 +3,6 @@ package com.ecom.craftbid.integration;
 import com.ecom.craftbid.dtos.*;
 import com.ecom.craftbid.entities.listing.Bid;
 import com.ecom.craftbid.entities.listing.Listing;
-import com.ecom.craftbid.entities.listing.Tag;
-import com.ecom.craftbid.entities.user.User;
 import com.ecom.craftbid.init.DataInitializer;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -24,7 +22,6 @@ import org.springframework.util.StreamUtils;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -54,7 +51,7 @@ public class ListingControllerTest extends BaseIntegrationTest {
                 .andReturn();
 
         String responseContent = result.getResponse().getContentAsString();
-        List<ListingDTO> responseListings = new ObjectMapper().readValue(responseContent, new TypeReference<List<ListingDTO>>() {
+        List<ListingDTO> responseListings = new ObjectMapper().readValue(responseContent, new TypeReference<>() {
         });
 
         List<Listing> listings = listingRepository.findAll();
@@ -72,7 +69,7 @@ public class ListingControllerTest extends BaseIntegrationTest {
                 .andReturn();
 
         String responseContent = result.getResponse().getContentAsString();
-        List<ListingDTO> responseListings = new ObjectMapper().readValue(responseContent, new TypeReference<List<ListingDTO>>() {
+        List<ListingDTO> responseListings = new ObjectMapper().readValue(responseContent, new TypeReference<>() {
         });
 
         int expectedSize = (int) listingRepository.findAll().stream().filter(l -> l.getTitle().equals(title)).count();
@@ -235,31 +232,10 @@ public class ListingControllerTest extends BaseIntegrationTest {
         assertEquals(bidCountBefore, responseListing.getBids().size());
     }
 
-    private Bid createBid(String description, long price, long bidderId, long listingId, int daysToDeliver) {
-        Bid bid = new Bid();
-        bid.setDescription(description);
-        bid.setPrice(price);
-        Date date = new Date();
-        bid.setCreationDate(date);
-        bid.setDaysToDeliver(daysToDeliver);
-        bid.setBidder(entityManager.getReference(User.class, bidderId));
-        bid.setListing(entityManager.getReference(Listing.class, listingId));
-        return bid;
-    }
-
-    private Tag createTag(String name) {
-        Tag tag = new Tag();
-        tag.setName(name);
-        tag.addListing(entityManager.getReference(Listing.class, 1L));
-
-        return tag;
-    }
-
     @Test
     public void testAddPhotosAndRemoveOne() throws Exception {
         long listingId = 1L;
         long photosAddedByDataInit = listingRepository.findById(listingId).orElseThrow().getPhotos().size();
-        Listing listing = listingRepository.findById(listingId).orElseThrow();
 
         MockMultipartFile kraftowyKowal = null;
         MockMultipartFile kraftowaJava = null;
@@ -321,7 +297,6 @@ public class ListingControllerTest extends BaseIntegrationTest {
     public void testAddPhotosOneByOne() throws Exception {
         long listingId = 1L;
         long photosAddedByDataInit = listingRepository.findById(listingId).orElseThrow().getPhotos().size();
-        Listing listing = listingRepository.findById(listingId).orElseThrow();
 
         MockMultipartFile kraftowyKowal = null;
         MockMultipartFile kraftowaJava = null;
@@ -388,15 +363,15 @@ public class ListingControllerTest extends BaseIntegrationTest {
 
     @Test
     public void testSearchByBidAvgBetween() throws Exception {
-        Double minPrice = 50.0;
-        Double maxPrice = 100.0;
+        double minPrice = 50.0;
+        double maxPrice = 100.0;
 
         MvcResult result = mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/public/listings/search?minPrice=" + minPrice + "&maxPrice=" + maxPrice))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andReturn();
 
         String responseContent = result.getResponse().getContentAsString();
-        List<ListingDTO> responseListings = new ObjectMapper().readValue(responseContent, new TypeReference<List<ListingDTO>>() {
+        List<ListingDTO> responseListings = new ObjectMapper().readValue(responseContent, new TypeReference<>() {
         });
 
         assertNotNull(responseListings);
@@ -419,7 +394,7 @@ public class ListingControllerTest extends BaseIntegrationTest {
                 .andReturn();
 
         String responseContent = result.getResponse().getContentAsString();
-        List<ListingDTO> responseListings = new ObjectMapper().readValue(responseContent, new TypeReference<List<ListingDTO>>() {
+        List<ListingDTO> responseListings = new ObjectMapper().readValue(responseContent, new TypeReference<>() {
         });
 
         assertNotNull(responseListings);
@@ -439,7 +414,7 @@ public class ListingControllerTest extends BaseIntegrationTest {
                 .andReturn();
 
         responseContent = result.getResponse().getContentAsString();
-        responseListings = new ObjectMapper().readValue(responseContent, new TypeReference<List<ListingDTO>>() {
+        responseListings = new ObjectMapper().readValue(responseContent, new TypeReference<>() {
         });
 
         assertNotNull(responseListings);
