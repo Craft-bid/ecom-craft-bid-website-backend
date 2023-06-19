@@ -4,6 +4,9 @@ package com.ecom.craftbid.integration;
 import com.ecom.craftbid.dtos.*;
 import com.ecom.craftbid.entities.listing.Bid;
 import com.ecom.craftbid.entities.listing.Listing;
+import com.ecom.craftbid.entities.user.Feedback;
+import com.ecom.craftbid.entities.user.PersonalData;
+import com.ecom.craftbid.entities.user.Profile;
 import com.ecom.craftbid.entities.user.User;
 import com.ecom.craftbid.enums.Role;
 import com.ecom.craftbid.repositories.BidRepository;
@@ -265,6 +268,24 @@ public class UserControllerTest {
 
         long userId = userService.getMyId(token);
         List<User> users = userRepository.findAll();
+
+        /* crate pd, feedback, profile */
+        User user = userRepository.findById(userId).get();
+        assertNotNull(user);
+        Profile profile = Profile.builder()
+                .build();
+        user.setProfile(profile);
+
+        PersonalData personalData = PersonalData.builder()
+                .firstName("test")
+                .lastName("test")
+                .build();
+        user.getProfile().addPersonalData(personalData);
+
+        Feedback feedback = Feedback.builder()
+                .build();
+        user.getProfile().addReceivedFeedback(feedback);
+        userRepository.save(user);
 
         /* create new listing and bid */
         Listing listing = createOneTestListing(userId);
