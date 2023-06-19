@@ -23,6 +23,13 @@ public class GlobalExceptionHandler {
         return ResponseEntity.badRequest().build();
     }
 
+    @ExceptionHandler(UnauthorizedException.class)
+    public ResponseEntity<Object> handleIllegalArgumentException(UnauthorizedException ex) {
+        System.out.println(ex.getMessage());
+        ex.printStackTrace();
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Object> handleException(Exception ex) {
         System.out.println(ex.getMessage());

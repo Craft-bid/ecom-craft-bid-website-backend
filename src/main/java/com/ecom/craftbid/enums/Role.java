@@ -1,7 +1,7 @@
 package com.ecom.craftbid.enums;
 
 public enum Role {
-     USER,
+    USER,
     ADMIN,
     BLOCKED
 }

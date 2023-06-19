@@ -56,7 +56,8 @@ public class Profile {
         this.receivedFeedback.add(data);
         data.setReceiver(this);
     }
-    public void removeReceivedFeedback(Feedback data){
+
+    public void removeReceivedFeedback(Feedback data) {
         this.receivedFeedback.remove(data);
         data.setReceiver(null);
     }
@@ -65,7 +66,8 @@ public class Profile {
         this.givenFeedback.add(data);
         data.setAuthor(this);
     }
-    public void removeGivenFeedback(Feedback data){
+
+    public void removeGivenFeedback(Feedback data) {
         this.givenFeedback.remove(data);
         data.setAuthor(null);
     }

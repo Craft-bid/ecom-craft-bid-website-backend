@@ -4,7 +4,6 @@ import com.ecom.craftbid.entities.user.User;
 import com.ecom.craftbid.enums.TokenType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 

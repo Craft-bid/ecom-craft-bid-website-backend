@@ -14,8 +14,11 @@ import java.util.List;
 @RequestMapping("/api/v1")
 public class UserController {
 
-    @Autowired
-    private UserService userService;
+    private final UserService userService;
+
+    public UserController(UserService userService) {
+        this.userService = userService;
+    }
 
     @GetMapping("/public/users")
     public ResponseEntity<List<UserDTO>> getAllUsers() {
@@ -58,6 +61,7 @@ public class UserController {
         UserDTO userDTO = userService.removeUserAvatar(userId, photoPath);
         return ResponseEntity.ok(userDTO);
     }
+
     @PutMapping("/private/users/{id}/password")
     public ResponseEntity<UserDTO> updateUserPassword(@PathVariable long id, @RequestBody String password) {
         UserDTO updatedUser = userService.updateUserPassword(id, password);

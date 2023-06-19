@@ -1,6 +1,5 @@
 package com.ecom.craftbid.init;
 
-import com.ecom.craftbid.dtos.ListingDTO;
 import com.ecom.craftbid.entities.listing.Bid;
 import com.ecom.craftbid.entities.listing.Listing;
 import com.ecom.craftbid.entities.listing.Tag;
@@ -21,6 +20,8 @@ import java.util.*;
 
 @Component
 public class DataInitializer implements CommandLineRunner {
+    public static final String TESTING_USER2_EMAIL = "jane@example.com";
+    public static final String TESTING_USER_EMAIL = "john@example.com";
     private final String defaultProfPic = "https://icon-library.com/images/default-profile-icon/default-profile-icon-24.jpg";
 
     private final UserRepository userRepository;
@@ -44,7 +45,7 @@ public class DataInitializer implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        //initializeUsers();
+        initializeUsers();
         //initializeListingsAndBids();
         initializePopulatedListings();
         System.out.println("Example data initialized");
@@ -57,7 +58,7 @@ public class DataInitializer implements CommandLineRunner {
                 .build();
 
         User user1 = new User();
-        user1.setEmail("john@example.com");
+        user1.setEmail(TESTING_USER_EMAIL);
         user1.setRole(Role.USER);
         user1.setPassword(passwordEncoder.encode("1234"));
         user1.setProfile(profile1);
@@ -69,7 +70,7 @@ public class DataInitializer implements CommandLineRunner {
         profile2.setDescription("Hello my name is Jane Doe. I am a 3D printing enthusiast and I love to create new things.");
 
         User user2 = new User();
-        user2.setEmail("jane@example.com");
+        user2.setEmail(TESTING_USER2_EMAIL);
         user2.setRole(Role.USER);
         user2.setPassword(passwordEncoder.encode("1234"));
         user2.setProfile(profile2);
@@ -308,10 +309,10 @@ public class DataInitializer implements CommandLineRunner {
                 .name(name)
                 .build();
         tagRepository.save(tag);
-        
+
         return tag;
     }
-    
+
     private Bid createBid(User bidder, Listing listing, int price, String description) {
         Random random = new Random();
         Bid bid = Bid.builder()
@@ -323,7 +324,7 @@ public class DataInitializer implements CommandLineRunner {
                 .daysToDeliver(random.nextInt(10))
                 .build();
         bidRepository.save(bid);
-        
+
         return bid;
     }
 

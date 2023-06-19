@@ -34,13 +34,18 @@ public class BidService {
         return BidDTO.fromBid(bid);
     }
 
+    public boolean isBidOwner(long bidId, String username) {
+        Bid bid = bidRepository.findById(bidId).orElseThrow(NotFoundException::new);
+        return bid.getBidder().getId() == userService.findUserByEmail(username).getId();
+    }
+
     public BidDTO createBid(BidCreateRequest bidRequest) {
         Bid bid = new Bid();
         bid.setPrice(bidRequest.getPrice());
         bid.setDescription(bidRequest.getDescription());
         bid.setCreationDate(bidRequest.getCreationDate());
         bid.setDaysToDeliver(bidRequest.getDaysToDeliver());
-        bid.setBidder(userService.findUserById(bidRequest.getBidderId()));
+        bid.setBidder(userService.findUserByEmail(bidRequest.getBidderUsername()));
         bid.setListing(listingRepository.findById(bidRequest.getListingId()).orElseThrow(NotFoundException::new));
 
         Bid save = bidRepository.save(bid);
