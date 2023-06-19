@@ -14,14 +14,17 @@ import java.util.List;
 @RequestMapping("/api/v1")
 public class TagController {
 
-    @Autowired
-    private TagService tagService;
+    private final TagService tagService;
+
+    public TagController(TagService tagService) {
+        this.tagService = tagService;
+    }
 
     @GetMapping("/public/tags")
     public ResponseEntity<List<TagDTO>> getAllTags() {
         List<Tag> tags = tagService.getAllTags();
         List<TagDTO> ntags = new ArrayList<>();
-        for(Tag t : tags){
+        for (Tag t : tags) {
             ntags.add(new TagDTO(t.getId(), t.getName()));
         }
         return ResponseEntity.ok(ntags);

@@ -2,7 +2,10 @@ package com.ecom.craftbid.entities.user;
 
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -25,7 +28,7 @@ public class PersonalData {
     private String phoneNumber;
 
     /* TODO: add payment details depending of chosen payments API
-    *   and hook it up to transactions table */
+     *   and hook it up to transactions table */
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "profile_id")

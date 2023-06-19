@@ -49,12 +49,12 @@ public class PhotosManager {
         return saveFile(photo, photoName);
     }
 
-    private static String saveFile(MultipartFile photo, String photoName) {
+    private static String saveFile(MultipartFile photo, String filename) {
         if (photo.isEmpty())
             throw new RuntimeException("Empty file");
         try {
             Path directoryPath = Path.of(PHOTOS_PATH);
-            Path filePath = directoryPath.resolve(photoName);
+            Path filePath = directoryPath.resolve(filename);
             if (!Files.exists(directoryPath)) {
                 Files.createDirectories(directoryPath);
             }
@@ -62,17 +62,23 @@ public class PhotosManager {
 
             return ServletUriComponentsBuilder.fromCurrentContextPath()
                     .path(PHOTOS_PATH)
-                    .path(photoName)
+                    .path(filename)
+                    .port(8080)
                     .toUriString();
 
         } catch (Exception e) {
-            throw new RuntimeException("Could not store file " + photoName
+            throw new RuntimeException("Could not store file " + filename
                     + ". Please try again!", e);
         }
 
     }
 
-    public static InputStream loadPhoto(String filename) throws IOException {
-        return PhotosManager.class.getResourceAsStream(PHOTOS_PATH + filename);
+    public static InputStream loadPhoto(String photoName) throws IOException {
+        Path directoryPath = Path.of(PHOTOS_PATH);
+        Path filePath = directoryPath.resolve(photoName);
+        if (!Files.exists(directoryPath)) {
+            Files.createDirectories(directoryPath);
+        }
+        return Files.newInputStream(filePath);
     }
 }

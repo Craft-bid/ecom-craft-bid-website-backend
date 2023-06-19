@@ -1,7 +1,6 @@
 package com.ecom.craftbid.entities.listing;
 
 import com.ecom.craftbid.entities.user.User;
-import jakarta.annotation.Nonnull;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.OnDelete;
@@ -37,7 +36,7 @@ public class Listing {
     @ElementCollection
     private final List<String> photos = new ArrayList<>();
 
-    @OneToMany(mappedBy = "listing", cascade = CascadeType.ALL,orphanRemoval = true)
+    @OneToMany(mappedBy = "listing", cascade = CascadeType.ALL, orphanRemoval = true)
     private final List<Bid> bids = new ArrayList<>();
 
     @ManyToMany(mappedBy = "listings", cascade = CascadeType.ALL)

@@ -1,10 +1,10 @@
 package com.ecom.craftbid.entities.transaction;
 
 
-import com.ecom.craftbid.entities.user.PersonalData;
-import com.ecom.craftbid.entities.user.User;
 import com.ecom.craftbid.entities.listing.Bid;
 import com.ecom.craftbid.entities.listing.Listing;
+import com.ecom.craftbid.entities.user.PersonalData;
+import com.ecom.craftbid.entities.user.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

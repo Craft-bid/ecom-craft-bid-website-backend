@@ -56,11 +56,11 @@ public class ListingDTO {
             return 0;
         }
 
-    	double sum = 0;
-    	for(Bid b : bids) {
-    		sum += b.getPrice();
-    	}
-    	return sum/bids.size();
+        double sum = 0;
+        for (Bid b : bids) {
+            sum += b.getPrice();
+        }
+        return sum / bids.size();
     }
 
 }

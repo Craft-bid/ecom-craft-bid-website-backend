@@ -10,12 +10,10 @@ import com.ecom.craftbid.repositories.BidRepository;
 import com.ecom.craftbid.repositories.ListingRepository;
 import com.ecom.craftbid.repositories.TagRepository;
 import com.ecom.craftbid.repositories.UserRepository;
+import com.ecom.craftbid.utils.PhotosManager;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.criteria.*;
 import jakarta.transaction.Transactional;
-
-import com.ecom.craftbid.utils.PhotosManager;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -51,6 +49,10 @@ public class ListingService {
     @Autowired
     private UserRepository userRepository;
 
+    public boolean isOwner(long listingId, String email) {
+        Listing listing = listingRepository.findById(listingId).orElseThrow(NotFoundException::new);
+        return listing.getAdvertiser().getId() == userService.findUserByEmail(email).getId();
+    }
 
     private Listing findListingById(long listingId) throws NotFoundException {
         return listingRepository.findById(listingId)
@@ -179,7 +181,7 @@ public class ListingService {
 
     public ListingDTO addBidToListing(BidCreateRequest bidCreateRequest, long listingId) {
         Listing listing = findListingById(listingId);
-        User bidder = userService.findUserById(bidCreateRequest.getBidderId());
+        User bidder = userService.findUserByEmail(bidCreateRequest.getBidderUsername());
         Bid bid = bidCreateRequest.toBid();
         bid.setBidder(bidder);
         listing.addBid(bid);
@@ -198,7 +200,12 @@ public class ListingService {
 
     public ListingDTO setWinnerForListing(long listingId, long userId) {
         Listing listing = findListingById(listingId);
+
         User winner = userService.findUserById(userId);
+        if (listing.getBids().stream().noneMatch(bid -> bid.getBidder().getId() == userId)) {
+            throw new NotFoundException("User with ID " + userId + " is not a bidder for listing with ID " + listingId);
+        }
+
         listing.setWinner(winner);
         return saveAndReturnListingDTO(listing);
     }
@@ -223,8 +230,7 @@ public class ListingService {
         return listings.map(ListingDTO::fromListing);
     }
 
-    public Page<ListingDTO> findAllAdmin(Pageable pageable)
-    {
+    public Page<ListingDTO> findAllAdmin(Pageable pageable) {
         Page<Listing> listings = listingRepository.findAll(pageable);
         return listings.map(ListingDTO::fromListing);
     }
