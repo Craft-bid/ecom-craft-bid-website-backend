@@ -44,16 +44,15 @@ public class SecurityConfiguration {
                 .authorizeHttpRequests()
                 .requestMatchers(
                         "/api/v1/auth/**",
-                        "/v2/api-docs",
-                        "/v3/api-docs",
-                        "/v3/api-docs/**",
-                        "/swagger-resources",
-                        "/swagger-resources/**",
-                        "/configuration/ui",
-                        "/configuration/security",
-                        "/swagger-ui/**",
-                        "/webjars/**",
-                        "/swagger-ui.html"
+                        "/api/v1/public/**",
+                        "/api/v1/private/**",
+                        "/api/v1/public/users/**",
+                        "/api/v1/public/listings/**",
+                        "/api/v1/private/listings/**",
+                        "/api/v1/private/users/**",
+                        "/api/v1/admin/**",
+                        "/api/v1/admin/listings/**",
+                        "/api/v1/admin/users/**"
                 )
                 .permitAll()
 
@@ -76,24 +75,24 @@ public class SecurityConfiguration {
 
         @Bean
     public CorsFilter corsFilter() {
-        //final UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        //final CorsConfiguration config = new CorsConfiguration();
-//        config.setAllowedOrigins(List.of("*"));
-//        config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
-//        config.setAllowedHeaders(Arrays.asList("Authorization", "Cache-Control", "Content-Type"));
-//        config.setExposedHeaders(List.of("Authorization"));
-//        source.registerCorsConfiguration("/**", config);
-//        return new CorsFilter(source);
-
         final UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         final CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(Arrays.asList("*"));
-        config.setAllowedMethods(Arrays.asList("*"));
-        config.setAllowedHeaders(Arrays.asList("*"));
-        config.setAllowCredentials(true);
-
+        config.setAllowedOrigins(List.of("*"));
+        config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
+        config.setAllowedHeaders(Arrays.asList("Authorization", "Cache-Control", "Content-Type"));
+        config.setExposedHeaders(List.of("Authorization"));
         source.registerCorsConfiguration("/**", config);
         return new CorsFilter(source);
+
+//        final UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+//        final CorsConfiguration config = new CorsConfiguration();
+//        config.setAllowedOrigins(Arrays.asList("*"));
+//        config.setAllowedMethods(Arrays.asList("*"));
+//        config.setAllowedHeaders(Arrays.asList("*"));
+//        config.setAllowCredentials(true);
+//
+//        source.registerCorsConfiguration("/**", config);
+//        return new CorsFilter(source);
     }
 }
 
