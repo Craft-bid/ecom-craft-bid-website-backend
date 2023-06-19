@@ -30,7 +30,7 @@ public class PersonalData {
     /* TODO: add payment details depending of chosen payments API
      *   and hook it up to transactions table */
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "profile_id")
-    private Profile profile;
+//    @ManyToOne(fetch = FetchType.LAZY)
+//    @JoinColumn(name = "profile_id")
+//    private Profile profile;
 }

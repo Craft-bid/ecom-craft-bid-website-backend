@@ -107,17 +107,15 @@ public class DataInitializer implements CommandLineRunner {
         Feedback feedback1 = new Feedback();
         feedback1.setComment("Great seller, would buy again!");
         feedback1.setStars(FeedbackStar.FOUR_STARS);
-        feedback1.setAuthor(user1.getProfile());
-        feedback1.setReceiver(user2.getProfile());
-
-        user2.addReceivedFeedback(feedback1);
+        user1.getProfile().addGivenFeedback(feedback1);
+        user2.getProfile().addReceivedFeedback(feedback1);
 
 
         Feedback feedback2 = new Feedback();
         feedback2.setComment("Yeah i can recommend this seller");
         feedback2.setStars(FeedbackStar.FIVE_STARS);
-        feedback2.setAuthor(user2.getProfile());
-        feedback2.setReceiver(user1.getProfile());
+        user2.getProfile().addGivenFeedback(feedback2);
+        user1.getProfile().addReceivedFeedback(feedback2);
 
         user1.addReceivedFeedback(feedback2);
 
@@ -294,10 +292,11 @@ public class DataInitializer implements CommandLineRunner {
         Feedback feedback = new Feedback();
         feedback.setComment(comment);
         feedback.setStars(feedbackStar);
-        feedback.setAuthor(user.getProfile());
-        feedback.setReceiver(user.getProfile());
+        // TODO: author and receiver should be different
+        user.getProfile().addGivenFeedback(feedback);
+        user.getProfile().addReceivedFeedback(feedback);
 
-        user.addReceivedFeedback(feedback);
+        //user.addReceivedFeedback(feedback);
         userRepository.save(user);
 
         return user;

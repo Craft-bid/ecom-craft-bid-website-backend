@@ -1,24 +1,29 @@
 package com.ecom.craftbid.integration;
 
 
-import com.ecom.craftbid.dtos.AuthenticationResponse;
-import com.ecom.craftbid.dtos.RegisterRequest;
-import com.ecom.craftbid.dtos.UserDTO;
+import com.ecom.craftbid.dtos.*;
+import com.ecom.craftbid.entities.listing.Bid;
+import com.ecom.craftbid.entities.listing.Listing;
 import com.ecom.craftbid.entities.user.User;
 import com.ecom.craftbid.enums.Role;
+import com.ecom.craftbid.repositories.BidRepository;
+import com.ecom.craftbid.repositories.ListingRepository;
 import com.ecom.craftbid.repositories.UserRepository;
 import com.ecom.craftbid.services.AuthenticationService;
 import com.ecom.craftbid.services.UserService;
 import com.ecom.craftbid.utils.TokenParser;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
+import org.checkerframework.checker.units.qual.A;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.ActiveProfiles;
@@ -62,6 +67,12 @@ public class UserControllerTest {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private ListingRepository listingRepository;
+
+    @Autowired
+    private BidRepository bidRepository;
 
     @Test
     public void testGetUserIdFromToken() throws Exception {
@@ -229,5 +240,71 @@ public class UserControllerTest {
         result = mockMvc.perform(get("/api/v1/public/users/" + userId))
                 .andExpect(MockMvcResultMatchers.status().isNotFound())
                 .andReturn();
+    }
+
+    @Test
+    public void testDeleteUserWithListingAndBid() throws Exception {
+        String email = "test@lister.com";
+        String password = "test1234";
+        String username = "testlister";
+        RegisterRequest registerRequest = RegisterRequest.builder()
+                .name(username)
+                .email(email)
+                .password(password)
+                .build();
+
+        MvcResult result = mockMvc.perform(post("/api/v1/auth/register")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(registerRequest)))
+                .andExpect(status().isCreated())
+                .andReturn();
+
+        String response = result.getResponse().getContentAsString();
+        AuthenticationResponse authenticationResponse = objectMapper.readValue(response, AuthenticationResponse.class);
+        String token = authenticationResponse.getToken();
+
+        long userId = userService.getMyId(token);
+        List<User> users = userRepository.findAll();
+
+        /* create new listing and bid */
+        Listing listing = createOneTestListing(userId);
+        long listingId = listing.getId();
+        Bid bid = createOneTestBid(userId, listingId);
+
+        /* remove user */
+        mockMvc.perform(delete("/api/v1/private/users/" + userId))
+                .andExpect(MockMvcResultMatchers.status().isNoContent())
+                .andReturn();
+
+        List<Listing> listings = listingRepository.findAll();
+        List<Bid> bids = bidRepository.findAll();
+        List<User> usersAfterDelete = userRepository.findAll();
+        System.out.println("users after delete: " + usersAfterDelete);
+    }
+
+    /* meant for testDeleteUserWithListingAndBid only */
+    // TODO: later set winner and check
+    private Listing createOneTestListing(long userId) throws Exception {
+        Listing listing = Listing.builder()
+                .title("test listing")
+                .description("test description")
+                .advertiser(userService.getUser(userId))
+                .ended(false)
+                .build();
+
+        listingRepository.save(listing);
+        return listing;
+    }
+
+    /* meant for testDeleteUserWithListingAndBid only */
+    private Bid createOneTestBid(long userId, long listingId) throws Exception {
+        Bid bid = Bid.builder()
+                .bidder(userService.getUser(userId))
+                .price(100)
+                .listing(listingRepository.findById(listingId).get())
+                .build();
+
+        bidRepository.save(bid);
+        return bid;
     }
 }
