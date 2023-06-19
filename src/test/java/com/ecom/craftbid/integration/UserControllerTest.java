@@ -122,7 +122,7 @@ public class UserControllerTest {
                 .password(password)
                 .build();
 
-        MvcResult result = mockMvc.perform(get("/api/v1/auth/register")
+        MvcResult result = mockMvc.perform(post("/api/v1/auth/register")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(registerRequest)))
                 .andExpect(status().isCreated())
