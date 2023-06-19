@@ -225,10 +225,9 @@ public class UserControllerTest {
                 .andExpect(MockMvcResultMatchers.status().isNoContent())
                 .andReturn();
 
-        // get the user
+        // will throw an exception don't panic
         result = mockMvc.perform(get("/api/v1/public/users/" + userId))
                 .andExpect(MockMvcResultMatchers.status().isNotFound())
                 .andReturn();
-
     }
 }
