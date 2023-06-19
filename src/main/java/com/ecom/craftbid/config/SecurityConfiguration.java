@@ -73,6 +73,28 @@ public class SecurityConfiguration {
 
         return http.build();
     }
+
+        @Bean
+    public CorsFilter corsFilter() {
+        //final UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        //final CorsConfiguration config = new CorsConfiguration();
+//        config.setAllowedOrigins(List.of("*"));
+//        config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
+//        config.setAllowedHeaders(Arrays.asList("Authorization", "Cache-Control", "Content-Type"));
+//        config.setExposedHeaders(List.of("Authorization"));
+//        source.registerCorsConfiguration("/**", config);
+//        return new CorsFilter(source);
+
+        final UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        final CorsConfiguration config = new CorsConfiguration();
+        config.setAllowedOrigins(Arrays.asList("*"));
+        config.setAllowedMethods(Arrays.asList("*"));
+        config.setAllowedHeaders(Arrays.asList("*"));
+        config.setAllowCredentials(true);
+
+        source.registerCorsConfiguration("/**", config);
+        return new CorsFilter(source);
+    }
 }
 
 
