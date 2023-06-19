@@ -282,8 +282,86 @@ public class UserControllerTest {
         System.out.println("users after delete: " + usersAfterDelete);
     }
 
+    @Test
+    public void testDeleteWinnerOfListingFromDatabase() throws Exception {
+        /* create lister */
+        String email = "test@lister.com";
+        String password = "test1234";
+        String username = "testlister";
+        RegisterRequest registerRequest = RegisterRequest.builder()
+                .name(username)
+                .email(email)
+                .password(password)
+                .build();
+
+        MvcResult result = mockMvc.perform(post("/api/v1/auth/register")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(registerRequest)))
+                .andExpect(status().isCreated())
+                .andReturn();
+
+        String response = result.getResponse().getContentAsString();
+        AuthenticationResponse authenticationResponse = objectMapper.readValue(response, AuthenticationResponse.class);
+        String token = authenticationResponse.getToken();
+
+        long userId = userService.getMyId(token);
+
+        /* create winner */
+        String email2 = "test@winner.com";
+        String password2 = "test1234";
+        String username2 = "testwinner";
+        RegisterRequest registerRequest2 = RegisterRequest.builder()
+                .name(username2)
+                .email(email2)
+                .password(password2)
+                .build();
+
+        result = mockMvc.perform(post("/api/v1/auth/register")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(registerRequest2)))
+                .andExpect(status().isCreated())
+                .andReturn();
+
+        String response2 = result.getResponse().getContentAsString();
+        AuthenticationResponse authenticationResponse2 = objectMapper.readValue(response2, AuthenticationResponse.class);
+        String token2 = authenticationResponse2.getToken();
+
+        long winnerId = userService.getMyId(token2);
+
+        /* create new listing and bid */
+        Listing listing = createOneTestListingWithWinner(winnerId, userId);
+
+        /* remove winner from the db */
+        mockMvc.perform(delete("/api/v1/private/users/" + winnerId))
+                .andExpect(MockMvcResultMatchers.status().isNoContent())
+                .andReturn();
+
+        List<Listing> listings = listingRepository.findAll();
+        System.out.println("listings after delete: " + listings);
+    }
+
+    /* meant for testDeleteWinnerOfListingFromDatabase only */
+    private Listing createOneTestListingWithWinner(long winnerId, long listerId) {
+        Listing listing = Listing.builder()
+                .title("test listing")
+                .description("test description")
+                .advertiser(userService.getUser(listerId))
+                .winner(userService.getUser(winnerId))
+                .ended(true)
+                .build();
+        listingRepository.save(listing);
+
+        Bid winnerBid = Bid.builder()
+                .bidder(userService.getUser(winnerId))
+                .price(100)
+                .listing(listing)
+                .build();
+        bidRepository.save(winnerBid);
+
+        return listing;
+    }
+
     /* meant for testDeleteUserWithListingAndBid only */
-    // TODO: later set winner and check
     private Listing createOneTestListing(long userId) throws Exception {
         Listing listing = Listing.builder()
                 .title("test listing")
@@ -296,7 +374,7 @@ public class UserControllerTest {
         return listing;
     }
 
-    /* meant for testDeleteUserWithListingAndBid only */
+    /* meant for testDeleteUserWithListingAndBid and testDeleteWinnerOfListingFromDatabase only */
     private Bid createOneTestBid(long userId, long listingId) throws Exception {
         Bid bid = Bid.builder()
                 .bidder(userService.getUser(userId))
