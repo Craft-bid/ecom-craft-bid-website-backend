@@ -52,7 +52,8 @@ public class SecurityConfiguration {
                         "/api/v1/private/users/**",
                         "/api/v1/admin/**",
                         "/api/v1/admin/listings/**",
-                        "/api/v1/admin/users/**"
+                        "/api/v1/admin/users/**",
+                        "/assets/photos/**"
                 )
                 .permitAll()
 
