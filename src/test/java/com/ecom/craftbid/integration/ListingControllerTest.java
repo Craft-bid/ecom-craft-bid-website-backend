@@ -321,6 +321,7 @@ public class ListingControllerTest extends BaseIntegrationTest {
         } catch (IOException e) {
             e.printStackTrace();
         }
+
         assertNotNull(kraftowyKowal);
         assertNotNull(kraftowaJava);
 
