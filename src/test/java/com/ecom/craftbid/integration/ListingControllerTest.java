@@ -26,6 +26,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@WithMockUser(username = DataInitializer.TESTING_USER2_EMAIL, roles = "USER")
 public class ListingControllerTest extends BaseIntegrationTest {
 
     @Test

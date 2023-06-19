@@ -87,8 +87,10 @@ public class UserService {
     }
 
     public void deleteUser(long id) {
-
-        userRepository.deleteById(id);
+        User user = findUserById(id);
+        List<Listing> listings = listingRepository.findByAdvertiserId(id, Pageable.unpaged()).getContent();
+        listingRepository.deleteAll(listings);
+        userRepository.delete(user);
     }
 
     public UserDTO updateUserPassword(long id, String password) {

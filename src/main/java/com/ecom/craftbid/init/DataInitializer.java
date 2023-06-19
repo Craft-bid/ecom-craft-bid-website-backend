@@ -184,16 +184,16 @@ public class DataInitializer implements CommandLineRunner {
 
         User georgeTheBidder = createUser("george@yahoo.com", "georgy2137", 5, "Hello my name is George. I like to buy things.",
                 "201 W Washington Blvd", "Los Angeles", "USA", "George", "Bidman", "123456789", "CA90007",
-                "Great buyer, quick payment", FeedbackStar.FIVE_STARS);
+                "Great buyer, quick payment", FeedbackStar.FIVE_STARS, Role.USER);
         User pawelKrawczyk = createUser("pawel.krawczyk@wp.pl", "kraftowyPawel", 5, "Hi I'm Pawel Krawczyk!",
                 "Politechniki 81", "Warszawa", "Poland", "Pawel", "Krawczyk", "123456789", "12-100",
-                "nice", FeedbackStar.FIVE_STARS);
+                "nice", FeedbackStar.FIVE_STARS, Role.USER);
         User jamesWilson = createUser("james@uk.co", "jamesOneTwo3", 5, "Hello my name is James Wilson. I am professional woodworker and I love to create new things.",
                 "221B Baker Street ", "London", "UK", "James", "Wilson", "123456789", "99-200",
-                "Great seller, would buy again!", FeedbackStar.FIVE_STARS);
+                "Great seller, would buy again!", FeedbackStar.FIVE_STARS, Role.USER);
         User elonProCNC = createUser("elon@gmail.com", "elonNowak", 5, "Hello my name is Elon. I am professional CNC operator with 10 years of experience.",
                 "23A Millers", "Brussels", "Belgium", "Elon", "Nowak", "31353142", "29312",
-                "Great products", FeedbackStar.FIVE_STARS);
+                "Great products", FeedbackStar.FIVE_STARS, Role.ADMIN);
 
         /* listing */
         List<String> photosJames = new ArrayList<>();
@@ -264,12 +264,13 @@ public class DataInitializer implements CommandLineRunner {
 
     private User createUser(String mail, String password, double averageRating, String description, String address,
                             String city, String country, String firstName, String lastName, String number, String zipCode,
-                            String comment, FeedbackStar feedbackStar) {
+                            String comment, FeedbackStar feedbackStar, Role role) {
         User user = new User();
         user.setEmail(mail);
         user.setRole(Role.USER);
         user.setDisplayName(firstName + " " + lastName);
         user.setPassword(passwordEncoder.encode(password));
+        user.setRole(role);
 
         Profile profile = Profile.builder()
                 .averageRating(averageRating)
