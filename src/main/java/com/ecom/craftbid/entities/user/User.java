@@ -29,8 +29,8 @@ public class User implements UserDetails {
     @Column(unique = true)
     private String email;
 
-    @JsonIgnore
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "profile_id")
     private Profile profile;
 
     @Enumerated(EnumType.STRING)
@@ -44,11 +44,6 @@ public class User implements UserDetails {
         }
         return List.of(new SimpleGrantedAuthority(role.name()));
     }
-
-    public void setProfile(Profile data) {
-        this.profile = data;
-    }
-
 
     @Override
     public String getUsername() {

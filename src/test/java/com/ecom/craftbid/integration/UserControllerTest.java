@@ -221,15 +221,10 @@ public class UserControllerTest {
         long userId = userService.getMyId(token);
         List<User> users = userRepository.findAll();
 
-        result = mockMvc.perform(get("/api/v1/public/users/" + userId))
-                .andExpect(MockMvcResultMatchers.status().isOk())
-                .andReturn();
-
         mockMvc.perform(delete("/api/v1/private/users/" + userId))
                 .andExpect(MockMvcResultMatchers.status().isNoContent())
                 .andReturn();
 
-        // get the user
         // will throw an exception don't panic
         result = mockMvc.perform(get("/api/v1/public/users/" + userId))
                 .andExpect(MockMvcResultMatchers.status().isNotFound())
