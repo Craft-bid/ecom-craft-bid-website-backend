@@ -31,6 +31,7 @@ public class User implements UserDetails {
 
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "profile_id")
+    @JsonIgnore
     private Profile profile;
 
     @Enumerated(EnumType.STRING)
