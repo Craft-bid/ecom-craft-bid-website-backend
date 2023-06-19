@@ -101,7 +101,7 @@ public class UserControllerTest {
         assertEquals(userId, userService.getMyId(tokenFromResponse));
 
         /* test endpoint */
-        result = mockMvc.perform(get("/api/v1/public/users/myId")
+        result = mockMvc.perform(post("/api/v1/public/users/myId")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(tokenFromResponse))
                 .andExpect(status().isOk())
@@ -122,7 +122,7 @@ public class UserControllerTest {
                 .password(password)
                 .build();
 
-        MvcResult result = mockMvc.perform(post("/api/v1/auth/register")
+        MvcResult result = mockMvc.perform(get("/api/v1/auth/register")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(registerRequest)))
                 .andExpect(status().isCreated())
