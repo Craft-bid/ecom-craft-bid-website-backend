@@ -2,6 +2,7 @@ package com.ecom.craftbid.integration;
 
 import com.ecom.craftbid.entities.listing.Tag;
 import com.ecom.craftbid.exceptions.NotFoundException;
+import com.ecom.craftbid.init.DataInitializer;
 import com.ecom.craftbid.repositories.TagRepository;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -12,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -26,6 +28,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @AutoConfigureMockMvc
 @Transactional
 @ActiveProfiles("test")
+@WithMockUser(username = DataInitializer.TESTING_USER2_EMAIL, roles = "USER")
 public class TagControllerTest {
     @Autowired
     private MockMvc mockMvc;

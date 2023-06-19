@@ -6,6 +6,7 @@ import com.ecom.craftbid.dtos.RegisterRequest;
 import com.ecom.craftbid.dtos.UserDTO;
 import com.ecom.craftbid.entities.user.User;
 import com.ecom.craftbid.enums.Role;
+import com.ecom.craftbid.init.DataInitializer;
 import com.ecom.craftbid.repositories.UserRepository;
 import com.ecom.craftbid.services.AuthenticationService;
 import com.ecom.craftbid.services.UserService;
@@ -21,6 +22,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -42,6 +44,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @Transactional
 @ActiveProfiles("test")
+@WithMockUser(username = DataInitializer.TESTING_USER2_EMAIL, roles = "USER")
 public class UserControllerTest {
     @Value("${secureTokenSIgnKey}")
     private String SECRET_KEY;
