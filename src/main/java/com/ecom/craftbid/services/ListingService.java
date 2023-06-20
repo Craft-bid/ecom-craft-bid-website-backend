@@ -235,7 +235,7 @@ public class ListingService {
         return listings.map(ListingDTO::fromListing);
     }
 
-    public List<ListingDTO> findBySearchCriteria(@ModelAttribute SearchCriteriaDto searchRequest, Pageable pageable) {
+    public Page<ListingDTO> findBySearchCriteria(@ModelAttribute SearchCriteriaDto searchRequest, Pageable pageable) {
         Specification<Listing> spec = Specification.where(null);
 
         String title = searchRequest.getTitle();
@@ -305,7 +305,7 @@ public class ListingService {
         }
 
         Page<Listing> searchResults = listingRepository.findAll(spec, pageable);
-        return searchResults.stream().map(ListingDTO::fromListing).toList();
+        return searchResults.map(ListingDTO::fromListing);
     }
 
     private static void filterByPriceConstruct(Root<Listing> root, CriteriaBuilder criteriaBuilder, Subquery<Double> subquery) {

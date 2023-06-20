@@ -53,8 +53,8 @@ public class ListingController {
     }
 
     @GetMapping("/public/listings/search")
-    public ResponseEntity<List<ListingDTO>> findBySearchCriteria(@ModelAttribute SearchCriteriaDto searchCriteriaDto, Pageable pageable) {
-        List<ListingDTO> listingDtoPage = listingService.findBySearchCriteria(searchCriteriaDto, pageable);
+    public ResponseEntity<Page<ListingDTO>> findBySearchCriteria(@ModelAttribute SearchCriteriaDto searchCriteriaDto, Pageable pageable) {
+        Page<ListingDTO> listingDtoPage = listingService.findBySearchCriteria(searchCriteriaDto, pageable);
         return ResponseEntity.ok(listingDtoPage);
     }
 
