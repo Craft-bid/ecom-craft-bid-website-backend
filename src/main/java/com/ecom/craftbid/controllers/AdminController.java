@@ -4,10 +4,10 @@ import com.ecom.craftbid.dtos.ListingDTO;
 import com.ecom.craftbid.entities.user.User;
 import com.ecom.craftbid.services.ListingService;
 import com.ecom.craftbid.services.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -44,4 +44,12 @@ public class AdminController {
         listingService.deleteListing(id);
         return ResponseEntity.noContent().build();
     }
+
+    @GetMapping("/hello")
+    public ResponseEntity<String> helloWorld() {
+        Authentication authentication = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication();
+        String currentUserName = authentication.getName();
+        return ResponseEntity.ok("Hello: " + currentUserName);
+    }
+
 }

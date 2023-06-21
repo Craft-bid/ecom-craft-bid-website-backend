@@ -1,5 +1,6 @@
 package com.ecom.craftbid.config;
 
+import com.ecom.craftbid.enums.Role;
 import com.ecom.craftbid.filters.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -21,9 +22,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import static com.ecom.craftbid.enums.Role.ADMIN;
-import static com.ecom.craftbid.enums.Role.USER;
-import static org.springframework.http.HttpMethod.*;
-import static org.springframework.http.HttpMethod.DELETE;
 
 
 @Configuration
@@ -45,17 +43,22 @@ public class SecurityConfiguration {
                 .requestMatchers(
                         "/api/v1/auth/**",
                         "/api/v1/public/**",
-                        "/api/v1/private/**",
                         "/api/v1/public/users/**",
                         "/api/v1/public/listings/**",
+                        "/assets/photos/**"
+                ).permitAll()
+
+                .requestMatchers(
+                        "/api/v1/private/**",
                         "/api/v1/private/listings/**",
-                        "/api/v1/private/users/**",
+                        "/api/v1/private/users/**"
+                ).authenticated()
+
+                .requestMatchers(
                         "/api/v1/admin/**",
                         "/api/v1/admin/listings/**",
-                        "/api/v1/admin/users/**",
-                        "/assets/photos/**"
-                )
-                .permitAll()
+                        "/api/v1/admin/users/**"
+                ).hasAuthority(ADMIN.name())
 
                 .anyRequest()
                 .authenticated()
@@ -74,7 +77,7 @@ public class SecurityConfiguration {
         return http.build();
     }
 
-        @Bean
+    @Bean
     public CorsFilter corsFilter() {
         final UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         final CorsConfiguration config = new CorsConfiguration();
