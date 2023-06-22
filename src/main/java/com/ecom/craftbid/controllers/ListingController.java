@@ -2,6 +2,7 @@ package com.ecom.craftbid.controllers;
 
 import com.ecom.craftbid.dtos.*;
 import com.ecom.craftbid.entities.listing.Listing;
+import com.ecom.craftbid.entities.user.User;
 import com.ecom.craftbid.exceptions.UnauthorizedException;
 import com.ecom.craftbid.services.BidService;
 import com.ecom.craftbid.services.ListingService;
@@ -60,6 +61,12 @@ public class ListingController {
 
     @PostMapping("/private/listings")
     public ResponseEntity<ListingDTO> createListing(@RequestBody ListingCreateRequest listingCreateRequest) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (!authentication.isAuthenticated()) {
+            throw new UnauthorizedException("You must be logged in to create a listing");
+        }
+        listingCreateRequest.setAdvertiserId(((User)authentication.getPrincipal()).getId());
+
         ListingDTO listingDto = listingService.createListing(listingCreateRequest);
         return ResponseEntity.ok(listingDto);
     }
