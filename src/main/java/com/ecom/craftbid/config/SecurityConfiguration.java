@@ -45,6 +45,7 @@ public class SecurityConfiguration {
                         "/api/v1/auth/**",
                         "/api/v1/public/**",
                         "/api/v1/public/users/**",
+                        "/_ah/**",
                         "/api/v1/public/listings/**",
                         "/assets/photos/**"
                 ).permitAll()

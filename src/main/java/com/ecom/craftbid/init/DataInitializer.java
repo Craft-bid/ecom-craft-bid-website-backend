@@ -12,6 +12,7 @@ import com.ecom.craftbid.repositories.TagRepository;
 import com.ecom.craftbid.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.core.env.Environment;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
@@ -32,6 +33,9 @@ public class DataInitializer implements CommandLineRunner {
     private final FeedbackRepository feedbackRepository;
 
     @Autowired
+    private Environment environment;
+
+    @Autowired
     public DataInitializer(UserRepository userRepository, ListingRepository listingRepository,
                            BidRepository bidRepository, PasswordEncoder passwordEncoder,
                            FeedbackRepository feedbackRepository, TagRepository tagRepository) {
@@ -45,10 +49,13 @@ public class DataInitializer implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        initializeUsers();
-        //initializeListingsAndBids();
-        initializePopulatedListings();
-        System.out.println("Example data initialized");
+        if ("create-drop".equalsIgnoreCase(environment.getProperty("spring.jpa.hibernate.ddl-auto"))) {
+            initializeUsers();
+            //initializeListingsAndBids();
+            initializePopulatedListings();
+            System.out.println("Example data initialized");
+        }
+
     }
 
     private void initializeUsers() {
