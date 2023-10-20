@@ -33,3 +33,5 @@ build/
 .vscode/
 
 assets/
+
+gha-creds-*.json
