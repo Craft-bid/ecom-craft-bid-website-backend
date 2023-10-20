@@ -29,7 +29,7 @@ public class AuthenticationService {
 
     @Autowired
     private ProfileRepository profileRepository;
-    private final String defaultProfPic = "https://icon-library.com/images/default-profile-icon/default-profile-icon-24.jpg";
+    private static final String defaultProfPic = "https://icon-library.com/images/default-profile-icon/default-profile-icon-24.jpg";
 
     public AuthenticationResponse register(RegisterRequest request) {
         var user = new User();
@@ -39,7 +39,7 @@ public class AuthenticationService {
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setRole(Role.USER);
 
-        Profile profile = new Profile();;
+        Profile profile = new Profile();
         profile.setDescription("");
         profile.setAverageRating(5.0);
         profile.setAvatarUri(defaultProfPic);
@@ -68,6 +68,7 @@ public class AuthenticationService {
         saveUserToken(user, jwtToken);
         return AuthenticationResponse.builder()
                 .token(jwtToken)
+                .displayName(user.getDisplayName())
                 .build();
     }
 

@@ -1,5 +1,6 @@
 package com.ecom.craftbid.controllers;
 
+import com.ecom.craftbid.dtos.HelloResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -11,9 +12,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequestMapping("/api/v1/private/hello-world")
 public class DemoController {
     @GetMapping
-    public ResponseEntity<String> helloWorld() {
+    public ResponseEntity<HelloResponse> helloWorld() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String currentUserName = authentication.getName();
-        return ResponseEntity.ok("Hello from secured World: " + currentUserName + "!");
+        return ResponseEntity.ok(new HelloResponse("Hello from secured World: " + currentUserName + "!"));
     }
+
 }
+
