@@ -65,7 +65,7 @@ public class AuthenticationControllerTest {
     @Test
     public void testAuthenticate() throws Exception {
         AuthenticationRequest authenticationRequest = new AuthenticationRequest("testuser", "password123");
-        AuthenticationResponse authenticationResponse = new AuthenticationResponse("token123");
+        AuthenticationResponse authenticationResponse = AuthenticationResponse.builder().token("token123").build();
 
         when(authenticationService.authenticate(any(AuthenticationRequest.class))).thenReturn(authenticationResponse);
 

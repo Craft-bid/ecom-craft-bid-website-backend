@@ -65,7 +65,9 @@ public class ListingController {
         if (!authentication.isAuthenticated()) {
             throw new UnauthorizedException("You must be logged in to create a listing");
         }
-        listingCreateRequest.setAdvertiserId(((User)authentication.getPrincipal()).getId());
+
+        if (authentication.getPrincipal() instanceof User)
+            listingCreateRequest.setAdvertiserId(((User) authentication.getPrincipal()).getId());
 
         ListingDTO listingDto = listingService.createListing(listingCreateRequest);
         return ResponseEntity.ok(listingDto);

@@ -13,6 +13,6 @@ public class DemoControllerTest extends BaseIntegrationTest{
 
         mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/private/hello-world"))
                 .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.content().string("Hello from secured World: john@example.com!"));
+                .andExpect(MockMvcResultMatchers.content().string("{\"message\":\"Hello from secured World: john@example.com!\"}"));
     }
 }
