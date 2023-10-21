@@ -14,15 +14,15 @@ jobs:
       
       - name: Replace Environment Variables in application.properties
         env:
-          SPRING_DATA_SOURCE_URL: ${{ secrets.SPRING_DATA_SOURCE_URL }}
-          SPRING_DATA_SOURCE_USERNAME: ${{ secrets.SPRING_DATA_SOURCE_USERNAME }}
-          SPRING_DATA_SOURCE_PASSWORD: ${{ secrets.SPRING_DATA_SOURCE_PASSWORD }}
-          SPRING_TOKEN_KEY: ${{ secrets.SPRING_TOKEN_KEY }}
+          SPRING_DATA_SOURCE_URL_ENV: ${{ secrets.SPRING_DATA_SOURCE_URL }}
+          SPRING_DATA_SOURCE_USERNAME_ENV: ${{ secrets.SPRING_DATA_SOURCE_USERNAME }}
+          SPRING_DATA_SOURCE_PASSWORD_ENV: ${{ secrets.SPRING_DATA_SOURCE_PASSWORD }}
+          SPRING_TOKEN_KEY_ENV: ${{ secrets.SPRING_TOKEN_KEY }}
         run: |
-          sed -i "s|SPRING_DATA_SOURCE_URL_PLACEHOLDER|$SPRING_DATA_SOURCE_URL|g" application.properties > /dev/null 2>&1 && \
-          sed -i "s|SPRING_DATA_SOURCE_USERNAME_PLACEHOLDER|$SPRING_DATA_SOURCE_USERNAME|g" application.properties > /dev/null 2>&1 && \
-          sed -i "s|SPRING_DATA_SOURCE_PASSWORD_PLACEHOLDER|$SPRING_DATA_SOURCE_PASSWORD|g" application.properties > /dev/null 2>&1 && \
-          sed -i "s|SPRING_TOKEN_KEY_PLACEHOLDER|$SPRING_TOKEN_KEY|g" application.properties > /dev/null 2>&1
+          sed -i "s|SPRING_DATA_SOURCE_URL_PLACEHOLDER|$SPRING_DATA_SOURCE_URL_ENV|g" application.properties > /dev/null 2>&1 && \
+          sed -i "s|SPRING_DATA_SOURCE_USERNAME_PLACEHOLDER|$SPRING_DATA_SOURCE_USERNAME_ENV|g" application.properties > /dev/null 2>&1 && \
+          sed -i "s|SPRING_DATA_SOURCE_PASSWORD_PLACEHOLDER|$SPRING_DATA_SOURCE_PASSWORD_ENV|g" application.properties > /dev/null 2>&1 && \
+          sed -i "s|SPRING_TOKEN_KEY_PLACEHOLDER|$SPRING_TOKEN_KEY_ENV|g" application.properties > /dev/null 2>&1
           
         working-directory: src/main/resources
         
