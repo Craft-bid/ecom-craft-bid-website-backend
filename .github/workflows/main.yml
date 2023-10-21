@@ -18,13 +18,26 @@ jobs:
         uses: actions/checkout@v3
 
       
-      - name: Replace placeholders in application.properties with environment Variable 
+      - name: Replace SPRING_DATA_SOURCE_URL_PLACEHOLDER in application.properties
         run: |
-          sed -i "s|SPRING_DATA_SOURCE_URL_PLACEHOLDER|${SPRING_DATA_SOURCE_URL_ENV}|g" application.properties > /dev/null 2>&1 && \
-          sed -i "s|SPRING_DATA_SOURCE_USERNAME_PLACEHOLDER|${SPRING_DATA_SOURCE_USERNAME_ENV}|g" application.properties > /dev/null 2>&1 && \
-          sed -i "s|SPRING_DATA_SOURCE_PASSWORD_PLACEHOLDER|${SPRING_DATA_SOURCE_PASSWORD_ENV}|g" application.properties > /dev/null 2>&1 && \
+          sed -i "s|SPRING_DATA_SOURCE_URL_PLACEHOLDER|${SPRING_DATA_SOURCE_URL_ENV}|g" application.properties > /dev/null 2>&1
+        working-directory: src/main/resources
+      
+      - name: Replace SPRING_DATA_SOURCE_USERNAME_PLACEHOLDER in application.properties
+        run: |
+          sed -i "s|SPRING_DATA_SOURCE_USERNAME_PLACEHOLDER|${SPRING_DATA_SOURCE_USERNAME_ENV}|g" application.properties > /dev/null 2>&1
+        working-directory: src/main/resources
+      
+      - name: Replace SPRING_DATA_SOURCE_PASSWORD_PLACEHOLDER in application.properties
+        run: |
+          sed -i "s|SPRING_DATA_SOURCE_PASSWORD_PLACEHOLDER|${SPRING_DATA_SOURCE_PASSWORD_ENV}|g" application.properties > /dev/null 2>&1
+        working-directory: src/main/resources
+      
+      - name: Replace SPRING_TOKEN_KEY_PLACEHOLDER in application.properties
+        run: |
           sed -i "s|SPRING_TOKEN_KEY_PLACEHOLDER|${SPRING_TOKEN_KEY_ENV}|g" application.properties > /dev/null 2>&1
         working-directory: src/main/resources
+
 
     
       - name: Set up JDK 17
