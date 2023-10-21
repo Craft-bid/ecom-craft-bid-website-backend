@@ -3,6 +3,12 @@ on:
     branches:
       - master
 
+env:
+  SPRING_DATA_SOURCE_URL_ENV: ${{ secrets.SPRING_DATA_SOURCE_URL }}
+  SPRING_DATA_SOURCE_USERNAME_ENV: ${{ secrets.SPRING_DATA_SOURCE_USERNAME }}
+  SPRING_DATA_SOURCE_PASSWORD_ENV: ${{ secrets.SPRING_DATA_SOURCE_PASSWORD }}
+  SPRING_TOKEN_KEY_ENV: ${{ secrets.SPRING_TOKEN_KEY }}
+          
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
@@ -12,20 +18,15 @@ jobs:
         uses: actions/checkout@v3
 
       
-      - name: Replace Environment Variables in application.properties
-        env:
-          SPRING_DATA_SOURCE_URL_ENV: ${{ secrets.SPRING_DATA_SOURCE_URL }}
-          SPRING_DATA_SOURCE_USERNAME_ENV: ${{ secrets.SPRING_DATA_SOURCE_USERNAME }}
-          SPRING_DATA_SOURCE_PASSWORD_ENV: ${{ secrets.SPRING_DATA_SOURCE_PASSWORD }}
-          SPRING_TOKEN_KEY_ENV: ${{ secrets.SPRING_TOKEN_KEY }}
+      - name: Replace placeholders in application.properties with environment Variable 
         run: |
           sed -i "s|SPRING_DATA_SOURCE_URL_PLACEHOLDER|$SPRING_DATA_SOURCE_URL_ENV|g" application.properties > /dev/null 2>&1 && \
           sed -i "s|SPRING_DATA_SOURCE_USERNAME_PLACEHOLDER|$SPRING_DATA_SOURCE_USERNAME_ENV|g" application.properties > /dev/null 2>&1 && \
           sed -i "s|SPRING_DATA_SOURCE_PASSWORD_PLACEHOLDER|$SPRING_DATA_SOURCE_PASSWORD_ENV|g" application.properties > /dev/null 2>&1 && \
           sed -i "s|SPRING_TOKEN_KEY_PLACEHOLDER|$SPRING_TOKEN_KEY_ENV|g" application.properties > /dev/null 2>&1
-          
         working-directory: src/main/resources
-        
+    
+        working-directory: src/main/resources
       - name: Set up JDK 17
         uses: actions/setup-java@v3
         with:
