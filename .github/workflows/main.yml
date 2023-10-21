@@ -26,7 +26,6 @@ jobs:
           sed -i "s|SPRING_TOKEN_KEY_PLACEHOLDER|$SPRING_TOKEN_KEY_ENV|g" application.properties > /dev/null 2>&1
         working-directory: src/main/resources
     
-        working-directory: src/main/resources
       - name: Set up JDK 17
         uses: actions/setup-java@v3
         with:
