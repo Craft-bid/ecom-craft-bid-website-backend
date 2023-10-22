@@ -49,4 +49,8 @@ jobs:
           export_default_credentials: true
         
       - name: Deploy to App Engine
-        run: gcloud app deploy
+        run: gcloud app deploy --version=20231021t153245 
+
+      - name: Stop versions
+        run: gcloud app versions stop 20231021t153245 
+
