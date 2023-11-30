@@ -45,6 +45,7 @@ public class SecurityConfiguration {
                         "/api/v1/auth/**",
                         "/api/v1/public/**",
                         "/api/v1/public/users/**",
+                        "/api/v1/public/users/offers/**",
                         "/_ah/**",
                         "/api/v1/public/listings/**",
                         "/assets/photos/**"
@@ -84,7 +85,7 @@ public class SecurityConfiguration {
     @Bean
     CorsConfigurationSource corsConfigurationSource(){
         CorsConfiguration corsConfiguration = new CorsConfiguration();
-        corsConfiguration.setAllowedOrigins(List.of("*", "http://localhost:5173/"));
+        corsConfiguration.setAllowedOrigins(List.of("*", "http://localhost:5173/","http://localhost:43925/"));
         corsConfiguration.setAllowedMethods(List.of(
                 HttpMethod.GET.name(),
                 HttpMethod.POST.name(),

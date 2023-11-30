@@ -75,6 +75,15 @@ public class UserService {
 
         return userDTO;
     }
+    public UserDTO findByEmail(String email) {
+        User user = userRepository.findByEmail(email).orElseThrow(NotFoundException::new);
+        UserDTO userDTO = UserDTO.fromUser(user);
+
+        setUserDTOListings(userDTO);
+        setUserDTOWorkedIn(userDTO);
+
+        return userDTO;
+    }
 
     public UserDTO createUser(User user) {
         User createdUser = userRepository.save(user);
