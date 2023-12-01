@@ -1,5 +1,6 @@
 package com.ecom.craftbid.controllers;
 
+import com.ecom.craftbid.dtos.ListingDTO;
 import com.ecom.craftbid.dtos.UserDTO;
 import com.ecom.craftbid.entities.user.User;
 import com.ecom.craftbid.services.UserService;
@@ -31,7 +32,12 @@ public class UserController {
         UserDTO user = userService.findById(id);
         return ResponseEntity.ok(user);
     }
-
+    @GetMapping("/public/users/offers/{email}")
+    public ResponseEntity<List<ListingDTO>> getUserOffers(@PathVariable String email) {
+        UserDTO user = userService.findByEmail(email);
+        List<ListingDTO> listings = user.getListings();
+        return ResponseEntity.ok(listings);
+    }
     @PostMapping("/public/users/myId")
     public ResponseEntity<Long> getMyId(@RequestBody String jwtToken) {
         Long id = userService.getMyId(jwtToken);
