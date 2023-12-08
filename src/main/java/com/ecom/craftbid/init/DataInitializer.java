@@ -253,6 +253,13 @@ public class DataInitializer implements CommandLineRunner {
         List<String> photosGeorge2 = new ArrayList<>();
         photosGeorge2.add("https://exn9cid2c47.exactdn.com/wp-content/uploads/2022/03/laser-parts-hero-1-768x562.jpg?strip=all&lossy=1&ssl=1");
         photosGeorge2.add("https://sendcutsend.com/wp-content/uploads/2022/01/stainless-hero-1.jpg");
+        photosGeorge2.add("https://cdn.pixabay.com/photo/2023/10/29/11/33/cow-8349729_1280.png");
+        photosGeorge2.add("https://cdn.pixabay.com/photo/2023/11/21/21/38/puffins-8404284_1280.jpg");
+        photosGeorge2.add("https://cdn.pixabay.com/photo/2023/09/25/13/42/kingfisher-8275049_1280.png");
+        photosGeorge2.add("https://cdn.pixabay.com/photo/2023/11/20/13/48/butterfly-8401173_1280.jpg");
+        photosGeorge2.add("https://cdn.pixabay.com/photo/2023/06/21/04/42/automobile-8078415_1280.jpg");
+        photosGeorge2.add("https://cdn.pixabay.com/photo/2023/11/18/16/09/pears-8396722_1280.jpg");
+        photosGeorge2.add("https://cdn.pixabay.com/photo/2023/11/10/20/32/duck-8380065_1280.jpg");
         Listing listingGeorge2 = createListing("Need two sets of metal parts", new Date(System.currentTimeMillis()), "I need someone to provide me with two sets of metal parts, they will look some like the ones from the photos", georgeTheBidder, photosGeorge2);
         listingGeorge2.addTag(metal);
         listingGeorge2.addTag(pl);
@@ -261,9 +268,36 @@ public class DataInitializer implements CommandLineRunner {
         /* another listing */
         List<String> photosJames2 = new ArrayList<>();
         photosJames2.add("https://bwp.lt/wp-content/uploads/2020/04/4Pcs-Universal-Solid-Home-Table-Feet-Right-Angle-Square-Wooden-DIY-Replacement-Furniture-Leg-Tool-Reliable.jpg");
-        Listing listingJames2 = createListing("Will create wooden furniture legs", new Date(System.currentTimeMillis()), "Willing to create custom furniture legs", jamesWilson, photosJames2);
+        photosJames2.add("https://sendcutsend.com/wp-content/uploads/2022/01/stainless-hero-1.jpg");
+        photosJames2.add("https://cdn.pixabay.com/photo/2023/10/29/11/33/cow-8349729_1280.png");
+        photosJames2.add("https://cdn.pixabay.com/photo/2023/11/21/21/38/puffins-8404284_1280.jpg");
+        photosJames2.add("https://cdn.pixabay.com/photo/2023/09/25/13/42/kingfisher-8275049_1280.png");
+        photosJames2.add("https://cdn.pixabay.com/photo/2023/11/20/13/48/butterfly-8401173_1280.jpg");
+        photosJames2.add("https://cdn.pixabay.com/photo/2023/06/21/04/42/automobile-8078415_1280.jpg");
+        photosJames2.add("https://cdn.pixabay.com/photo/2023/11/18/16/09/pears-8396722_1280.jpg");
+        photosJames2.add("https://cdn.pixabay.com/photo/2023/11/10/20/32/duck-8380065_1280.jpg");
+
+        String description = "Niezwykłe Stoły na Zamówienie - Rzemiosło i Pasja\n\n"
+                + "Witaj w świecie wyjątkowych stołów tworzonych z pasji do drewna i rzemiosła. Jesteśmy stolarzami z wieloletnim doświadczeniem, specjalizującymi się w tworzeniu stołów na indywidualne zamówienia. Nasze stoły są symbolem jakości, trwałości i unikalnego stylu.\n\n"
+                + "Możliwości:\n"
+                + "- Personalizacja: Wszystkie stoły tworzymy według indywidualnych życzeń klientów. Możesz wybrać rozmiar, kształt, styl oraz dodatkowe elementy, takie jak szuflady czy specjalne wykończenia.\n"
+                + "- Dostępne materiały: Korzystamy z różnorodnych gatunków drewna, od klasycznego dębu i buku, po egzotyczne mahonie i teaki. Dodatkowo oferujemy wykończenia w postaci laminatu, szkła czy metalu dla nowoczesnego akcentu.\n\n"
+                + "Proces Tworzenia:\n"
+                + "1. Konsultacja: Rozpoczynamy od szczegółowych konsultacji, aby zrozumieć Twoje potrzeby i oczekiwania.\n"
+                + "2. Projekt: Tworzymy wizualizację Twojego stołu, zapewniając możliwość wprowadzenia zmian przed rozpoczęciem produkcji.\n"
+                + "3. Realizacja: Przechodzimy do precyzyjnego tworzenia stołu, dbając o każdy, nawet najmniejszy detal.\n\n"
+                + "Czas Realizacji i Wysyłka:\n"
+                + "- Czas realizacji zamówienia to zwykle 4-6 tygodni, w zależności od złożoności projektu.\n"
+                + "- Oferujemy bezpieczną i ubezpieczoną wysyłkę na terenie całej Polski.\n\n"
+                + "Obszar działania:\n"
+                + "- Nasza siedziba znajduje się w centralnej Polsce, ale obsługujemy klientów z całego kraju.\n\n"
+                + "Zapraszamy do kontaktu i stworzenia stołu, który będzie idealnie pasował do Twojego domu i stylu życia!";
+
+        Listing listingJames2 = createListing("Will create wooden furniture legs", new Date(System.currentTimeMillis()), description, jamesWilson, photosJames2);
         listingJames2.addTag(wood);
         listingJames2.addTag(eng);
+        listingJames2.addTag(pl);
+        listingJames2.addTag(fullTime);
 
         Bid bidJames4 = createBid(pawelKrawczyk, listingJames2, 150, "");
         listingRepository.save(listingJames2);
