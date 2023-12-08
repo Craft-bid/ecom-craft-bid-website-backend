@@ -19,12 +19,14 @@ public class Listing {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
+    @Column(length = 255)
     private String title;
 
     private Boolean ended;
     private Date expirationDate;
     private Date creationDate;
 
+    @Column(length = 5000)
     private String description;
 
     @ManyToOne

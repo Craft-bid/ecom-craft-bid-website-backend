@@ -1,4 +1,4 @@
-package com.ecom.craftbid;
+package com.ecom.craftbid.filters;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -12,7 +12,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 
